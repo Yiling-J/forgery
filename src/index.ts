@@ -1,6 +1,6 @@
 // @ts-ignore
-import index from "./ui/index.html";
-import { Hono } from "hono";
+import index from './ui/index.html'
+import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { cors } from 'hono/cors'
 import asset from './api/asset'
@@ -16,7 +16,8 @@ app.use('/*', cors())
 
 // API Sub-App
 const api = new Hono()
-const route = api.route('/assets', asset)
+const route = api
+  .route('/assets', asset)
   .route('/characters', character)
   .route('/equipments', equipment)
   .route('/generations', generation)
@@ -36,18 +37,16 @@ const server = Bun.serve({
   port: 3000,
   routes: {
     // Serve index.html for root
-    "/": index,
+    '/': index,
 
     // Proxy API requests to Hono
-    "/api/*": app.fetch,
-    "/files/*": app.fetch,
+    '/api/*': app.fetch,
+    '/files/*': app.fetch,
 
     // Catch-all for SPA routing (fallback to index.html)
-    "/*": index,
+    '/*': index,
   },
-  development: process.env.NODE_ENV !== "production",
-});
+  development: process.env.NODE_ENV !== 'production',
+})
 
-console.log(`🚀 Server running at ${server.url}`);
-
-export default app;
+console.log(`🚀 Server running at ${server.url}`)
