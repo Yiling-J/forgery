@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { EquipmentService } from '../services/equipment'
+import { EquipmentService } from '../service/equipment'
 
 const equipment = new Hono()
 

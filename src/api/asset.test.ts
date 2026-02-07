@@ -5,7 +5,7 @@ const mockAssetService = {
   createAsset: mock(),
 }
 
-mock.module('../services/asset', () => ({
+mock.module('../service/asset', () => ({
   AssetService: mockAssetService,
 }))
 

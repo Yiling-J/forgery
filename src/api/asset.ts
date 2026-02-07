@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { AssetService } from '../services/asset'
+import { AssetService } from '../service/asset'
 
 const asset = new Hono()
 

@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { CharacterService } from '../services/character'
+import { CharacterService } from '../service/character'
 
 const character = new Hono()
 

@@ -5,7 +5,7 @@ const mockGenerationService = {
   listGenerations: mock(),
 }
 
-mock.module('../services/generation', () => ({
+mock.module('../service/generation', () => ({
   GenerationService: mockGenerationService,
 }))
 

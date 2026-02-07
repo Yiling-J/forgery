@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { GenerationService } from '../services/generation'
+import { GenerationService } from '../service/generation'
 
 const generation = new Hono()
 

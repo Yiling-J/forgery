@@ -5,7 +5,7 @@ const mockEquipmentService = {
   listEquipments: mock(),
 }
 
-mock.module('../services/equipment', () => ({
+mock.module('../service/equipment', () => ({
   EquipmentService: mockEquipmentService,
 }))
 

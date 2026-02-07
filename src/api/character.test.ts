@@ -8,7 +8,7 @@ const mockCharacterService = {
   deleteCharacter: mock(),
 }
 
-mock.module('../services/character', () => ({
+mock.module('../service/character', () => ({
   CharacterService: mockCharacterService,
 }))
 
