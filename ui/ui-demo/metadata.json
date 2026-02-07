@@ -1,5 +1,0 @@
-{
-  "name": "Forgery",
-  "description": "Extract character assets and forge new characters using Gemini models.",
-  "requestFramePermissions": []
-}

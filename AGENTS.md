@@ -8,6 +8,7 @@ The backend is built with:
 - **Framework**: Hono
 - **ORM**: Prisma (with SQLite)
 - **Database**: SQLite (local file)
+- **AI**: Google Generative AI (Gemini)
 
 ### Layered Architecture
 
@@ -16,6 +17,32 @@ We follow a strict layered architecture:
 1.  **API Layer (`src/api`)**: Handles HTTP requests, validation, and calls Service layer. **Do not access DB directly.**
 2.  **Service Layer (`src/service`)**: Contains business logic and interacts with the Database via Prisma.
 3.  **Data Layer (`src/db.ts`)**: Exports the Prisma Client instance.
+
+## Frontend Architecture
+
+The frontend is built with:
+
+- **Runtime**: Bun (Bundler & Runner)
+- **Framework**: React
+- **Styling**: Tailwind CSS + Shadcn UI (Components)
+- **State**: React Hooks (useState, useEffect)
+
+### Project Structure
+
+- `ui/`: Root of the frontend project.
+- `ui/index.html`: Entry point for the frontend.
+- `ui/App.tsx`: Main application component.
+- `ui/components/`: Reusable UI components.
+- `ui/index.css`: Global styles (Tailwind imports).
+
+### Development
+
+- **Run Backend**: `bun --hot src/index.ts` (Runs on port 3000)
+- **Run Frontend**: `bun --hot ui/index.html` (Runs on port 3001, make sure port 3000 is running for API)
+
+### Build
+
+- **Build Frontend**: `bun build ui/index.html --outdir=ui/dist`
 
 ## Testing
 
@@ -55,7 +82,7 @@ We use `bun:test` for testing.
 
 ## Environment Variables
 
-- `.env`: Development environment variables (`DATABASE_URL="file:./dev.db"`).
+- `.env`: Development environment variables (`DATABASE_URL="file:./dev.db"`, `API_KEY="..."`).
 - `.env.test`: Test environment variables (`DATABASE_URL="file:./test.db"`).
 
 ## Known Issues
