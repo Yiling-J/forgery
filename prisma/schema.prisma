@@ -2,10 +2,103 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "sqlite"
+}
+
+model Asset {
+  id        String   @id
+  name      String
+  type      String
+  path      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  characters  Character[]
+  equipments  Equipment[]
+  generations Generation[]
+
+  @@map("assets")
+}
+
+model Character {
+  id          String   @id
+  name        String
+  description String?
+  imageId     String   @map("image_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  image       Asset        @relation(fields: [imageId], references: [id])
+  generations Generation[]
+
+  @@map("characters")
+}
+
+model Category {
+  id        String   @id
+  name      String
+  parentId  String?  @map("parent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  parent              Category?   @relation("CategoryToSubCategory", fields: [parentId], references: [id])
+  subCategories       Category[]  @relation("CategoryToSubCategory")
+  equipmentsAsMain    Equipment[] @relation("CategoryMain")
+  equipmentsAsSub     Equipment[] @relation("CategorySub")
+
+  @@map("categories")
+}
+
+model Equipment {
+  id            String   @id
+  name          String
+  description   String
+  categoryId    String   @map("category_id")
+  subCategoryId String?  @map("sub_category_id")
+  imageId       String   @map("image_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  category      Category              @relation("CategoryMain", fields: [categoryId], references: [id])
+  subCategory   Category?             @relation("CategorySub", fields: [subCategoryId], references: [id])
+  image         Asset                 @relation(fields: [imageId], references: [id])
+  generations   GenerationEquipment[]
+
+  @@map("equipments")
+}
+
+model Generation {
+  id          String   @id
+  characterId String   @map("character_id")
+  imageId     String   @map("image_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  character   Character             @relation(fields: [characterId], references: [id])
+  image       Asset                 @relation(fields: [imageId], references: [id])
+  equipments  GenerationEquipment[]
+
+  @@map("generations")
+}
+
+model GenerationEquipment {
+  generationId String @map("generation_id")
+  equipmentId  String @map("equipment_id")
+
+  generation Generation @relation(fields: [generationId], references: [id])
+  equipment  Equipment  @relation(fields: [equipmentId], references: [id])
+
+  @@id([generationId, equipmentId])
+  @@map("generation_equipments")
 }

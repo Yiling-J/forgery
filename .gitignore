@@ -1,2 +1,12 @@
-# deps
-node_modules/
+node_modules
+.bun
+dist
+out
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+data/files/*
+!data/files/.gitkeep
+*.db
