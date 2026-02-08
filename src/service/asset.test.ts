@@ -26,7 +26,7 @@ describe('AssetService', () => {
 
   it('createAsset should save file and create db record', async () => {
     // @ts-ignore
-    const { AssetService } = await import(`./asset?v=${Date.now()}`)
+    const { assetService } = await import(`./asset?v=${Date.now()}`)
     const file = new File(['content'], 'test.png', { type: 'image/png' })
     const meta = { name: 'Test Asset', type: 'image/png' }
 
@@ -39,7 +39,7 @@ describe('AssetService', () => {
       updatedAt: new Date(),
     })
 
-    const result = await AssetService.createAsset(file, meta)
+    const result = await assetService.createAsset(file, meta)
 
     expect(mockBunWrite).toHaveBeenCalled()
     expect(mockPrisma.asset.create).toHaveBeenCalled()

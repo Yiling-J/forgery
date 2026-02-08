@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { CharacterService } from '../service/character'
+import { characterService } from '../service/character'
 
 const app = new Hono()
 
@@ -25,23 +25,23 @@ const updateSchema = z.object({
 const route = app
   .get('/', zValidator('query', listSchema), async (c) => {
     const { page, limit } = c.req.valid('query')
-    const result = await CharacterService.listCharacters({ page, limit })
+    const result = await characterService.listCharacters({ page, limit })
     return c.json(result)
   })
   .post('/', zValidator('json', createSchema), async (c) => {
     const { name, description, imageId } = c.req.valid('json')
-    const result = await CharacterService.createCharacter({ name, description, imageId })
+    const result = await characterService.createCharacter({ name, description, imageId })
     return c.json(result, 201)
   })
   .put('/:id', zValidator('json', updateSchema), async (c) => {
     const id = c.req.param('id')
     const body = c.req.valid('json')
-    const result = await CharacterService.updateCharacter(id, body)
+    const result = await characterService.updateCharacter(id, body)
     return c.json(result)
   })
   .delete('/:id', async (c) => {
     const id = c.req.param('id')
-    await CharacterService.deleteCharacter(id)
+    await characterService.deleteCharacter(id)
     return c.json({ success: true }, 200)
   })
 

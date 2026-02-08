@@ -2,7 +2,7 @@ import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
 
 export class GenerationService {
-  static async listGenerations(
+  async listGenerations(
     pagination: { page: number; limit: number },
     filters?: { characterId?: string; equipmentId?: string },
   ) {
@@ -46,3 +46,5 @@ export class GenerationService {
     return { total, items, page, limit, totalPages: Math.ceil(total / limit) }
   }
 }
+
+export const generationService = new GenerationService()

@@ -6,7 +6,7 @@ export class EquipmentService {
   /**
    * Lists equipment with pagination and optional filtering by category/subcategory.
    */
-  static async listEquipments(
+  async listEquipments(
     pagination: { page: number; limit: number },
     filters?: { categoryId?: string; subCategoryId?: string },
   ) {
@@ -44,7 +44,7 @@ export class EquipmentService {
   /**
    * Saves a new equipment item, linking it to an asset (the refined image) and a category.
    */
-  static async createEquipment(data: {
+  async createEquipment(data: {
     name: string
     description: string
     imageId: string
@@ -69,3 +69,5 @@ export class EquipmentService {
     })
   }
 }
+
+export const equipmentService = new EquipmentService()

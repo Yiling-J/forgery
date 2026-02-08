@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { EquipmentService } from '../service/equipment'
+import { equipmentService } from '../service/equipment'
 
 const app = new Hono()
 
@@ -15,7 +15,7 @@ const listSchema = z.object({
 const route = app.get('/', zValidator('query', listSchema), async (c) => {
   const { page, limit, categoryId, subCategoryId } = c.req.valid('query')
 
-  const result = await EquipmentService.listEquipments(
+  const result = await equipmentService.listEquipments(
     { page, limit },
     { categoryId, subCategoryId },
   )

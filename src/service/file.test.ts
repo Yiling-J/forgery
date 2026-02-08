@@ -1,5 +1,5 @@
 import { describe, expect, test, mock } from 'bun:test'
-import { FileService } from './file'
+import { fileService } from './file'
 
 // Valid 1x1 PNG Base64
 const VALID_PNG_BASE64 =
@@ -26,7 +26,7 @@ describe('FileService', () => {
   test('saveFile saves a file and converts to webp if image', async () => {
     // Pass valid PNG buffer
     const file = new File([VALID_PNG_BUFFER], 'test.png', { type: 'image/png' })
-    const result = await FileService.saveFile(file)
+    const result = await fileService.saveFile(file)
 
     expect(result.filename.endsWith('.webp')).toBe(true)
     expect(result.mimeType).toBe('image/webp')
@@ -36,7 +36,7 @@ describe('FileService', () => {
 
   test('saveBase64Image saves a base64 string as webp', async () => {
     // Pass valid base64
-    const result = await FileService.saveBase64Image(VALID_PNG_BASE64)
+    const result = await fileService.saveBase64Image(VALID_PNG_BASE64)
 
     expect(result.filename.endsWith('.webp')).toBe(true)
     expect(mockWrite).toHaveBeenCalled()

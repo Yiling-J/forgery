@@ -19,11 +19,11 @@ describe('GenerationService', () => {
 
   it('listGenerations should filter by equipment', async () => {
     // @ts-ignore
-    const { GenerationService } = await import(`./generation?v=${Date.now()}`)
+    const { generationService } = await import(`./generation?v=${Date.now()}`)
     mockPrisma.generation.count.mockResolvedValue(2)
     mockPrisma.generation.findMany.mockResolvedValue([])
 
-    await GenerationService.listGenerations({ page: 1, limit: 10 }, { equipmentId: 'eq1' })
+    await generationService.listGenerations({ page: 1, limit: 10 }, { equipmentId: 'eq1' })
 
     expect(mockPrisma.generation.findMany).toHaveBeenCalledWith(
       expect.objectContaining({

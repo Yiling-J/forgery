@@ -4,7 +4,7 @@ import { join, extname } from 'path'
 // import { writeFile } from '../lib/fileSystem' // Using Bun.write
 
 export class AssetService {
-  static async createAsset(file: File, meta: { name: string; type: string }) {
+  async createAsset(file: File, meta: { name: string; type: string }) {
     const id = ulid()
     const ext = extname(file.name) || '.bin'
     const filename = `${id}${ext}`
@@ -26,7 +26,7 @@ export class AssetService {
   }
 
   // New method to handle already saved files
-  static async createAssetRecord(params: { path: string; name: string; type: string }) {
+  async createAssetRecord(params: { path: string; name: string; type: string }) {
     const id = ulid()
     return prisma.asset.create({
       data: {
@@ -38,9 +38,11 @@ export class AssetService {
     })
   }
 
-  static async getAsset(id: string) {
+  async getAsset(id: string) {
     return prisma.asset.findUnique({
       where: { id },
     })
   }
 }
+
+export const assetService = new AssetService()

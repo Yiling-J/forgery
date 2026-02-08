@@ -18,6 +18,22 @@ We follow a strict layered architecture:
 2.  **Service Layer (`src/service`)**: Contains business logic and interacts with the Database via Prisma.
 3.  **Data Layer (`src/db.ts`)**: Exports the Prisma Client instance.
 
+### Service Layer Patterns
+
+- **Instance Methods**: Define service logic as instance methods on a class, not static methods.
+- **Singleton Export**: Export a singleton instance of the service class.
+  ```typescript
+  export class MyService {
+    async doSomething() { ... }
+  }
+  export const myService = new MyService()
+  ```
+- **Usage**: Import and use the exported instance.
+  ```typescript
+  import { myService } from '../service/myService'
+  await myService.doSomething()
+  ```
+
 ### Hono API Definitions
 
 - **Route Chaining**: Always define API routes using method chaining on a Hono instance. This ensures that the type definitions for inputs and outputs are correctly inferred and preserved in the exported type.

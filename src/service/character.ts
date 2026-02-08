@@ -2,7 +2,7 @@ import { prisma } from '../db'
 import { ulid } from 'ulidx'
 
 export class CharacterService {
-  static async createCharacter(data: { name: string; description?: string; imageId: string }) {
+  async createCharacter(data: { name: string; description?: string; imageId: string }) {
     return prisma.character.create({
       data: {
         id: ulid(),
@@ -14,7 +14,7 @@ export class CharacterService {
     })
   }
 
-  static async listCharacters(pagination: { page: number; limit: number }) {
+  async listCharacters(pagination: { page: number; limit: number }) {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
     const [total, items] = await Promise.all([
@@ -34,7 +34,7 @@ export class CharacterService {
     return { total, items, page, limit, totalPages: Math.ceil(total / limit) }
   }
 
-  static async updateCharacter(
+  async updateCharacter(
     id: string,
     data: { name?: string; description?: string; imageId?: string },
   ) {
@@ -47,9 +47,11 @@ export class CharacterService {
     })
   }
 
-  static async deleteCharacter(id: string) {
+  async deleteCharacter(id: string) {
     return prisma.character.delete({
       where: { id },
     })
   }
 }
+
+export const characterService = new CharacterService()

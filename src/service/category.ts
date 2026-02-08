@@ -6,7 +6,7 @@ export class CategoryService {
    * Finds a category by name (case-insensitive) or creates it if it doesn't exist.
    * If a parentId is provided, it links the category as a sub-category.
    */
-  static async findOrCreate(name: string, parentId?: string): Promise<string> {
+  async findOrCreate(name: string, parentId?: string): Promise<string> {
     const normalizedName = name.trim()
 
     // Check if category exists
@@ -40,7 +40,7 @@ export class CategoryService {
   /**
    * Lists all main categories with their sub-categories.
    */
-  static async listAll() {
+  async listAll() {
     return prisma.category.findMany({
       where: {
         parentId: null,
@@ -54,3 +54,5 @@ export class CategoryService {
     })
   }
 }
+
+export const categoryService = new CategoryService()

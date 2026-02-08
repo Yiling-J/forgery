@@ -25,11 +25,11 @@ describe('CharacterService', () => {
 
   it('createCharacter should create character with image relation', async () => {
     // @ts-ignore
-    const { CharacterService } = await import(`./character?v=${Date.now()}`)
+    const { characterService } = await import(`./character?v=${Date.now()}`)
     const data = { name: 'Test Char', description: 'Desc', imageId: 'img1' }
     mockPrisma.character.create.mockResolvedValue({ id: 'char1', ...data })
 
-    const result = await CharacterService.createCharacter(data)
+    const result = await characterService.createCharacter(data)
 
     expect(mockPrisma.character.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -45,11 +45,11 @@ describe('CharacterService', () => {
 
   it('listCharacters should return paginated list', async () => {
     // @ts-ignore
-    const { CharacterService } = await import(`./character?v=${Date.now()}`)
+    const { characterService } = await import(`./character?v=${Date.now()}`)
     mockPrisma.character.count.mockResolvedValue(10)
     mockPrisma.character.findMany.mockResolvedValue([{ id: 'char1' }])
 
-    const result = await CharacterService.listCharacters({ page: 1, limit: 5 })
+    const result = await characterService.listCharacters({ page: 1, limit: 5 })
 
     expect(mockPrisma.character.findMany).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -6,7 +6,7 @@ const mockEquipmentService = {
 }
 
 mock.module('../service/equipment', () => ({
-  EquipmentService: mockEquipmentService,
+  equipmentService: mockEquipmentService,
 }))
 
 describe('Equipment API', () => {
