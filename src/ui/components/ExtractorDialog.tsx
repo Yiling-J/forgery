@@ -18,6 +18,8 @@ interface ExtractorDialogProps {
   onSuccess: (assets: ExtractedAsset[]) => void
 }
 
+import { useEffect } from 'react'
+
 export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   open,
   onOpenChange,
@@ -30,16 +32,34 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<ExtractedAsset[]>([])
 
+  const processFile = (f: File) => {
+    setFile(f)
+    setPreview(URL.createObjectURL(f))
+    setResults([])
+    setError(null)
+    setStatus('idle')
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const f = e.target.files[0]
-      setFile(f)
-      setPreview(URL.createObjectURL(f))
-      setResults([])
-      setError(null)
-      setStatus('idle')
+      processFile(e.target.files[0])
     }
   }
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      if (!open) return
+      if (e.clipboardData && e.clipboardData.files.length > 0) {
+        const f = e.clipboardData.files[0]
+        if (f.type.startsWith('image/')) {
+          processFile(f)
+        }
+      }
+    }
+
+    window.addEventListener('paste', handlePaste)
+    return () => window.removeEventListener('paste', handlePaste)
+  }, [open])
 
   const handleExtract = async () => {
     if (!file) return
