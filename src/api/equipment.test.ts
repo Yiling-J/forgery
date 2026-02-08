@@ -25,7 +25,7 @@ describe('Equipment API', () => {
     expect(res.status).toBe(200)
     expect(mockEquipmentService.listEquipments).toHaveBeenCalledWith(
       { page: 1, limit: 20 },
-      { category: 'Headwear', subCategory: undefined },
+      { category: ['Headwear'], subCategory: undefined },
     )
   })
 })
