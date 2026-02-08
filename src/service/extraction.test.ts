@@ -5,15 +5,17 @@ import { ExtractionService } from './extraction'
 mock.module('./ai', () => ({
   aiService: {
     generateText: mock(async () => ({
-      assets: [{
-        item_name: 'Helmet',
-        description: 'A rusty helmet',
-        background_color: 'Red',
-        category: 'Head'
-      }]
+      assets: [
+        {
+          item_name: 'Helmet',
+          description: 'A rusty helmet',
+          background_color: 'Red',
+          category: 'Head',
+        },
+      ],
     })),
     generateImage: mock(async () => 'data:image/png;base64,mockImage'),
-  }
+  },
 }))
 
 mock.module('./file', () => ({
@@ -21,27 +23,27 @@ mock.module('./file', () => ({
     saveBase64Image: mock(async () => ({
       path: 'data/files/123.webp',
       filename: '123.webp',
-      mimeType: 'image/webp'
-    }))
-  }
+      mimeType: 'image/webp',
+    })),
+  },
 }))
 
 mock.module('./category', () => ({
   CategoryService: {
-    findOrCreate: mock(async () => 'cat_123')
-  }
+    findOrCreate: mock(async () => 'cat_123'),
+  },
 }))
 
 mock.module('./asset', () => ({
   AssetService: {
-    createAssetRecord: mock(async () => ({ id: 'asset_123' }))
-  }
+    createAssetRecord: mock(async () => ({ id: 'asset_123' })),
+  },
 }))
 
 mock.module('./equipment', () => ({
   EquipmentService: {
-    createEquipment: mock(async () => ({ id: 'eq_123', name: 'Helmet' }))
-  }
+    createEquipment: mock(async () => ({ id: 'eq_123', name: 'Helmet' })),
+  },
 }))
 
 mock.module('sharp', () => {
@@ -49,9 +51,9 @@ mock.module('sharp', () => {
     metadata: () => Promise.resolve({ width: 100, height: 100 }),
     clone: () => ({
       extract: () => ({
-        toBuffer: () => Promise.resolve(Buffer.from('mockCrop'))
-      })
-    })
+        toBuffer: () => Promise.resolve(Buffer.from('mockCrop')),
+      }),
+    }),
   })
 })
 

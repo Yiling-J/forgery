@@ -65,7 +65,7 @@ export class EquipmentService {
       include: {
         image: true,
         category: true,
-      }
+      },
     })
   }
 }

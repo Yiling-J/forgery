@@ -11,7 +11,10 @@ export class FileService {
    * @param name Optional name for the file (used for extension detection if original name is missing).
    * @returns The relative path to the saved file.
    */
-  static async saveFile(file: File | Blob, name?: string): Promise<{ path: string; filename: string; mimeType: string }> {
+  static async saveFile(
+    file: File | Blob,
+    name?: string,
+  ): Promise<{ path: string; filename: string; mimeType: string }> {
     const id = ulid()
     let buffer: ArrayBuffer | Buffer
     let filename: string
@@ -32,12 +35,12 @@ export class FileService {
         mimeType = file.type || 'application/octet-stream'
       }
     } else {
-       // Blob case
-       buffer = await file.arrayBuffer()
-       const result = await this.optimizeImage(buffer)
-       buffer = result.buffer
-       filename = `${id}.webp`
-       mimeType = 'image/webp'
+      // Blob case
+      buffer = await file.arrayBuffer()
+      const result = await this.optimizeImage(buffer)
+      buffer = result.buffer
+      filename = `${id}.webp`
+      mimeType = 'image/webp'
     }
 
     const path = join('data/files', filename)
@@ -62,19 +65,19 @@ export class FileService {
    * Saves a base64 string as an image file.
    */
   static async saveBase64Image(base64: string): Promise<{ path: string; filename: string }> {
-     // Strip prefix if present
-     const data = base64.replace(/^data:image\/\w+;base64,/, '')
-     const buffer = Buffer.from(data, 'base64')
+    // Strip prefix if present
+    const data = base64.replace(/^data:image\/\w+;base64,/, '')
+    const buffer = Buffer.from(data, 'base64')
 
-     // Optimize
-     const { buffer: optimized } = await this.optimizeImage(buffer)
+    // Optimize
+    const { buffer: optimized } = await this.optimizeImage(buffer)
 
-     const id = ulid()
-     const filename = `${id}.webp`
-     const path = join('data/files', filename)
+    const id = ulid()
+    const filename = `${id}.webp`
+    const path = join('data/files', filename)
 
-     await Bun.write(path, optimized)
+    await Bun.write(path, optimized)
 
-     return { path, filename }
+    return { path, filename }
   }
 }

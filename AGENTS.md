@@ -37,12 +37,8 @@ The frontend is built with:
 
 ### Development
 
-- **Run Backend**: `bun --hot src/index.ts` (Runs on port 3000)
-- **Run Frontend**: `bun --hot ui/index.html` (Runs on port 3001, make sure port 3000 is running for API)
+- **Run Dev**: `bun --hot src/index.ts` (Runs on port 3000)
 
-### Build
-
-- **Build Frontend**: `bun build ui/index.html --outdir=ui/dist`
 
 ## Testing
 
@@ -66,7 +62,14 @@ We use `bun:test` for testing.
 
 ## Submission Rules
 
-- **Strict Requirement**: You must ensure `lint`, `format`, `typecheck`, and `test` all pass before submitting any changes.
+- **Strict Requirement**: A submission is considered complete **only** when there is a single final code state in which **all** of the following pass **simultaneously**:
+  - `lint`
+  - `format`
+  - `typecheck`
+  - `test`
+
+- Fixes must be iterated until **no check causes any other check to fail**.
+- Do **not** submit intermediate states where some checks pass and others fail, even temporarily.
 
 ## Prisma Configuration
 

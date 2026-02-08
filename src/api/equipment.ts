@@ -17,7 +17,7 @@ equipment.get('/', zValidator('query', listSchema), async (c) => {
 
   const result = await EquipmentService.listEquipments(
     { page, limit },
-    { categoryId, subCategoryId }
+    { categoryId, subCategoryId },
   )
 
   return c.json(result)

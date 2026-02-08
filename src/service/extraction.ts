@@ -43,18 +43,20 @@ Instructions:
 
 Output Format (Strict JSON):
 Return ONLY a JSON object with a list of assets.
-`;
+`
 
     const schema = z.object({
-      assets: z.array(z.object({
-        item_name: z.string().describe("Name of the item"),
-        background_color: z.string().describe("Background color assigned"),
-        description: z.string().describe("Description of the item"),
-        category: z.string().describe("Category of the item"),
-      })),
-    });
+      assets: z.array(
+        z.object({
+          item_name: z.string().describe('Name of the item'),
+          background_color: z.string().describe('Background color assigned'),
+          description: z.string().describe('Description of the item'),
+          category: z.string().describe('Category of the item'),
+        }),
+      ),
+    })
 
-    return aiService.generateText<AnalysisResponse>(prompt, [file], schema);
+    return aiService.generateText<AnalysisResponse>(prompt, [file], schema)
   }
 
   /**
@@ -62,16 +64,25 @@ Return ONLY a JSON object with a list of assets.
    */
   static async generateTextureSheet(file: File, assets: ExtractedAsset[]): Promise<string> {
     const HEX_COLORS: Record<string, string> = {
-      Red: '#FF0000', Yellow: '#FFFF00', Green: '#00FF00', White: '#FFFFFF',
-      Blue: '#0000FF', Black: '#000000', Magenta: '#FF00FF', Cyan: '#00FFFF',
-      Orange: '#FFA500', Gray: '#808080'
-    };
+      Red: '#FF0000',
+      Yellow: '#FFFF00',
+      Green: '#00FF00',
+      White: '#FFFFFF',
+      Blue: '#0000FF',
+      Black: '#000000',
+      Magenta: '#FF00FF',
+      Cyan: '#00FFFF',
+      Orange: '#FFA500',
+      Gray: '#808080',
+    }
 
-    const mappingString = assets.map(asset => {
-      const colorName = asset.background_color;
-      const hex = HEX_COLORS[colorName] || '#000000';
-      return `- ${asset.item_name}: ${colorName} Background (${hex}). ${asset.description}`;
-    }).join('\n');
+    const mappingString = assets
+      .map((asset) => {
+        const colorName = asset.background_color
+        const hex = HEX_COLORS[colorName] || '#000000'
+        return `- ${asset.item_name}: ${colorName} Background (${hex}). ${asset.description}`
+      })
+      .join('\n')
 
     const prompt = `
 Task: Character Asset Extraction & Grid Generation
@@ -89,17 +100,17 @@ Item & Background Mapping:
 ${mappingString}
 
 Output Requirement: High-resolution texture sheet, flat lay presentation, sharp edges, and uniform lighting across all assets.
-`;
+`
 
-    return aiService.generateImage(prompt, [file]);
+    return aiService.generateImage(prompt, [file])
   }
 
   /**
    * Detects bounding boxes for assets in the texture sheet.
    */
   static async detectBoundingBoxes(sheetBase64: string): Promise<BoundingBoxResponse> {
-    const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-    const file = new File([buffer], 'sheet.png', { type: 'image/png' });
+    const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+    const file = new File([buffer], 'sheet.png', { type: 'image/png' })
 
     const prompt = `
 Task: Spatial Asset Detection & Normalized Grid Mapping
@@ -114,71 +125,78 @@ Instructions:
 
 Output Format (Strict JSON):
 Return ONLY a JSON object. Provide the grid dimensions and a list of detected assets with their coordinates.
-`;
+`
 
     const schema = z.object({
       grid_dimensions: z.object({
         rows: z.number(),
         cols: z.number(),
       }),
-      assets: z.array(z.object({
-        item_name: z.string(),
-        coordinates: z.tuple([z.number(), z.number(), z.number(), z.number()]).describe("[ymin, xmin, ymax, xmax]"),
-        bg_color_detected: z.string(),
-      })),
-    });
+      assets: z.array(
+        z.object({
+          item_name: z.string(),
+          coordinates: z
+            .tuple([z.number(), z.number(), z.number(), z.number()])
+            .describe('[ymin, xmin, ymax, xmax]'),
+          bg_color_detected: z.string(),
+        }),
+      ),
+    })
 
-    return aiService.generateText<BoundingBoxResponse>(prompt, [file], schema);
+    return aiService.generateText<BoundingBoxResponse>(prompt, [file], schema)
   }
 
   /**
    * Crops assets from the texture sheet based on bounding boxes.
    */
-  static async cropAssets(sheetBase64: string, boxes: BoundingBoxResponse): Promise<{ name: string, base64: string }[]> {
-    const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-    const image = sharp(buffer);
-    const metadata = await image.metadata();
+  static async cropAssets(
+    sheetBase64: string,
+    boxes: BoundingBoxResponse,
+  ): Promise<{ name: string; base64: string }[]> {
+    const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+    const image = sharp(buffer)
+    const metadata = await image.metadata()
 
-    if (!metadata.width || !metadata.height) throw new Error("Could not determine image dimensions");
+    if (!metadata.width || !metadata.height) throw new Error('Could not determine image dimensions')
 
-    const croppedAssets = [];
+    const croppedAssets = []
 
     for (const box of boxes.assets) {
-      const [ymin, xmin, ymax, xmax] = box.coordinates;
+      const [ymin, xmin, ymax, xmax] = box.coordinates
 
-      const left = Math.floor(xmin * metadata.width);
-      const top = Math.floor(ymin * metadata.height);
-      const width = Math.floor((xmax - xmin) * metadata.width);
-      const height = Math.floor((ymax - ymin) * metadata.height);
+      const left = Math.floor(xmin * metadata.width)
+      const top = Math.floor(ymin * metadata.height)
+      const width = Math.floor((xmax - xmin) * metadata.width)
+      const height = Math.floor((ymax - ymin) * metadata.height)
 
       // Ensure we don't go out of bounds
-      const safeLeft = Math.max(0, left);
-      const safeTop = Math.max(0, top);
-      const safeWidth = Math.min(width, metadata.width - safeLeft);
-      const safeHeight = Math.min(height, metadata.height - safeTop);
+      const safeLeft = Math.max(0, left)
+      const safeTop = Math.max(0, top)
+      const safeWidth = Math.min(width, metadata.width - safeLeft)
+      const safeHeight = Math.min(height, metadata.height - safeTop)
 
-      if (safeWidth <= 0 || safeHeight <= 0) continue;
+      if (safeWidth <= 0 || safeHeight <= 0) continue
 
       const cropBuffer = await image
         .clone()
         .extract({ left: safeLeft, top: safeTop, width: safeWidth, height: safeHeight })
-        .toBuffer();
+        .toBuffer()
 
       croppedAssets.push({
         name: box.item_name,
-        base64: `data:image/png;base64,${cropBuffer.toString('base64')}`
-      });
+        base64: `data:image/png;base64,${cropBuffer.toString('base64')}`,
+      })
     }
 
-    return croppedAssets;
+    return croppedAssets
   }
 
   /**
    * Refines a cropped asset (removes background, upscales).
    */
   static async refineAsset(base64: string): Promise<string> {
-    const buffer = Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-    const file = new File([buffer], 'crop.png', { type: 'image/png' });
+    const buffer = Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+    const file = new File([buffer], 'crop.png', { type: 'image/png' })
 
     const prompt = `
 Task: Asset Refinement
@@ -189,8 +207,8 @@ Instructions:
 3. Upscale the image and enhance details for high-quality game asset presentation.
 4. Ensure the object is centered and fully visible.
 5. Return only the image.
-`;
+`
     // Using generateImage with image input
-    return aiService.generateImage(prompt, [file]);
+    return aiService.generateImage(prompt, [file])
   }
 }

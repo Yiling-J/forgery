@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-border: #e5e7eb;
@@ -37,10 +37,11 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: #f3f4f6; /* Gray 100 */
   background-image:
-    radial-gradient(#e5e7eb 1px, transparent 1px),
-    radial-gradient(#e5e7eb 1px, transparent 1px);
+    radial-gradient(#e5e7eb 1px, transparent 1px), radial-gradient(#e5e7eb 1px, transparent 1px);
   background-size: 20px 20px;
-  background-position: 0 0, 10px 10px;
+  background-position:
+    0 0,
+    10px 10px;
   color: #1f2937; /* Gray 800 */
 }
 
@@ -63,8 +64,14 @@ body {
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-fade-in-up {
   animation: fade-in-up 0.4s ease-out forwards;

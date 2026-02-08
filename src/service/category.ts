@@ -14,10 +14,10 @@ export class CategoryService {
       where: {
         name: {
           equals: normalizedName,
-        //   mode: 'insensitive' // SQLite doesn't support 'mode: insensitive' directly like Postgres, usually need manual lower() or collate NOCASE
+          //   mode: 'insensitive' // SQLite doesn't support 'mode: insensitive' directly like Postgres, usually need manual lower() or collate NOCASE
         },
-        parentId: parentId || null
-      }
+        parentId: parentId || null,
+      },
     })
 
     if (existing) {
@@ -30,8 +30,8 @@ export class CategoryService {
       data: {
         id,
         name: normalizedName,
-        parentId: parentId || null
-      }
+        parentId: parentId || null,
+      },
     })
 
     return newCategory.id
@@ -43,14 +43,14 @@ export class CategoryService {
   static async listAll() {
     return prisma.category.findMany({
       where: {
-        parentId: null
+        parentId: null,
       },
       include: {
-        subCategories: true
+        subCategories: true,
       },
       orderBy: {
-        name: 'asc'
-      }
+        name: 'asc',
+      },
     })
   }
 }

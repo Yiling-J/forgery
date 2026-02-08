@@ -2,20 +2,23 @@ import { describe, expect, test, mock } from 'bun:test'
 import { FileService } from './file'
 
 // Valid 1x1 PNG Base64
-const VALID_PNG_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-const VALID_PNG_BUFFER = Buffer.from(VALID_PNG_BASE64, 'base64');
+const VALID_PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+const VALID_PNG_BUFFER = Buffer.from(VALID_PNG_BASE64, 'base64')
 
 // Mock sharp
 mock.module('sharp', () => {
   return () => ({
     webp: () => ({
-      toBuffer: () => Promise.resolve(new Uint8Array([1, 2, 3]))
-    })
+      toBuffer: () => Promise.resolve(new Uint8Array([1, 2, 3])),
+    }),
   })
 })
 
 // Mock Bun.write
-const mockWrite = mock((path: string, content: string | Uint8Array) => Promise.resolve(content.length))
+const mockWrite = mock((path: string, content: string | Uint8Array) =>
+  Promise.resolve(content.length),
+)
 // @ts-ignore
 Bun.write = mockWrite
 
