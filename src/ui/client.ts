@@ -1,5 +1,5 @@
 import { hc } from 'hono/client'
-import type { AppType } from '../../index'
+import type { AppType } from '../index'
 
 // Create a typed client
 // Since we are serving frontend and backend on the same origin (port 3000),

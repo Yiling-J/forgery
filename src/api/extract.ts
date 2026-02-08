@@ -30,8 +30,7 @@ extract.post('/', zValidator('form', extractSchema), async (c) => {
       try {
         analysis = await ExtractionService.analyzeImage(file)
       } catch (err: unknown) {
-        const error = err instanceof Error ? err : new Error(String(err));
-        throw new Error("Analysis failed: " + error.message, { cause: error });
+        throw new Error(`Analysis failed: ${err instanceof Error ? err.message : String(err)}`, { cause: err });
       }
 
       if (!analysis.assets || analysis.assets.length === 0) {
@@ -52,8 +51,7 @@ extract.post('/', zValidator('form', extractSchema), async (c) => {
       try {
         sheetBase64 = await ExtractionService.generateTextureSheet(file, analysis.assets)
       } catch (err: unknown) {
-         const error = err instanceof Error ? err : new Error(String(err));
-         throw new Error("Generation failed: " + error.message, { cause: error });
+         throw new Error(`Generation failed: ${err instanceof Error ? err.message : String(err)}`, { cause: err });
       }
 
       // 3. Detect Bounding Boxes
@@ -66,8 +64,7 @@ extract.post('/', zValidator('form', extractSchema), async (c) => {
       try {
         boxes = await ExtractionService.detectBoundingBoxes(sheetBase64)
       } catch (err: unknown) {
-        const error = err instanceof Error ? err : new Error(String(err));
-        throw new Error("Detection failed: " + error.message, { cause: error });
+        throw new Error(`Detection failed: ${err instanceof Error ? err.message : String(err)}`, { cause: err });
       }
 
       // 4. Crop Assets

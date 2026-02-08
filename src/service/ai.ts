@@ -19,7 +19,7 @@ export class GeminiService implements AIService {
   async generateText<T>(prompt: string, images: File[] = [], schema?: z.ZodType<T>): Promise<T> {
     const model = 'gemini-1.5-flash'; // Or 'gemini-2.0-flash-exp' if available for faster responses
 
-    const parts: any[] = [];
+    const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [];
 
     // Convert files to base64 parts
     for (const image of images) {
@@ -35,12 +35,14 @@ export class GeminiService implements AIService {
 
     parts.push({ text: prompt });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config: any = {
         responseMimeType: "application/json",
     };
 
     if (schema) {
-        config.responseSchema = zodToJsonSchema(schema);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        config.responseSchema = zodToJsonSchema(schema as any);
     }
 
     const result = await this.genAI.models.generateContent({
@@ -49,7 +51,9 @@ export class GeminiService implements AIService {
       config: config
     });
 
-    const text = result.response.text();
+    // @ts-ignore - The property exists on the response object
+    const textProp = typeof result.text === 'function' ? result.text() : result.text;
+    const text = typeof textProp === 'string' ? textProp : undefined;
     if (!text) throw new Error("No text generated");
 
     try {
@@ -63,14 +67,13 @@ export class GeminiService implements AIService {
       return json as T;
     } catch (e: unknown) {
       console.error("Failed to parse JSON", text);
-      const error = e instanceof Error ? e : new Error(String(e));
-      throw new Error("Invalid JSON response from AI", { cause: error });
+      throw new Error(`Invalid JSON response from AI: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
     }
   }
 
   // Generates an image based on prompt and optional reference images
   async generateImage(prompt: string, referenceImages: File[] = []): Promise<string> {
-    const parts: any[] = [];
+    const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [];
 
     for (const image of referenceImages) {
         const buffer = await image.arrayBuffer();
@@ -91,10 +94,10 @@ export class GeminiService implements AIService {
     });
 
     // Check for image in response
-    const candidate = result.response.candidates?.[0];
+    const candidate = result.candidates?.[0];
     if (candidate?.content?.parts) {
         for (const part of candidate.content.parts) {
-            if (part.inlineData && part.inlineData.mimeType.startsWith('image/')) {
+            if (part.inlineData?.mimeType?.startsWith('image/')) {
                 return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
             }
         }

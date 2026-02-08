@@ -15,7 +15,7 @@ mock.module('sharp', () => {
 })
 
 // Mock Bun.write
-const mockWrite = mock((path: string, content: any) => Promise.resolve(content.length))
+const mockWrite = mock((path: string, content: string | Uint8Array) => Promise.resolve(content.length))
 // @ts-ignore
 Bun.write = mockWrite
 

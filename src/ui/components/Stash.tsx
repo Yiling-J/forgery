@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StashItem } from '../types';
 import { client } from '../client';
+import { InferResponseType } from 'hono/client';
+
+type EquipmentResponse = InferResponseType<typeof client.equipments.$get>;
+type StashItem = EquipmentResponse['items'][number];
 
 interface StashProps {
   onNavigateToExtractor: () => void;
@@ -22,8 +25,10 @@ export const Stash: React.FC<StashProps> = ({ onNavigateToExtractor }) => {
           limit: '100'
         }
       });
-      const data = await res.json();
-      setItems(data.items);
+      if (res.ok) {
+        const data = await res.json() as any;
+        setItems(data.items);
+      }
     } catch (e) {
       console.error("Failed to load stash", e);
     } finally {
@@ -67,13 +72,13 @@ export const Stash: React.FC<StashProps> = ({ onNavigateToExtractor }) => {
              <div key={item.id} className="group relative bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
                 <div className="aspect-square bg-stone-50 p-4 flex items-center justify-center relative">
                    <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '8px 8px'}}></div>
-                   <img src={(item as any).image?.path ? `/files/${(item as any).image.path}` : item.imageUrl} className="max-w-full max-h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform" />
+                   <img src={item.image?.path ? `/files/${item.image.path}` : ''} className="max-w-full max-h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="p-3">
                    <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-sm font-bold text-stone-800 leading-tight truncate pr-2">{item.item_name}</h3>
+                      <h3 className="text-sm font-bold text-stone-800 leading-tight truncate pr-2">{item.name}</h3>
                    </div>
-                   <p className="text-[10px] text-stone-400 font-mono uppercase tracking-wider truncate">{(item as any).category?.name || 'Unknown'}</p>
+                   <p className="text-[10px] text-stone-400 font-mono uppercase tracking-wider truncate">{item.category?.name || 'Unknown'}</p>
                 </div>
              </div>
           ))}

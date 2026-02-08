@@ -24,7 +24,7 @@ const route = api
   .route('/extract', extract)
 
 // Mount API
-app.route('/api', api)
+app.route('/api', route)
 
 // Serve static files from data/files under /files path
 app.use('/files/*', serveStatic({ root: './data' }))

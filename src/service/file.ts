@@ -13,7 +13,7 @@ export class FileService {
    */
   static async saveFile(file: File | Blob, name?: string): Promise<{ path: string; filename: string; mimeType: string }> {
     const id = ulid()
-    let buffer: ArrayBuffer
+    let buffer: ArrayBuffer | Buffer
     let filename: string
     let mimeType: string
 
@@ -50,7 +50,7 @@ export class FileService {
   /**
    * Optimizes an image buffer by converting it to WebP using sharp.
    */
-  private static async optimizeImage(buffer: ArrayBuffer): Promise<{ buffer: ArrayBuffer }> {
+  private static async optimizeImage(buffer: ArrayBuffer | Buffer): Promise<{ buffer: Buffer }> {
     const optimizedBuffer = await sharp(buffer)
       .webp({ quality: 80 }) // Good balance between size and quality
       .toBuffer()

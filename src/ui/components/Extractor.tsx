@@ -142,15 +142,15 @@ export const Extractor: React.FC<ExtractorProps> = ({
                           {/* Download Overlay */}
                           <a
                              href={item.imageUrl}
-                             download={`${item.item_name}.webp`}
+                             download={`${item.name}.webp`}
                              className="absolute inset-0 bg-stone-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-[1px]"
                           >
                              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                           </a>
                        </div>
                        <div className="p-3 bg-white border-t border-stone-200 rounded-b-lg">
-                          <div className="text-xs font-bold text-stone-700 truncate">{item.item_name}</div>
-                          <div className="text-[10px] text-stone-400 truncate">{item.category}</div>
+                          <div className="text-xs font-bold text-stone-700 truncate">{item.name}</div>
+                          <div className="text-[10px] text-stone-400 truncate">{item.category.name}</div>
                           <div className="w-6 h-1 bg-amber-400 rounded-full mt-2"></div>
                        </div>
                     </div>
