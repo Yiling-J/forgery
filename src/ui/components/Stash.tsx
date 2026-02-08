@@ -26,7 +26,7 @@ export const Stash: React.FC<StashProps> = ({ onNavigateToExtractor }) => {
         },
       })
       if (res.ok) {
-        const data = (await res.json()) as any
+        const data = await res.json()
         setItems(data.items)
       }
     } catch (e) {

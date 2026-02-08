@@ -7,15 +7,13 @@ const mockPrisma = {
   },
 }
 
-const mockFileSystem = {
-  writeFile: mock(),
-}
-
 mock.module('../db', () => ({
   prisma: mockPrisma,
 }))
 
-const mockBunWrite = mock((path: string, content: any) => Promise.resolve(content.length))
+const mockBunWrite = mock((_path: string, content: unknown) =>
+  Promise.resolve((content as Blob | string).toString().length),
+)
 // @ts-ignore
 Bun.write = mockBunWrite
 

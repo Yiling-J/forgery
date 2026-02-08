@@ -8,13 +8,13 @@ import { EquipmentService } from '../service/equipment'
 import { CategoryService } from '../service/category'
 import { AssetService } from '../service/asset'
 
-const extract = new Hono()
+const app = new Hono()
 
 const extractSchema = z.object({
   image: z.instanceof(File),
 })
 
-extract.post('/', zValidator('form', extractSchema), async (c) => {
+const route = app.post('/', zValidator('form', extractSchema), async (c) => {
   const { image } = c.req.valid('form')
   const file = image as File
 
@@ -138,4 +138,4 @@ extract.post('/', zValidator('form', extractSchema), async (c) => {
   })
 })
 
-export default extract
+export default route

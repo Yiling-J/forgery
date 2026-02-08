@@ -1,36 +1,48 @@
 import { Hono } from 'hono'
+import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
 import { CharacterService } from '../service/character'
 
-const character = new Hono()
+const app = new Hono()
 
-character.get('/', async (c) => {
-  const page = parseInt(c.req.query('page') || '1')
-  const limit = parseInt(c.req.query('limit') || '10')
-  const result = await CharacterService.listCharacters({ page, limit })
-  return c.json(result)
+const listSchema = z.object({
+  page: z.coerce.number().optional().default(1),
+  limit: z.coerce.number().optional().default(10),
 })
 
-character.post('/', async (c) => {
-  const body = await c.req.json()
-  const { name, description, imageId } = body
-  if (!name || !imageId) {
-    return c.json({ error: 'Name and Image ID are required' }, 400)
-  }
-  const result = await CharacterService.createCharacter({ name, description, imageId })
-  return c.json(result, 201)
+const createSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  imageId: z.string().min(1),
 })
 
-character.put('/:id', async (c) => {
-  const id = c.req.param('id')
-  const body = await c.req.json()
-  const result = await CharacterService.updateCharacter(id, body)
-  return c.json(result)
+const updateSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+  imageId: z.string().optional(),
 })
 
-character.delete('/:id', async (c) => {
-  const id = c.req.param('id')
-  await CharacterService.deleteCharacter(id)
-  return c.json({ success: true }, 200)
-})
+const route = app
+  .get('/', zValidator('query', listSchema), async (c) => {
+    const { page, limit } = c.req.valid('query')
+    const result = await CharacterService.listCharacters({ page, limit })
+    return c.json(result)
+  })
+  .post('/', zValidator('json', createSchema), async (c) => {
+    const { name, description, imageId } = c.req.valid('json')
+    const result = await CharacterService.createCharacter({ name, description, imageId })
+    return c.json(result, 201)
+  })
+  .put('/:id', zValidator('json', updateSchema), async (c) => {
+    const id = c.req.param('id')
+    const body = c.req.valid('json')
+    const result = await CharacterService.updateCharacter(id, body)
+    return c.json(result)
+  })
+  .delete('/:id', async (c) => {
+    const id = c.req.param('id')
+    await CharacterService.deleteCharacter(id)
+    return c.json({ success: true }, 200)
+  })
 
-export default character
+export default route

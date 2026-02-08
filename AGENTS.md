@@ -18,6 +18,19 @@ We follow a strict layered architecture:
 2.  **Service Layer (`src/service`)**: Contains business logic and interacts with the Database via Prisma.
 3.  **Data Layer (`src/db.ts`)**: Exports the Prisma Client instance.
 
+### Hono API Definitions
+
+- **Route Chaining**: Always define API routes using method chaining on a Hono instance. This ensures that the type definitions for inputs and outputs are correctly inferred and preserved in the exported type.
+- **Export Pattern**: Export the chained route instance as the default export.
+  ```typescript
+  const app = new Hono()
+  const route = app
+    .get('/', ...)
+    .post('/', ...)
+  export default route
+  ```
+- **Type Safety**: Use `zValidator` for request validation (query, json, form) to ensure full end-to-end type safety with the Hono RPC client.
+
 ## Frontend Architecture
 
 The frontend is built with:
@@ -38,7 +51,6 @@ The frontend is built with:
 ### Development
 
 - **Run Dev**: `bun --hot src/index.ts` (Runs on port 3000)
-
 
 ## Testing
 

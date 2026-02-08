@@ -1,25 +1,22 @@
 import { Hono } from 'hono'
+import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
 import { AssetService } from '../service/asset'
 
-const asset = new Hono()
+const app = new Hono()
 
-asset.post('/upload', async (c) => {
-  const body = await c.req.parseBody()
-  const file = body['file']
-  const name = body['name'] as string
+const uploadSchema = z.object({
+  file: z.instanceof(File),
+  name: z.string().min(1),
+})
 
-  if (!file || !(file instanceof File)) {
-    return c.json({ error: 'File is required' }, 400)
-  }
-
-  if (!name) {
-    return c.json({ error: 'Name is required' }, 400)
-  }
+const route = app.post('/upload', zValidator('form', uploadSchema), async (c) => {
+  const { file, name } = c.req.valid('form')
 
   try {
-    const result = await AssetService.createAsset(file, {
+    const result = await AssetService.createAsset(file as File, {
       name,
-      type: file.type,
+      type: (file as File).type,
     })
     return c.json(result, 201)
   } catch (error) {
@@ -28,4 +25,4 @@ asset.post('/upload', async (c) => {
   }
 })
 
-export default asset
+export default route

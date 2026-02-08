@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { EquipmentService } from '../service/equipment'
 
-const equipment = new Hono()
+const app = new Hono()
 
 const listSchema = z.object({
   page: z.coerce.number().optional().default(1),
@@ -12,7 +12,7 @@ const listSchema = z.object({
   subCategoryId: z.string().optional(),
 })
 
-equipment.get('/', zValidator('query', listSchema), async (c) => {
+const route = app.get('/', zValidator('query', listSchema), async (c) => {
   const { page, limit, categoryId, subCategoryId } = c.req.valid('query')
 
   const result = await EquipmentService.listEquipments(
@@ -23,4 +23,4 @@ equipment.get('/', zValidator('query', listSchema), async (c) => {
   return c.json(result)
 })
 
-export default equipment
+export default route
