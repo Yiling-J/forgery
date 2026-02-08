@@ -9,7 +9,7 @@ const mockCharacterService = {
 }
 
 mock.module('../service/character', () => ({
-  CharacterService: mockCharacterService,
+  characterService: mockCharacterService,
 }))
 
 describe('Character API', () => {

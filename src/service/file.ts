@@ -11,7 +11,7 @@ export class FileService {
    * @param name Optional name for the file (used for extension detection if original name is missing).
    * @returns The relative path to the saved file.
    */
-  static async saveFile(
+  async saveFile(
     file: File | Blob,
     name?: string,
   ): Promise<{ path: string; filename: string; mimeType: string }> {
@@ -53,7 +53,7 @@ export class FileService {
   /**
    * Optimizes an image buffer by converting it to WebP using sharp.
    */
-  private static async optimizeImage(buffer: ArrayBuffer | Buffer): Promise<{ buffer: Buffer }> {
+  private async optimizeImage(buffer: ArrayBuffer | Buffer): Promise<{ buffer: Buffer }> {
     const optimizedBuffer = await sharp(buffer)
       .webp({ quality: 80 }) // Good balance between size and quality
       .toBuffer()
@@ -64,7 +64,7 @@ export class FileService {
   /**
    * Saves a base64 string as an image file.
    */
-  static async saveBase64Image(base64: string): Promise<{ path: string; filename: string }> {
+  async saveBase64Image(base64: string): Promise<{ path: string; filename: string }> {
     // Strip prefix if present
     const data = base64.replace(/^data:image\/\w+;base64,/, '')
     const buffer = Buffer.from(data, 'base64')
@@ -81,3 +81,5 @@ export class FileService {
     return { path, filename }
   }
 }
+
+export const fileService = new FileService()

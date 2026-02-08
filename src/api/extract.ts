@@ -2,11 +2,11 @@ import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { ExtractionService } from '../service/extraction'
-import { FileService } from '../service/file'
-import { EquipmentService } from '../service/equipment'
-import { CategoryService } from '../service/category'
-import { AssetService } from '../service/asset'
+import { extractionService } from '../service/extraction'
+import { fileService } from '../service/file'
+import { equipmentService } from '../service/equipment'
+import { categoryService } from '../service/category'
+import { assetService } from '../service/asset'
 
 const app = new Hono()
 
@@ -28,7 +28,7 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
 
       let analysis
       try {
-        analysis = await ExtractionService.analyzeImage(file)
+        analysis = await extractionService.analyzeImage(file)
       } catch (err: unknown) {
         throw new Error(`Analysis failed: ${err instanceof Error ? err.message : String(err)}`, {
           cause: err,
@@ -51,7 +51,7 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
 
       let sheetBase64: string
       try {
-        sheetBase64 = await ExtractionService.generateTextureSheet(file, analysis.assets)
+        sheetBase64 = await extractionService.generateTextureSheet(file, analysis.assets)
       } catch (err: unknown) {
         throw new Error(`Generation failed: ${err instanceof Error ? err.message : String(err)}`, {
           cause: err,
@@ -66,7 +66,7 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
 
       let boxes
       try {
-        boxes = await ExtractionService.detectBoundingBoxes(sheetBase64)
+        boxes = await extractionService.detectBoundingBoxes(sheetBase64)
       } catch (err: unknown) {
         throw new Error(`Detection failed: ${err instanceof Error ? err.message : String(err)}`, {
           cause: err,
@@ -74,7 +74,7 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
       }
 
       // 4. Crop Assets
-      const crops = await ExtractionService.cropAssets(sheetBase64, boxes)
+      const crops = await extractionService.cropAssets(sheetBase64, boxes)
 
       // 5. Refine & Save
       await stream.writeSSE({
@@ -94,23 +94,23 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
         }
 
         // Refine image
-        const refinedBase64 = await ExtractionService.refineAsset(crop.base64)
+        const refinedBase64 = await extractionService.refineAsset(crop.base64)
 
         // Save to file system
-        const savedFile = await FileService.saveBase64Image(refinedBase64)
+        const savedFile = await fileService.saveBase64Image(refinedBase64)
 
         // Create Asset record (AssetService now has createAssetRecord)
-        const asset = await AssetService.createAssetRecord({
+        const asset = await assetService.createAssetRecord({
           name: originalMeta.item_name,
           type: 'image/webp',
           path: savedFile.filename,
         })
 
         // Find or create category
-        const categoryId = await CategoryService.findOrCreate(originalMeta.category)
+        const categoryId = await categoryService.findOrCreate(originalMeta.category)
 
         // Create Equipment record linked to Asset and Category
-        const equipment = await EquipmentService.createEquipment({
+        const equipment = await equipmentService.createEquipment({
           name: originalMeta.item_name,
           description: originalMeta.description,
           imageId: asset.id,

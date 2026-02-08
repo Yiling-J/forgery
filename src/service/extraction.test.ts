@@ -1,5 +1,5 @@
 import { describe, expect, test, mock } from 'bun:test'
-import { ExtractionService } from './extraction'
+import { extractionService } from './extraction'
 
 // Mock dependencies
 mock.module('./ai', () => ({
@@ -19,7 +19,7 @@ mock.module('./ai', () => ({
 }))
 
 mock.module('./file', () => ({
-  FileService: {
+  fileService: {
     saveBase64Image: mock(async () => ({
       path: 'data/files/123.webp',
       filename: '123.webp',
@@ -29,19 +29,19 @@ mock.module('./file', () => ({
 }))
 
 mock.module('./category', () => ({
-  CategoryService: {
+  categoryService: {
     findOrCreate: mock(async () => 'cat_123'),
   },
 }))
 
 mock.module('./asset', () => ({
-  AssetService: {
+  assetService: {
     createAssetRecord: mock(async () => ({ id: 'asset_123' })),
   },
 }))
 
 mock.module('./equipment', () => ({
-  EquipmentService: {
+  equipmentService: {
     createEquipment: mock(async () => ({ id: 'eq_123', name: 'Helmet' })),
   },
 }))
@@ -60,14 +60,14 @@ mock.module('sharp', () => {
 describe('ExtractionService', () => {
   test('analyzeImage calls AI service', async () => {
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
-    const result = await ExtractionService.analyzeImage(file)
+    const result = await extractionService.analyzeImage(file)
     expect(result.assets.length).toBe(1)
     expect(result.assets[0].item_name).toBe('Helmet')
   })
 
   test('generateTextureSheet calls AI service', async () => {
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
-    const result = await ExtractionService.generateTextureSheet(file, [])
+    const result = await extractionService.generateTextureSheet(file, [])
     expect(result).toBe('data:image/png;base64,mockImage')
   })
 })

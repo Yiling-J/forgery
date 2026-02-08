@@ -30,7 +30,7 @@ export class ExtractionService {
   /**
    * Analyzes an image to identify extractable assets.
    */
-  static async analyzeImage(file: File): Promise<AnalysisResponse> {
+  async analyzeImage(file: File): Promise<AnalysisResponse> {
     const prompt = `
 Task: Character Asset Identification for Extraction
 
@@ -62,7 +62,7 @@ Return ONLY a JSON object with a list of assets.
   /**
    * Generates a texture sheet with isolated assets on solid backgrounds.
    */
-  static async generateTextureSheet(file: File, assets: ExtractedAsset[]): Promise<string> {
+  async generateTextureSheet(file: File, assets: ExtractedAsset[]): Promise<string> {
     const HEX_COLORS: Record<string, string> = {
       Red: '#FF0000',
       Yellow: '#FFFF00',
@@ -108,7 +108,7 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
   /**
    * Detects bounding boxes for assets in the texture sheet.
    */
-  static async detectBoundingBoxes(sheetBase64: string): Promise<BoundingBoxResponse> {
+  async detectBoundingBoxes(sheetBase64: string): Promise<BoundingBoxResponse> {
     const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
     const file = new File([buffer], 'sheet.png', { type: 'image/png' })
 
@@ -149,7 +149,7 @@ Return ONLY a JSON object. Provide the grid dimensions and a list of detected as
   /**
    * Crops assets from the texture sheet based on bounding boxes.
    */
-  static async cropAssets(
+  async cropAssets(
     sheetBase64: string,
     boxes: BoundingBoxResponse,
   ): Promise<{ name: string; base64: string }[]> {
@@ -194,7 +194,7 @@ Return ONLY a JSON object. Provide the grid dimensions and a list of detected as
   /**
    * Refines a cropped asset (removes background, upscales).
    */
-  static async refineAsset(base64: string): Promise<string> {
+  async refineAsset(base64: string): Promise<string> {
     const buffer = Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
     const file = new File([buffer], 'crop.png', { type: 'image/png' })
 
@@ -212,3 +212,5 @@ Instructions:
     return aiService.generateImage(prompt, [file])
   }
 }
+
+export const extractionService = new ExtractionService()

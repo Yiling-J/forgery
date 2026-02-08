@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { AssetService } from '../service/asset'
+import { assetService } from '../service/asset'
 
 const app = new Hono()
 
@@ -14,7 +14,7 @@ const route = app.post('/upload', zValidator('form', uploadSchema), async (c) =>
   const { file, name } = c.req.valid('form')
 
   try {
-    const result = await AssetService.createAsset(file as File, {
+    const result = await assetService.createAsset(file as File, {
       name,
       type: (file as File).type,
     })
