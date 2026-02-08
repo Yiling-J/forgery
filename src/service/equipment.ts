@@ -8,14 +8,14 @@ export class EquipmentService {
    */
   async listEquipments(
     pagination: { page: number; limit: number },
-    filters?: { category?: string; subCategory?: string },
+    filters?: { category?: string[]; subCategory?: string },
   ) {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
     const where: Prisma.EquipmentWhereInput = {}
 
-    if (filters?.category) {
-      where.category = filters.category
+    if (filters?.category && filters.category.length > 0) {
+      where.category = { in: filters.category }
     }
     if (filters?.subCategory) {
       where.subCategory = filters.subCategory
