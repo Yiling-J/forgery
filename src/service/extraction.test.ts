@@ -18,34 +18,6 @@ mock.module('./ai', () => ({
   },
 }))
 
-mock.module('./file', () => ({
-  fileService: {
-    saveBase64Image: mock(async () => ({
-      path: 'data/files/123.webp',
-      filename: '123.webp',
-      mimeType: 'image/webp',
-    })),
-  },
-}))
-
-mock.module('./category', () => ({
-  categoryService: {
-    findOrCreate: mock(async () => 'cat_123'),
-  },
-}))
-
-mock.module('./asset', () => ({
-  assetService: {
-    createAssetRecord: mock(async () => ({ id: 'asset_123' })),
-  },
-}))
-
-mock.module('./equipment', () => ({
-  equipmentService: {
-    createEquipment: mock(async () => ({ id: 'eq_123', name: 'Helmet' })),
-  },
-}))
-
 mock.module('sharp', () => {
   return () => ({
     metadata: () => Promise.resolve({ width: 100, height: 100 }),
