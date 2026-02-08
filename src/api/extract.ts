@@ -5,7 +5,6 @@ import { z } from 'zod'
 import { extractionService } from '../service/extraction'
 import { fileService } from '../service/file'
 import { equipmentService } from '../service/equipment'
-import { categoryService } from '../service/category'
 import { assetService } from '../service/asset'
 
 const app = new Hono()
@@ -66,7 +65,7 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
 
       let boxes
       try {
-        boxes = await extractionService.detectBoundingBoxes(sheetBase64)
+        boxes = await extractionService.detectBoundingBoxes(sheetBase64, analysis.assets)
       } catch (err: unknown) {
         throw new Error(`Detection failed: ${err instanceof Error ? err.message : String(err)}`, {
           cause: err,
@@ -89,7 +88,8 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
         const originalMeta = analysis.assets.find((a) => a.item_name === crop.name) || {
           item_name: crop.name,
           description: 'Extracted asset',
-          category: 'Uncategorized',
+          category: 'Others',
+          sub_category: 'Others',
           background_color: 'unknown',
         }
 
@@ -106,20 +106,26 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
           path: savedFile.filename,
         })
 
-        // Find or create category
-        const categoryId = await categoryService.findOrCreate(originalMeta.category)
-
-        // Create Equipment record linked to Asset and Category
+        // Create Equipment record linked to Asset and using string categories
         const equipment = await equipmentService.createEquipment({
           name: originalMeta.item_name,
           description: originalMeta.description,
           imageId: asset.id,
-          categoryId: categoryId,
+          category: originalMeta.category,
+          subCategory: originalMeta.sub_category,
         })
 
-        refinedAssets.push({
+        const refinedAsset = {
           ...equipment,
           imageUrl: `/files/${savedFile.filename}`, // Frontend needs URL
+        }
+
+        refinedAssets.push(refinedAsset)
+
+        // Stream event for progressive display
+        await stream.writeSSE({
+          event: 'asset_refined',
+          data: JSON.stringify({ asset: refinedAsset }),
         })
       }
 

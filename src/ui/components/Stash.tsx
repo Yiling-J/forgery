@@ -130,7 +130,7 @@ export const Stash: React.FC<StashProps> = ({ onNavigateToExtractor }) => {
                 </h3>
               </div>
               <p className="text-[10px] text-stone-400 font-mono uppercase tracking-wider truncate">
-                {item.category?.name || 'Unknown'}
+                {item.category || 'Unknown'}
               </p>
             </div>
           </div>

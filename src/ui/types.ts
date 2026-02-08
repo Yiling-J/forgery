@@ -1,13 +1,9 @@
-export interface Category {
-  id: string
-  name: string
-}
-
 export interface ExtractedAsset {
   id: string
   name: string
   description: string
-  category: Category
+  category: string
+  subCategory?: string
   imageUrl: string
 }
 

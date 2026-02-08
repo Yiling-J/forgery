@@ -17,7 +17,7 @@ describe('Equipment API', () => {
   it('GET / should list equipments with filters', async () => {
     mockEquipmentService.listEquipments.mockResolvedValue({ items: [], total: 0 })
 
-    const req = new Request('http://localhost/?categoryId=cat1', {
+    const req = new Request('http://localhost/?category=Headwear', {
       method: 'GET',
     })
 
@@ -25,7 +25,7 @@ describe('Equipment API', () => {
     expect(res.status).toBe(200)
     expect(mockEquipmentService.listEquipments).toHaveBeenCalledWith(
       { page: 1, limit: 20 },
-      { categoryId: 'cat1', subCategoryId: undefined },
+      { category: 'Headwear', subCategory: undefined },
     )
   })
 })
