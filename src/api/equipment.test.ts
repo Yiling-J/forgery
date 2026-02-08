@@ -6,7 +6,7 @@ const mockEquipmentService = {
 }
 
 mock.module('../service/equipment', () => ({
-  EquipmentService: mockEquipmentService,
+  equipmentService: mockEquipmentService,
 }))
 
 describe('Equipment API', () => {
@@ -24,7 +24,7 @@ describe('Equipment API', () => {
     const res = await equipment.fetch(req)
     expect(res.status).toBe(200)
     expect(mockEquipmentService.listEquipments).toHaveBeenCalledWith(
-      { page: 1, limit: 10 },
+      { page: 1, limit: 20 },
       { categoryId: 'cat1', subCategoryId: undefined },
     )
   })

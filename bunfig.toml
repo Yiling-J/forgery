@@ -1,0 +1,5 @@
+[serve.static]
+plugins = ["bun-plugin-tailwind"]
+
+# Optional: Environment variables to expose to client
+# env = "PUBLIC_*"

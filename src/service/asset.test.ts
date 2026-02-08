@@ -7,26 +7,26 @@ const mockPrisma = {
   },
 }
 
-const mockFileSystem = {
-  writeFile: mock(),
-}
-
 mock.module('../db', () => ({
   prisma: mockPrisma,
 }))
 
-mock.module('../lib/fileSystem', () => mockFileSystem)
+const mockBunWrite = mock((_path: string, content: unknown) =>
+  Promise.resolve((content as Blob | string).toString().length),
+)
+// @ts-ignore
+Bun.write = mockBunWrite
 
 describe('AssetService', () => {
   afterEach(() => {
     mockPrisma.asset.create.mockClear()
     mockPrisma.asset.findUnique.mockClear()
-    mockFileSystem.writeFile.mockClear()
+    mockBunWrite.mockClear()
   })
 
   it('createAsset should save file and create db record', async () => {
     // @ts-ignore
-    const { AssetService } = await import(`./asset?v=${Date.now()}`)
+    const { assetService } = await import(`./asset?v=${Date.now()}`)
     const file = new File(['content'], 'test.png', { type: 'image/png' })
     const meta = { name: 'Test Asset', type: 'image/png' }
 
@@ -39,9 +39,9 @@ describe('AssetService', () => {
       updatedAt: new Date(),
     })
 
-    const result = await AssetService.createAsset(file, meta)
+    const result = await assetService.createAsset(file, meta)
 
-    expect(mockFileSystem.writeFile).toHaveBeenCalled()
+    expect(mockBunWrite).toHaveBeenCalled()
     expect(mockPrisma.asset.create).toHaveBeenCalled()
     expect(result.name).toBe(meta.name)
   })

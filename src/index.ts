@@ -1,22 +1,53 @@
+// @ts-ignore
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
+import { cors } from 'hono/cors'
 import asset from './api/asset'
 import character from './api/character'
 import equipment from './api/equipment'
+import extract from './api/extract'
 import generation from './api/generation'
+import index from './ui/index.html'
 
 const app = new Hono()
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+// Enable CORS
+app.use('/*', cors())
 
-// Serve static files from data/files
+// API Sub-App
+const api = new Hono()
+const route = api
+  .route('/assets', asset)
+  .route('/characters', character)
+  .route('/equipments', equipment)
+  .route('/generations', generation)
+  .route('/extract', extract)
+
+// Mount API
+app.route('/api', route)
+
+// Serve static files from data/files under /files path
 app.use('/files/*', serveStatic({ root: './data' }))
 
-app.route('/assets', asset)
-app.route('/characters', character)
-app.route('/equipments', equipment)
-app.route('/generations', generation)
+// Export type for RPC
+export type AppType = typeof route
 
-export default app
+// Serve the frontend
+const server = Bun.serve({
+  port: 3000,
+  routes: {
+    // Serve index.html for root
+    '/': index,
+
+    // Proxy API requests to Hono
+    '/api/*': app.fetch,
+    '/files/*': app.fetch,
+
+    // Catch-all for SPA routing (fallback to index.html)
+    '/*': index,
+  },
+  development: process.env.NODE_ENV !== 'production',
+  idleTimeout: 200,
+})
+
+console.log(`🚀 Server running at ${server.url}`)

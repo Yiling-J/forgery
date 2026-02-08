@@ -19,11 +19,11 @@ describe('EquipmentService', () => {
 
   it('listEquipments should filter by category', async () => {
     // @ts-ignore
-    const { EquipmentService } = await import(`./equipment?v=${Date.now()}`)
+    const { equipmentService } = await import(`./equipment?v=${Date.now()}`)
     mockPrisma.equipment.count.mockResolvedValue(5)
     mockPrisma.equipment.findMany.mockResolvedValue([])
 
-    await EquipmentService.listEquipments({ page: 1, limit: 10 }, { categoryId: 'cat1' })
+    await equipmentService.listEquipments({ page: 1, limit: 10 }, { categoryId: 'cat1' })
 
     expect(mockPrisma.equipment.findMany).toHaveBeenCalledWith(
       expect.objectContaining({

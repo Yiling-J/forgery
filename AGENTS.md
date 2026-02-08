@@ -8,6 +8,7 @@ The backend is built with:
 - **Framework**: Hono
 - **ORM**: Prisma (with SQLite)
 - **Database**: SQLite (local file)
+- **AI**: Google Generative AI (Gemini)
 
 ### Layered Architecture
 
@@ -16,6 +17,56 @@ We follow a strict layered architecture:
 1.  **API Layer (`src/api`)**: Handles HTTP requests, validation, and calls Service layer. **Do not access DB directly.**
 2.  **Service Layer (`src/service`)**: Contains business logic and interacts with the Database via Prisma.
 3.  **Data Layer (`src/db.ts`)**: Exports the Prisma Client instance.
+
+### Service Layer Patterns
+
+- **Instance Methods**: Define service logic as instance methods on a class, not static methods.
+- **Singleton Export**: Export a singleton instance of the service class.
+  ```typescript
+  export class MyService {
+    async doSomething() { ... }
+  }
+  export const myService = new MyService()
+  ```
+- **Usage**: Import and use the exported instance.
+  ```typescript
+  import { myService } from '../service/myService'
+  await myService.doSomething()
+  ```
+
+### Hono API Definitions
+
+- **Route Chaining**: Always define API routes using method chaining on a Hono instance. This ensures that the type definitions for inputs and outputs are correctly inferred and preserved in the exported type.
+- **Export Pattern**: Export the chained route instance as the default export.
+  ```typescript
+  const app = new Hono()
+  const route = app
+    .get('/', ...)
+    .post('/', ...)
+  export default route
+  ```
+- **Type Safety**: Use `zValidator` for request validation (query, json, form) to ensure full end-to-end type safety with the Hono RPC client.
+
+## Frontend Architecture
+
+The frontend is built with:
+
+- **Runtime**: Bun (Bundler & Runner)
+- **Framework**: React
+- **Styling**: Tailwind CSS + Shadcn UI (Components)
+- **State**: React Hooks (useState, useEffect)
+
+### Project Structure
+
+- `ui/`: Root of the frontend project.
+- `ui/index.html`: Entry point for the frontend.
+- `ui/App.tsx`: Main application component.
+- `ui/components/`: Reusable UI components.
+- `ui/index.css`: Global styles (Tailwind imports).
+
+### Development
+
+- **Run Dev**: `bun --hot src/index.ts` (Runs on port 3000)
 
 ## Testing
 
@@ -39,7 +90,14 @@ We use `bun:test` for testing.
 
 ## Submission Rules
 
-- **Strict Requirement**: You must ensure `lint`, `format`, `typecheck`, and `test` all pass before submitting any changes.
+- **Strict Requirement**: A submission is considered complete **only** when there is a single final code state in which **all** of the following pass **simultaneously**:
+  - `lint`
+  - `format`
+  - `typecheck`
+  - `test`
+
+- Fixes must be iterated until **no check causes any other check to fail**.
+- Do **not** submit intermediate states where some checks pass and others fail, even temporarily.
 
 ## Prisma Configuration
 
@@ -55,7 +113,7 @@ We use `bun:test` for testing.
 
 ## Environment Variables
 
-- `.env`: Development environment variables (`DATABASE_URL="file:./dev.db"`).
+- `.env`: Development environment variables (`DATABASE_URL="file:./dev.db"`, `API_KEY="..."`).
 - `.env.test`: Test environment variables (`DATABASE_URL="file:./test.db"`).
 
 ## Known Issues

@@ -6,7 +6,7 @@ const mockGenerationService = {
 }
 
 mock.module('../service/generation', () => ({
-  GenerationService: mockGenerationService,
+  generationService: mockGenerationService,
 }))
 
 describe('Generation API', () => {
