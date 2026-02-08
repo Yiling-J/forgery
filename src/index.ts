@@ -47,7 +47,7 @@ const server = Bun.serve({
     '/*': index,
   },
   development: process.env.NODE_ENV !== 'production',
-  idleTimeout: 300,
+  idleTimeout: 200,
 })
 
 console.log(`🚀 Server running at ${server.url}`)
