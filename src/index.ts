@@ -1,13 +1,13 @@
 // @ts-ignore
-import index from './ui/index.html'
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { cors } from 'hono/cors'
 import asset from './api/asset'
 import character from './api/character'
 import equipment from './api/equipment'
-import generation from './api/generation'
 import extract from './api/extract'
+import generation from './api/generation'
+import index from './ui/index.html'
 
 const app = new Hono()
 
@@ -47,6 +47,7 @@ const server = Bun.serve({
     '/*': index,
   },
   development: process.env.NODE_ENV !== 'production',
+  idleTimeout: 300,
 })
 
 console.log(`🚀 Server running at ${server.url}`)

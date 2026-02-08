@@ -17,7 +17,7 @@ export class GeminiService implements AIService {
 
   // Generates JSON output from text and images using Gemini
   async generateText<T>(prompt: string, images: File[] = [], schema?: z.ZodType<T>): Promise<T> {
-    const model = 'gemini-1.5-flash' // Or 'gemini-2.0-flash-exp' if available for faster responses
+    const model = 'gemini-3-pro-preview'
 
     const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = []
 
@@ -92,7 +92,7 @@ export class GeminiService implements AIService {
     parts.push({ text: prompt })
 
     const result = await this.genAI.models.generateContent({
-      model: 'gemini-2.0-flash-exp', // Using a known capable model
+      model: 'gemini-2.5-flash-image',
       contents: { parts },
     })
 
