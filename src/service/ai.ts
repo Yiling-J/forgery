@@ -1,6 +1,5 @@
 import { GoogleGenAI } from '@google/genai'
 import { z } from 'zod'
-import zodToJsonSchema from 'zod-to-json-schema'
 
 // Generic AI service interface for flexibility
 export interface AIService {
@@ -41,8 +40,7 @@ export class GeminiService implements AIService {
     }
 
     if (schema) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      config.responseSchema = zodToJsonSchema(schema as any)
+      config.responseSchema = z.toJSONSchema(schema)
     }
 
     const result = await this.genAI.models.generateContent({
@@ -57,9 +55,7 @@ export class GeminiService implements AIService {
     if (!text) throw new Error('No text generated')
 
     try {
-      // Clean up markdown if present
-      const cleanText = text.replace(/^```(json)?\n?|\n?```$/g, '').trim()
-      const json = JSON.parse(cleanText)
+      const json = JSON.parse(text)
 
       if (schema) {
         return schema.parse(json)
