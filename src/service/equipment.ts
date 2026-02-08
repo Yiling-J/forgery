@@ -8,17 +8,17 @@ export class EquipmentService {
    */
   async listEquipments(
     pagination: { page: number; limit: number },
-    filters?: { categoryId?: string; subCategoryId?: string },
+    filters?: { category?: string; subCategory?: string },
   ) {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
     const where: Prisma.EquipmentWhereInput = {}
 
-    if (filters?.categoryId) {
-      where.categoryId = filters.categoryId
+    if (filters?.category) {
+      where.category = filters.category
     }
-    if (filters?.subCategoryId) {
-      where.subCategoryId = filters.subCategoryId
+    if (filters?.subCategory) {
+      where.subCategory = filters.subCategory
     }
 
     const [total, items] = await Promise.all([
@@ -29,8 +29,6 @@ export class EquipmentService {
         take: limit,
         include: {
           image: true,
-          category: true,
-          subCategory: true,
         },
         orderBy: {
           createdAt: 'desc',
@@ -48,8 +46,8 @@ export class EquipmentService {
     name: string
     description: string
     imageId: string
-    categoryId: string
-    subCategoryId?: string
+    category: string
+    subCategory?: string
   }) {
     const id = ulid()
 
@@ -59,12 +57,11 @@ export class EquipmentService {
         name: data.name,
         description: data.description,
         imageId: data.imageId,
-        categoryId: data.categoryId,
-        subCategoryId: data.subCategoryId,
+        category: data.category,
+        subCategory: data.subCategory,
       },
       include: {
         image: true,
-        category: true,
       },
     })
   }

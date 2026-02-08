@@ -1,13 +1,15 @@
 import { aiService } from './ai'
 import sharp from 'sharp'
 import { z } from 'zod'
+import { EQUIPMENT_CATEGORIES } from '../lib/categories'
 
 // Types for the extraction process
 export interface ExtractedAsset {
   item_name: string
   description: string
   background_color: string
-  category: string // Added category
+  category: string
+  sub_category?: string
 }
 
 export interface AnalysisResponse {
@@ -31,15 +33,21 @@ export class ExtractionService {
    * Analyzes an image to identify extractable assets.
    */
   async analyzeImage(file: File): Promise<AnalysisResponse> {
+    const categoriesJson = JSON.stringify(EQUIPMENT_CATEGORIES, null, 2)
     const prompt = `
 Task: Character Asset Identification for Extraction
 
 Instructions:
 1. Analyze the character in the image and identify all distinct, extractable equipment and clothing items.
-2. Filter for items that are clearly visible: tops, bottoms, headwear, footwear, specialized armor (arm guards, leg guards), and accessories (scarves, belts, capes).
+2. Filter for items that are clearly visible.
 3. For each identified item, assign one of the following high-contrast background colors for future segmentation: Red, Yellow, Green, White, Blue, Black, Magenta, Cyan, Orange, Gray. Avoid repeating colors if possible.
 4. Limit to a maximum of 9 most prominent assets.
-5. Assign a general category to each item (e.g., Head, Body, Legs, Feet, Weapon, Accessory).
+5. Assign a category and sub-category to each item based on the provided list.
+   - Choose the best fitting "main_category" and "sub_categories".
+   - If no suitable category/sub-category is found, use "Others".
+
+Available Categories:
+${categoriesJson}
 
 Output Format (Strict JSON):
 Return ONLY a JSON object with a list of assets.
@@ -51,7 +59,8 @@ Return ONLY a JSON object with a list of assets.
           item_name: z.string().describe('Name of the item'),
           background_color: z.string().describe('Background color assigned'),
           description: z.string().describe('Description of the item'),
-          category: z.string().describe('Category of the item'),
+          category: z.string().describe('Main category of the item'),
+          sub_category: z.string().optional().describe('Sub category of the item'),
         }),
       ),
     })
@@ -108,9 +117,19 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
   /**
    * Detects bounding boxes for assets in the texture sheet.
    */
-  async detectBoundingBoxes(sheetBase64: string): Promise<BoundingBoxResponse> {
+  async detectBoundingBoxes(
+    sheetBase64: string,
+    analyzedAssets: ExtractedAsset[],
+  ): Promise<BoundingBoxResponse> {
     const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
     const file = new File([buffer], 'sheet.png', { type: 'image/png' })
+
+    const assetContext = analyzedAssets
+      .map(
+        (a) =>
+          `- Name: ${a.item_name}, Description: ${a.description}, Background Color: ${a.background_color}`,
+      )
+      .join('\n')
 
     const prompt = `
 Task: Spatial Asset Detection & Normalized Grid Mapping
@@ -122,10 +141,19 @@ Instructions:
    - [ymin, xmin, ymax, xmax]
    - (0, 0) is the top-left corner; (1.0, 1.0) is the bottom-right corner.
 4. Ensure the box coordinates strictly encompass the outer boundary of each colored tile.
+5. Use the provided asset context to correctly identify which item is in which box.
+
+Asset Context:
+${assetContext}
 
 Output Format (Strict JSON):
 Return ONLY a JSON object. Provide the grid dimensions and a list of detected assets with their coordinates.
 `
+
+    // Create an enum from the analyzed asset names plus "unknown"
+    const assetNames = analyzedAssets.map((a) => a.item_name)
+    // Zod enum requires at least one value, and they must be unique
+    const uniqueNames = Array.from(new Set([...assetNames, 'unknown'])) as [string, ...string[]]
 
     const schema = z.object({
       grid_dimensions: z.object({
@@ -134,7 +162,7 @@ Return ONLY a JSON object. Provide the grid dimensions and a list of detected as
       }),
       assets: z.array(
         z.object({
-          item_name: z.string(),
+          item_name: z.enum(uniqueNames),
           coordinates: z
             .tuple([z.number(), z.number(), z.number(), z.number()])
             .describe('[ymin, xmin, ymax, xmax]'),
@@ -162,6 +190,8 @@ Return ONLY a JSON object. Provide the grid dimensions and a list of detected as
     const croppedAssets = []
 
     for (const box of boxes.assets) {
+      if (box.item_name === 'unknown') continue
+
       const [ymin, xmin, ymax, xmax] = box.coordinates
 
       const left = Math.floor(xmin * metadata.width)

@@ -74,8 +74,16 @@ export const Extractor: React.FC<ExtractorProps> = ({
 
               if (event === 'status') {
                 onStatusChange(data.status, data.message)
+              } else if (event === 'asset_refined') {
+                // progressively update results
+                const newAsset = data.asset
+                setResults((prev) => [...prev, newAsset])
               } else if (event === 'complete') {
                 onStatusChange('complete', 'Extraction complete!')
+                // Assuming data.assets contains all assets, but we have been accumulating them.
+                // We can just rely on the accumulated results if we trust asset_refined.
+                // But let's sync one last time or just keep what we have.
+                // The API sends all assets in complete event too.
                 setResults(data.assets)
                 onAssetsExtracted(data.assets)
               } else if (event === 'error') {
@@ -181,7 +189,7 @@ export const Extractor: React.FC<ExtractorProps> = ({
                 </div>
                 <div className="p-3 bg-white border-t border-stone-200 rounded-b-lg">
                   <div className="text-xs font-bold text-stone-700 truncate">{item.name}</div>
-                  <div className="text-[10px] text-stone-400 truncate">{item.category.name}</div>
+                  <div className="text-[10px] text-stone-400 truncate">{item.category}</div>
                   <div className="w-6 h-1 bg-amber-400 rounded-full mt-2"></div>
                 </div>
               </div>

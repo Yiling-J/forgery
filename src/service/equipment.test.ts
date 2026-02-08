@@ -23,12 +23,12 @@ describe('EquipmentService', () => {
     mockPrisma.equipment.count.mockResolvedValue(5)
     mockPrisma.equipment.findMany.mockResolvedValue([])
 
-    await equipmentService.listEquipments({ page: 1, limit: 10 }, { categoryId: 'cat1' })
+    await equipmentService.listEquipments({ page: 1, limit: 10 }, { category: 'Headwear' })
 
     expect(mockPrisma.equipment.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          categoryId: 'cat1',
+          category: 'Headwear',
         }),
       }),
     )
