@@ -15,13 +15,15 @@ mock.module('../db', () => ({
   prisma: mockPrisma,
 }))
 
-mock.module('../lib/fileSystem', () => mockFileSystem)
+const mockBunWrite = mock((path: string, content: any) => Promise.resolve(content.length))
+// @ts-ignore
+Bun.write = mockBunWrite
 
 describe('AssetService', () => {
   afterEach(() => {
     mockPrisma.asset.create.mockClear()
     mockPrisma.asset.findUnique.mockClear()
-    mockFileSystem.writeFile.mockClear()
+    mockBunWrite.mockClear()
   })
 
   it('createAsset should save file and create db record', async () => {
@@ -41,7 +43,7 @@ describe('AssetService', () => {
 
     const result = await AssetService.createAsset(file, meta)
 
-    expect(mockFileSystem.writeFile).toHaveBeenCalled()
+    expect(mockBunWrite).toHaveBeenCalled()
     expect(mockPrisma.asset.create).toHaveBeenCalled()
     expect(result.name).toBe(meta.name)
   })

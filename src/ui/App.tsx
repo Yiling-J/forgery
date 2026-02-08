@@ -15,7 +15,14 @@ export default function App() {
     if (message) setStatusMessage(message);
   };
 
-  const NavButton = ({ target, label, color, icon }: any) => (
+  interface NavButtonProps {
+    target: 'extractor' | 'stash';
+    label: string;
+    color: string;
+    icon: string;
+  }
+
+  const NavButton = ({ target, label, color, icon }: NavButtonProps) => (
     <button
       onClick={() => setView(target)}
       className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider flex items-center gap-2 transition-all ${
