@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { client } from '../client'
 import { InferResponseType } from 'hono/client'
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
-import { Card, CardContent } from '../components/ui/card'
-import { Button } from '../components/ui/button'
 import { Plus } from 'lucide-react'
-import { CreateCharacterDialog } from '../components/CreateCharacterDialog'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { client } from '../client'
+import { CreateCharacterDialog } from '../components/CreateCharacterDialog'
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
+import { Button } from '../components/ui/button'
 
 type CharacterResponse = InferResponseType<typeof client.characters.$get>
 type Character = CharacterResponse['items'][number]
@@ -56,17 +55,17 @@ export default function Characters() {
 
       {characters.length === 0 ? (
         <div className="text-center p-12 bg-white rounded-xl border border-stone-200">
-           <p className="text-stone-500">No characters found.</p>
+          <p className="text-stone-500">No characters found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
           {characters.map((char) => (
-            <Card
+            <div
               key={char.id}
-              className="border-stone-200 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer"
+              className="border-transparent cursor-pointer"
               onClick={() => navigate(`/characters/${char.id}/outfits`)}
             >
-              <CardContent className="flex flex-col items-center p-6 gap-4">
+              <div className="flex flex-col items-center p-6 gap-4">
                 <Avatar className="w-32 h-32 border-4 border-stone-100 shadow-inner">
                   <AvatarImage
                     src={char.image?.path ? `/files/${char.image.path}` : ''}
@@ -83,8 +82,8 @@ export default function Characters() {
                     <p className="text-xs text-stone-400 mt-1 line-clamp-2">{char.description}</p>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}
