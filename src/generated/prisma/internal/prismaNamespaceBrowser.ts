@@ -55,7 +55,8 @@ export const ModelName = {
   Character: 'Character',
   Equipment: 'Equipment',
   Generation: 'Generation',
-  GenerationEquipment: 'GenerationEquipment'
+  GenerationEquipment: 'GenerationEquipment',
+  Setting: 'Setting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -126,6 +127,16 @@ export const GenerationEquipmentScalarFieldEnum = {
 } as const
 
 export type GenerationEquipmentScalarFieldEnum = (typeof GenerationEquipmentScalarFieldEnum)[keyof typeof GenerationEquipmentScalarFieldEnum]
+
+
+export const SettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -42,3 +42,8 @@ export type Generation = Prisma.GenerationModel
  *
  */
 export type GenerationEquipment = Prisma.GenerationEquipmentModel
+/**
+ * Model Setting
+ *
+ */
+export type Setting = Prisma.SettingModel

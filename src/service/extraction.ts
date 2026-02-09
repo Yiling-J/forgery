@@ -65,7 +65,7 @@ Return ONLY a JSON object with a list of assets.
       ),
     })
 
-    return aiService.generateText<AnalysisResponse>(prompt, [file], schema)
+    return aiService.generateText<AnalysisResponse>(prompt, [file], schema, 'step_analyze_model')
   }
 
   /**
@@ -111,7 +111,7 @@ ${mappingString}
 Output Requirement: High-resolution texture sheet, flat lay presentation, sharp edges, and uniform lighting across all assets.
 `
 
-    return aiService.generateImage(prompt, [file])
+    return aiService.generateImage(prompt, [file], 'step_texture_model')
   }
 
   /**
@@ -171,7 +171,7 @@ Return ONLY a JSON object. Provide the grid dimensions and a list of detected as
       ),
     })
 
-    return aiService.generateText<BoundingBoxResponse>(prompt, [file], schema)
+    return aiService.generateText<BoundingBoxResponse>(prompt, [file], schema, 'step_bounding_box_model')
   }
 
   /**
@@ -239,7 +239,7 @@ Instructions:
 5. Return only the image.
 `
     // Using generateImage with image input
-    return aiService.generateImage(prompt, [file])
+    return aiService.generateImage(prompt, [file], 'step_refine_model')
   }
 }
 

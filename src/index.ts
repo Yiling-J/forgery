@@ -7,6 +7,7 @@ import character from './api/character'
 import equipment from './api/equipment'
 import extract from './api/extract'
 import generation from './api/generation'
+import setting from './api/setting'
 import index from './ui/index.html'
 
 const app = new Hono()
@@ -22,6 +23,7 @@ const route = api
   .route('/equipments', equipment)
   .route('/generations', generation)
   .route('/extract', extract)
+  .route('/settings', setting)
 
 // Mount API
 app.route('/api', route)

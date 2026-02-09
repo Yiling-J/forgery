@@ -4,6 +4,7 @@ import Layout from './Layout'
 import Characters from './pages/Characters'
 import Equipments from './pages/Equipments'
 import FittingRoom from './pages/FittingRoom'
+import Settings from './pages/Settings'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="characters" element={<Characters />} />
           <Route path="characters/:id/outfits" element={<FittingRoom />} />
           <Route path="equipments" element={<Equipments />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </BrowserRouter>
