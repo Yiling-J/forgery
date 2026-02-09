@@ -150,7 +150,7 @@ export default function FittingRoom() {
                         </p>
                          <div className="flex gap-1 flex-wrap content-start h-12 overflow-hidden">
                            {/* @ts-ignore - equipment structure might vary based on include */}
-                           {gen.equipments?.slice(0, 3).map((eq: any) => (
+                           {gen.equipments?.slice(0, 3).map((eq) => (
                              <span key={eq.equipmentId} className="text-[10px] bg-white/20 text-white px-2 py-1 rounded-md backdrop-blur-md border border-white/10">
                                {eq.equipment.name}
                              </span>

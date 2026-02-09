@@ -41,7 +41,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
   const fetchItems = async () => {
     setLoading(true)
     try {
-      const query: any = {
+      const query: { limit: string; category?: string[] } = {
         limit: '100',
       }
       if (selectedCategories.length > 0) {
@@ -204,14 +204,14 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
 
               <div className="flex gap-4">
                 <ScrollArea className="flex-1 whitespace-nowrap">
-                   <div className="flex gap-3 pb-2 min-h-[100px] items-center">
+                   <div className="flex gap-3 pb-2 min-h-[150px] items-center">
                      {selectedEquipments.length === 0 ? (
                        <div className="text-stone-400 text-sm italic w-full text-center py-8 border-2 border-dashed border-stone-100 rounded-xl">
                          Select items from the list above to equip them.
                        </div>
                      ) : (
                        selectedEquipments.map((item) => (
-                         <div key={item.id} className="relative w-[100px] h-[100px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group">
+                         <div key={item.id} className="relative w-[150px] h-[150px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group">
                             <img
                               src={item.image?.path ? `/files/${item.image.path}` : ''}
                               className="max-w-full max-h-full object-contain p-2"
@@ -239,7 +239,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
                 <div className="flex items-center pl-4 border-l border-stone-100">
                    <Button
                      size="lg"
-                     className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg border-0 h-full max-h-[100px] min-w-[120px]"
+                     className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg border-0 h-full max-h-[150px] min-w-[120px]"
                      disabled={submitting || selectedEquipments.length === 0}
                      onClick={handleCreate}
                    >
