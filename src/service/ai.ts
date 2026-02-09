@@ -5,6 +5,9 @@ import { z } from 'zod'
 export interface AIService {
   generateText<T>(prompt: string, images: File[], schema?: z.ZodType<T>): Promise<T>
   generateImage(prompt: string, referenceImages?: File[]): Promise<string>
+  generateImageFromParts(
+    parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }>,
+  ): Promise<string>
 }
 
 export class GeminiService implements AIService {
@@ -87,6 +90,12 @@ export class GeminiService implements AIService {
 
     parts.push({ text: prompt })
 
+    return this.generateImageFromParts(parts)
+  }
+
+  async generateImageFromParts(
+    parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }>,
+  ): Promise<string> {
     const result = await this.genAI.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: { parts },

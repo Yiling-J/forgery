@@ -34,6 +34,15 @@ export class CharacterService {
     return { total, items, page, limit, totalPages: Math.ceil(total / limit) }
   }
 
+  async getCharacter(id: string) {
+    return prisma.character.findUnique({
+      where: { id },
+      include: {
+        image: true,
+      },
+    })
+  }
+
   async updateCharacter(
     id: string,
     data: { name?: string; description?: string; imageId?: string },
