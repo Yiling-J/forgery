@@ -33,6 +33,15 @@ const route = app
     const result = await characterService.createCharacter({ name, description, imageId })
     return c.json(result, 201)
   })
+  .get('/:id', async (c) => {
+    const id = c.req.param('id')
+    const character = await characterService.getCharacter(id)
+    if (!character) {
+      // @ts-ignore
+      return c.json({ error: 'Character not found' }, 404)
+    }
+    return c.json(character)
+  })
   .put('/:id', zValidator('json', updateSchema), async (c) => {
     const id = c.req.param('id')
     const body = c.req.valid('json')

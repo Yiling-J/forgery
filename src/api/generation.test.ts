@@ -3,6 +3,7 @@ import generation from './generation'
 
 const mockGenerationService = {
   listGenerations: mock(),
+  createGeneration: mock(),
 }
 
 mock.module('../service/generation', () => ({
@@ -27,5 +28,20 @@ describe('Generation API', () => {
       { page: 1, limit: 10 },
       { characterId: undefined, equipmentId: 'eq1' },
     )
+  })
+
+  it('POST / should create generation', async () => {
+    mockGenerationService.createGeneration.mockResolvedValue({ id: '1' })
+
+    const req = new Request('http://localhost/', {
+      method: 'POST',
+      body: JSON.stringify({ characterId: 'char1', equipmentIds: ['eq1', 'eq2'] }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    const res = await generation.fetch(req)
+    expect(res.status).toBe(201)
+    expect(await res.json()).toEqual({ id: '1' })
+    expect(mockGenerationService.createGeneration).toHaveBeenCalledWith('char1', ['eq1', 'eq2'])
   })
 })

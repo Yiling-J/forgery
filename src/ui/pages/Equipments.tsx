@@ -25,7 +25,7 @@ export default function Equipments() {
   const fetchItems = async () => {
     setLoading(true)
     try {
-      const query: any = {
+      const query: { limit: string; category?: string[] } = {
         limit: '100',
       }
 

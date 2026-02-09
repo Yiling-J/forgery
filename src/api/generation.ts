@@ -12,14 +12,30 @@ const listSchema = z.object({
   equipmentId: z.string().optional(),
 })
 
-const route = app.get('/', zValidator('query', listSchema), async (c) => {
-  const { page, limit, characterId, equipmentId } = c.req.valid('query')
-
-  const result = await generationService.listGenerations(
-    { page, limit },
-    { characterId, equipmentId },
-  )
-  return c.json(result)
+const createSchema = z.object({
+  characterId: z.string().min(1),
+  equipmentIds: z.array(z.string()),
 })
+
+const route = app
+  .get('/', zValidator('query', listSchema), async (c) => {
+    const { page, limit, characterId, equipmentId } = c.req.valid('query')
+
+    const result = await generationService.listGenerations(
+      { page, limit },
+      { characterId, equipmentId },
+    )
+    return c.json(result)
+  })
+  .post('/', zValidator('json', createSchema), async (c) => {
+    const { characterId, equipmentIds } = c.req.valid('json')
+    try {
+      const result = await generationService.createGeneration(characterId, equipmentIds)
+      return c.json(result, 201)
+    } catch (e) {
+      console.error('Failed to create generation', e)
+      return c.json({ error: e instanceof Error ? e.message : 'Unknown error' }, 500)
+    }
+  })
 
 export default route

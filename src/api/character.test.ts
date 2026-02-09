@@ -6,6 +6,7 @@ const mockCharacterService = {
   listCharacters: mock(),
   updateCharacter: mock(),
   deleteCharacter: mock(),
+  getCharacter: mock(),
 }
 
 mock.module('../service/character', () => ({
@@ -44,5 +45,18 @@ describe('Character API', () => {
     const res = await character.fetch(req)
     expect(res.status).toBe(201)
     expect(await res.json()).toEqual({ id: '1', name: 'Char' })
+  })
+
+  it('GET /:id should get character', async () => {
+    mockCharacterService.getCharacter.mockResolvedValue({ id: '1', name: 'Char' })
+
+    const req = new Request('http://localhost/1', {
+      method: 'GET',
+    })
+
+    const res = await character.fetch(req)
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ id: '1', name: 'Char' })
+    expect(mockCharacterService.getCharacter).toHaveBeenCalledWith('1')
   })
 })

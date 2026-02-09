@@ -3,6 +3,10 @@ import { client } from '../client'
 import { InferResponseType } from 'hono/client'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
 import { Card, CardContent } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Plus } from 'lucide-react'
+import { CreateCharacterDialog } from '../components/CreateCharacterDialog'
+import { useNavigate } from 'react-router-dom'
 
 type CharacterResponse = InferResponseType<typeof client.characters.$get>
 type Character = CharacterResponse['items'][number]
@@ -10,6 +14,8 @@ type Character = CharacterResponse['items'][number]
 export default function Characters() {
   const [characters, setCharacters] = useState<Character[]>([])
   const [loading, setLoading] = useState(true)
+  const [createOpen, setCreateOpen] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchCharacters()
@@ -39,9 +45,14 @@ export default function Characters() {
 
   return (
     <div className="p-8 animate-fade-in-up">
-      <h1 className="text-3xl font-black text-stone-800 uppercase tracking-tighter mb-8">
-        Characters
-      </h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-black text-stone-800 uppercase tracking-tighter">
+          Characters
+        </h1>
+        <Button onClick={() => setCreateOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Create Character
+        </Button>
+      </div>
 
       {characters.length === 0 ? (
         <div className="text-center p-12 bg-white rounded-xl border border-stone-200">
@@ -50,7 +61,11 @@ export default function Characters() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
           {characters.map((char) => (
-            <Card key={char.id} className="border-stone-200 hover:shadow-lg transition-all hover:-translate-y-1">
+            <Card
+              key={char.id}
+              className="border-stone-200 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer"
+              onClick={() => navigate(`/characters/${char.id}/outfits`)}
+            >
               <CardContent className="flex flex-col items-center p-6 gap-4">
                 <Avatar className="w-32 h-32 border-4 border-stone-100 shadow-inner">
                   <AvatarImage
@@ -73,6 +88,12 @@ export default function Characters() {
           ))}
         </div>
       )}
+
+      <CreateCharacterDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onSuccess={fetchCharacters}
+      />
     </div>
   )
 }
