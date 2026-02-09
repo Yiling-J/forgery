@@ -1,8 +1,8 @@
 import { GoogleGenAI } from '@google/genai'
-import { z } from 'zod'
-import { settingService } from './setting'
 import OpenAI from 'openai'
 import { zodResponseFormat } from 'openai/helpers/zod'
+import { z } from 'zod'
+import { settingService } from './setting'
 
 // Generic AI service interface for flexibility
 export interface AIService {
@@ -51,7 +51,9 @@ export class UnifiedAIService implements AIService {
     return new GoogleGenAI({ apiKey: finalApiKey })
   }
 
-  private async getModelForStep(step?: string): Promise<{ provider: 'openai' | 'google'; model: string }> {
+  private async getModelForStep(
+    step?: string,
+  ): Promise<{ provider: 'openai' | 'google'; model: string }> {
     if (!step) {
       // Default to Google if no step specified (legacy behavior)
       return { provider: 'google', model: 'gemini-2.0-flash' }
@@ -197,7 +199,11 @@ export class UnifiedAIService implements AIService {
     }
   }
 
-  async generateImage(prompt: string, referenceImages: File[] = [], step?: string): Promise<string> {
+  async generateImage(
+    prompt: string,
+    referenceImages: File[] = [],
+    step?: string,
+  ): Promise<string> {
     const { provider, model } = await this.getModelForStep(step)
 
     if (provider === 'openai') {
@@ -231,7 +237,7 @@ export class UnifiedAIService implements AIService {
     // Let's implement standard generation.
 
     if (referenceImages.length > 0) {
-       console.warn("OpenAI DALL-E 3 does not support input images directly. Using prompt only.")
+      console.warn('OpenAI DALL-E 3 does not support input images directly. Using prompt only.')
     }
 
     const response = await client.images.generate({
@@ -242,46 +248,46 @@ export class UnifiedAIService implements AIService {
       response_format: 'b64_json',
     })
 
-    const base64 = response.data[0].b64_json
+    const base64 = (response.data ?? [])[0].b64_json
     if (!base64) throw new Error('No image generated from OpenAI')
 
     return `data:image/png;base64,${base64}`
   }
 
   private async generateImageGoogle(
-      model: string,
-      prompt: string,
-      referenceImages: File[] = [],
+    model: string,
+    prompt: string,
+    referenceImages: File[] = [],
   ): Promise<string> {
-      const client = await this.getGoogleClient()
+    const client = await this.getGoogleClient()
 
-      const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = []
+    const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = []
 
-      for (const image of referenceImages) {
-        const buffer = await image.arrayBuffer()
-        const base64 = Buffer.from(buffer).toString('base64')
-        parts.push({
-          inlineData: {
-            mimeType: image.type,
-            data: base64,
-          },
-        })
-      }
+    for (const image of referenceImages) {
+      const buffer = await image.arrayBuffer()
+      const base64 = Buffer.from(buffer).toString('base64')
+      parts.push({
+        inlineData: {
+          mimeType: image.type,
+          data: base64,
+        },
+      })
+    }
 
-      parts.push({ text: prompt })
+    parts.push({ text: prompt })
 
-      return this.generateImageFromParts(parts, model, client)
+    return this.generateImageFromParts(parts, model, client)
   }
 
   async generateImageFromParts(
     parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }>,
     modelOverride?: string,
-    clientOverride?: GoogleGenAI
+    clientOverride?: GoogleGenAI,
   ): Promise<string> {
     // This method seems specific to Google's structure in previous code.
     // We default to Google if called directly or internal usage.
 
-    const client = clientOverride || await this.getGoogleClient()
+    const client = clientOverride || (await this.getGoogleClient())
     const model = modelOverride || 'gemini-2.0-flash' // Default fallback
 
     const result = await client.models.generateContent({
