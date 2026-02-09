@@ -35,7 +35,8 @@ export default function Settings() {
   const fetchSettings = async () => {
     setLoading(true)
     try {
-      const res = await client.api.settings.$get()
+      // Corrected API call: remove .api prefix
+      const res = await client.settings.$get()
       if (res.ok) {
         const data = await res.json()
         setSettings(data)
@@ -45,6 +46,8 @@ export default function Settings() {
         setOpenaiImageModels(JSON.parse(data['openai_image_models'] || '[]'))
         setGoogleTextModels(JSON.parse(data['google_text_models'] || '[]'))
         setGoogleImageModels(JSON.parse(data['google_image_models'] || '[]'))
+      } else {
+        throw new Error(`Failed to fetch settings: ${res.status} ${res.statusText}`)
       }
     } catch (error) {
       console.error('Failed to fetch settings', error)
@@ -61,10 +64,16 @@ export default function Settings() {
   const saveSetting = async (key: string, value: string) => {
     setSaving((prev) => ({ ...prev, [key]: true }))
     try {
-      await client.api.settings[':key'].$put({
+      // Corrected API call: remove .api prefix
+      const res = await client.settings[':key'].$put({
         param: { key },
         json: { value },
       })
+
+      if (!res.ok) {
+        throw new Error(`Failed to save setting: ${res.status} ${res.statusText}`)
+      }
+
       setSettings((prev) => ({ ...prev, [key]: value }))
       toast({
         title: 'Success',
