@@ -93,9 +93,7 @@ export const CreateCharacterDialog: React.FC<CreateCharacterDialogProps> = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Character</DialogTitle>
-          <DialogDescription>
-            Add a new character to your collection.
-          </DialogDescription>
+          <DialogDescription>Add a new character to your collection.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">

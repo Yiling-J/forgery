@@ -38,7 +38,6 @@ mock.module('openai/helpers/zod', () => ({
   zodResponseFormat: (schema: any) => ({ type: 'json_schema', json_schema: { schema } }),
 }))
 
-
 // Mock Google GenAI
 const mockGoogleGenAIClient = {
   models: {
@@ -84,12 +83,7 @@ describe('UnifiedAIService', () => {
       choices: [{ message: { content: '{"result": "success"}' } }],
     })
 
-    const result = await aiService.generateText(
-      'prompt',
-      [],
-      undefined,
-      'step_analyze_model',
-    )
+    const result = await aiService.generateText('prompt', [], undefined, 'step_analyze_model')
 
     expect(result).toEqual({ result: 'success' })
     expect(mockOpenAIClient.chat.completions.create).toHaveBeenCalled()
@@ -111,12 +105,7 @@ describe('UnifiedAIService', () => {
       text: () => '{"result": "success"}',
     })
 
-    const result = await aiService.generateText(
-      'prompt',
-      [],
-      undefined,
-      'step_analyze_model',
-    )
+    const result = await aiService.generateText('prompt', [], undefined, 'step_analyze_model')
 
     expect(result).toEqual({ result: 'success' })
     expect(mockGoogleGenAIClient.models.generateContent).toHaveBeenCalled()

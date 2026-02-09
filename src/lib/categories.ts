@@ -5,7 +5,17 @@ export const EQUIPMENT_CATEGORIES = [
   },
   {
     main_category: 'Top',
-    sub_categories: ['Shirt', 'Jacket', 'Hoodie', 'Vest', 'Tunic', 'Armor_Chest', 'Bra_Top', 'Cape', 'Others'],
+    sub_categories: [
+      'Shirt',
+      'Jacket',
+      'Hoodie',
+      'Vest',
+      'Tunic',
+      'Armor_Chest',
+      'Bra_Top',
+      'Cape',
+      'Others',
+    ],
   },
   {
     main_category: 'Bottom',
@@ -25,11 +35,31 @@ export const EQUIPMENT_CATEGORIES = [
   },
   {
     main_category: 'Weapon',
-    sub_categories: ['Sword', 'Greatsword', 'Dagger', 'Spear', 'Bow', 'Firearm', 'Shield', 'Staff', 'Others'],
+    sub_categories: [
+      'Sword',
+      'Greatsword',
+      'Dagger',
+      'Spear',
+      'Bow',
+      'Firearm',
+      'Shield',
+      'Staff',
+      'Others',
+    ],
   },
   {
     main_category: 'Accessory',
-    sub_categories: ['Scarf', 'Necklace', 'Belt', 'Sash', 'Glasses', 'Goggles', 'Earpiece', 'Wing', 'Others'],
+    sub_categories: [
+      'Scarf',
+      'Necklace',
+      'Belt',
+      'Sash',
+      'Glasses',
+      'Goggles',
+      'Earpiece',
+      'Wing',
+      'Others',
+    ],
   },
   {
     main_category: 'Storage',

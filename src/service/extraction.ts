@@ -171,7 +171,12 @@ Return ONLY a JSON object. Provide the grid dimensions and a list of detected as
       ),
     })
 
-    return aiService.generateText<BoundingBoxResponse>(prompt, [file], schema, 'step_bounding_box_model')
+    return aiService.generateText<BoundingBoxResponse>(
+      prompt,
+      [file],
+      schema,
+      'step_bounding_box_model',
+    )
   }
 
   /**

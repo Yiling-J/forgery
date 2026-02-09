@@ -97,14 +97,24 @@ export default function Settings() {
     setList(list)
   }
 
-  const addModel = (list: string[], setList: (l: string[]) => void, key: string, newItem: string) => {
+  const addModel = (
+    list: string[],
+    setList: (l: string[]) => void,
+    key: string,
+    newItem: string,
+  ) => {
     if (newItem && !list.includes(newItem)) {
       const newList = [...list, newItem]
       updateModelList(key, newList, setList)
     }
   }
 
-  const removeModel = (list: string[], setList: (l: string[]) => void, key: string, itemToRemove: string) => {
+  const removeModel = (
+    list: string[],
+    setList: (l: string[]) => void,
+    key: string,
+    itemToRemove: string,
+  ) => {
     const newList = list.filter((item) => item !== itemToRemove)
     updateModelList(key, newList, setList)
   }
@@ -168,13 +178,19 @@ export default function Settings() {
             title="Text Models"
             models={openaiTextModels}
             onAdd={(m) => addModel(openaiTextModels, setOpenaiTextModels, 'openai_text_models', m)}
-            onRemove={(m) => removeModel(openaiTextModels, setOpenaiTextModels, 'openai_text_models', m)}
+            onRemove={(m) =>
+              removeModel(openaiTextModels, setOpenaiTextModels, 'openai_text_models', m)
+            }
           />
           <ModelList
             title="Image Models"
             models={openaiImageModels}
-            onAdd={(m) => addModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)}
-            onRemove={(m) => removeModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)}
+            onAdd={(m) =>
+              addModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)
+            }
+            onRemove={(m) =>
+              removeModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)
+            }
           />
         </CardContent>
       </Card>
@@ -209,13 +225,19 @@ export default function Settings() {
             title="Text Models"
             models={googleTextModels}
             onAdd={(m) => addModel(googleTextModels, setGoogleTextModels, 'google_text_models', m)}
-            onRemove={(m) => removeModel(googleTextModels, setGoogleTextModels, 'google_text_models', m)}
+            onRemove={(m) =>
+              removeModel(googleTextModels, setGoogleTextModels, 'google_text_models', m)
+            }
           />
           <ModelList
             title="Image Models"
             models={googleImageModels}
-            onAdd={(m) => addModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)}
-            onRemove={(m) => removeModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)}
+            onAdd={(m) =>
+              addModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)
+            }
+            onRemove={(m) =>
+              removeModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)
+            }
           />
         </CardContent>
       </Card>
@@ -224,41 +246,43 @@ export default function Settings() {
       <Card>
         <CardHeader>
           <CardTitle>Extraction Flow Defaults</CardTitle>
-          <CardDescription>Select default models for each step of the extraction process.</CardDescription>
+          <CardDescription>
+            Select default models for each step of the extraction process.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-           {/* Step 1: Analyze Image (Text) */}
-           <StepSelector
-             label="Step 1: Analyze Image (Text)"
-             value={settings['step_analyze_model']}
-             openaiModels={openaiTextModels}
-             googleModels={googleTextModels}
-             onSelect={(val) => saveSetting('step_analyze_model', val)}
-           />
-           {/* Step 2: Texture Sheet (Image) */}
-           <StepSelector
-             label="Step 2: Generate Texture Sheet (Image)"
-             value={settings['step_texture_model']}
-             openaiModels={openaiImageModels}
-             googleModels={googleImageModels}
-             onSelect={(val) => saveSetting('step_texture_model', val)}
-           />
-           {/* Step 3: Bounding Box (Text) */}
-           <StepSelector
-             label="Step 3: Detect Bounding Boxes (Text)"
-             value={settings['step_bounding_box_model']}
-             openaiModels={openaiTextModels}
-             googleModels={googleTextModels}
-             onSelect={(val) => saveSetting('step_bounding_box_model', val)}
-           />
-           {/* Step 4: Refine Asset (Image) */}
-           <StepSelector
-             label="Step 4: Refine Asset (Image)"
-             value={settings['step_refine_model']}
-             openaiModels={openaiImageModels}
-             googleModels={googleImageModels}
-             onSelect={(val) => saveSetting('step_refine_model', val)}
-           />
+          {/* Step 1: Analyze Image (Text) */}
+          <StepSelector
+            label="Step 1: Analyze Image (Text)"
+            value={settings['step_analyze_model']}
+            openaiModels={openaiTextModels}
+            googleModels={googleTextModels}
+            onSelect={(val) => saveSetting('step_analyze_model', val)}
+          />
+          {/* Step 2: Texture Sheet (Image) */}
+          <StepSelector
+            label="Step 2: Generate Texture Sheet (Image)"
+            value={settings['step_texture_model']}
+            openaiModels={openaiImageModels}
+            googleModels={googleImageModels}
+            onSelect={(val) => saveSetting('step_texture_model', val)}
+          />
+          {/* Step 3: Bounding Box (Text) */}
+          <StepSelector
+            label="Step 3: Detect Bounding Boxes (Text)"
+            value={settings['step_bounding_box_model']}
+            openaiModels={openaiTextModels}
+            googleModels={googleTextModels}
+            onSelect={(val) => saveSetting('step_bounding_box_model', val)}
+          />
+          {/* Step 4: Refine Asset (Image) */}
+          <StepSelector
+            label="Step 4: Refine Asset (Image)"
+            value={settings['step_refine_model']}
+            openaiModels={openaiImageModels}
+            googleModels={googleImageModels}
+            onSelect={(val) => saveSetting('step_refine_model', val)}
+          />
         </CardContent>
       </Card>
     </div>
@@ -307,12 +331,17 @@ function ModelList({
             className="flex items-center gap-1 rounded-md border bg-secondary px-2 py-1 text-sm"
           >
             <span>{model}</span>
-            <button onClick={() => onRemove(model)} className="text-muted-foreground hover:text-foreground">
+            <button
+              onClick={() => onRemove(model)}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <Trash2 className="h-3 w-3" />
             </button>
           </div>
         ))}
-        {models.length === 0 && <span className="text-sm text-muted-foreground">No models configured.</span>}
+        {models.length === 0 && (
+          <span className="text-sm text-muted-foreground">No models configured.</span>
+        )}
       </div>
     </div>
   )
@@ -341,23 +370,23 @@ function StepSelector({
         <SelectContent>
           {openaiModels.length > 0 && (
             <SelectGroup>
-                <SelectLabel>OpenAI</SelectLabel>
-                {openaiModels.map((m) => (
-                    <SelectItem key={`openai:${m}`} value={`openai:${m}`}>
-                    {m}
-                    </SelectItem>
-                ))}
+              <SelectLabel>OpenAI</SelectLabel>
+              {openaiModels.map((m) => (
+                <SelectItem key={`openai:${m}`} value={`openai:${m}`}>
+                  {m}
+                </SelectItem>
+              ))}
             </SelectGroup>
           )}
 
           {googleModels.length > 0 && (
             <SelectGroup>
-                <SelectLabel>Google</SelectLabel>
-                {googleModels.map((m) => (
-                    <SelectItem key={`google:${m}`} value={`google:${m}`}>
-                    {m}
-                    </SelectItem>
-                ))}
+              <SelectLabel>Google</SelectLabel>
+              {googleModels.map((m) => (
+                <SelectItem key={`google:${m}`} value={`google:${m}`}>
+                  {m}
+                </SelectItem>
+              ))}
             </SelectGroup>
           )}
         </SelectContent>

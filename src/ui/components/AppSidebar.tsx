@@ -1,13 +1,13 @@
 import { Backpack, Settings, Users } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from './ui/sidebar'
 
 // Menu items.

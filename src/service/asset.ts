@@ -25,7 +25,10 @@ export class AssetService {
     return asset
   }
 
-  async createAssetFromBuffer(buffer: Buffer | ArrayBuffer, meta: { name: string; type: string; ext?: string }) {
+  async createAssetFromBuffer(
+    buffer: Buffer | ArrayBuffer,
+    meta: { name: string; type: string; ext?: string },
+  ) {
     const id = ulid()
     const ext = meta.ext || '.bin'
     const filename = `${id}${ext}`

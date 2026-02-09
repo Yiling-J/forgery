@@ -22,9 +22,9 @@ describe('SettingService', () => {
   let settingService: any
 
   beforeAll(async () => {
-      // Use cache busting to ensure we get a fresh module with the mock applied
-      const module = await import(`./setting?v=${Date.now()}`)
-      settingService = module.settingService
+    // Use cache busting to ensure we get a fresh module with the mock applied
+    const module = await import(`./setting?v=${Date.now()}`)
+    settingService = module.settingService
   })
 
   beforeEach(() => {
