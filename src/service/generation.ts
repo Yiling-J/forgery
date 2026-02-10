@@ -6,7 +6,7 @@ import { aiService, type AIPart } from './ai'
 import { assetService } from './asset'
 
 export class GenerationService {
-  async createGeneration(characterId: string, equipmentIds: string[]) {
+  async createGeneration(characterId: string, equipmentIds: string[], userPrompt?: string) {
     // 1. Fetch character and its image
     const character = await prisma.character.findUnique({
       where: { id: characterId },
@@ -64,7 +64,7 @@ category: ${eq.category}
       })
     }
 
-    const prompt = `
+    let prompt = `
     Task: Character Synthesis and Equipment Modification.
 
     1. Reference the 'Base Character' for pose, body type, facial features, and general art style.
@@ -75,6 +75,14 @@ category: ${eq.category}
     6. Maintain the exact pose and angle of the Base Character.
     7. High quality, detailed, game art style.
   `
+
+    if (userPrompt) {
+      prompt += `
+    User Requirements:
+    ${userPrompt}
+    IMPORTANT: You must strictly adhere to the User Requirements above.
+      `
+    }
 
     parts.push({ text: prompt })
 
@@ -109,6 +117,7 @@ category: ${eq.category}
         id: generationId,
         characterId: character.id,
         imageId: asset.id,
+        userPrompt: userPrompt,
       },
     })
 

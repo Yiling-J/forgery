@@ -4,6 +4,8 @@ import { InferResponseType } from 'hono/client'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
+import { Textarea } from './ui/textarea'
+import { Label } from './ui/label'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { cn } from '../lib/utils'
@@ -29,6 +31,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [loading, setLoading] = useState(true)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedEquipments, setSelectedEquipments] = useState<EquipmentItem[]>([])
+  const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -86,6 +89,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
         json: {
           characterId,
           equipmentIds: selectedEquipments.map((e) => e.id),
+          userPrompt: userPrompt.trim() || undefined,
         },
       })
 
@@ -97,6 +101,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
       onSuccess()
       onOpenChange(false)
       setSelectedEquipments([])
+      setUserPrompt('')
     } catch (e) {
       console.error(e)
       setError(e instanceof Error ? e.message : 'Something went wrong')
@@ -190,6 +195,23 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
               })}
             </div>
           )}
+        </div>
+
+        {/* User Prompt Area */}
+        <div className="px-6 py-4 border-t border-stone-200 bg-white shrink-0">
+          <Label
+            htmlFor="user-prompt"
+            className="text-xs font-bold text-stone-700 uppercase mb-2 block"
+          >
+            Extra Instructions (Optional)
+          </Label>
+          <Textarea
+            id="user-prompt"
+            placeholder="E.g. The sword should be worn on the back..."
+            className="resize-none bg-stone-50 border-stone-200 focus:border-stone-400"
+            value={userPrompt}
+            onChange={(e) => setUserPrompt(e.target.value)}
+          />
         </div>
 
         {/* Bottom Dock - Selected Items */}

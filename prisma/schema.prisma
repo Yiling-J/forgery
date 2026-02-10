@@ -65,6 +65,7 @@ model Generation {
   id          String   @id
   characterId String   @map("character_id")
   imageId     String   @map("image_id")
+  userPrompt  String?  @map("user_prompt")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

@@ -28,6 +28,7 @@ export type GenerationMinAggregateOutputType = {
   id: string | null
   characterId: string | null
   imageId: string | null
+  userPrompt: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type GenerationMaxAggregateOutputType = {
   id: string | null
   characterId: string | null
   imageId: string | null
+  userPrompt: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type GenerationCountAggregateOutputType = {
   id: number
   characterId: number
   imageId: number
+  userPrompt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type GenerationMinAggregateInputType = {
   id?: true
   characterId?: true
   imageId?: true
+  userPrompt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type GenerationMaxAggregateInputType = {
   id?: true
   characterId?: true
   imageId?: true
+  userPrompt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type GenerationCountAggregateInputType = {
   id?: true
   characterId?: true
   imageId?: true
+  userPrompt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type GenerationGroupByOutputType = {
   id: string
   characterId: string
   imageId: string
+  userPrompt: string | null
   createdAt: Date
   updatedAt: Date
   _count: GenerationCountAggregateOutputType | null
@@ -180,6 +187,7 @@ export type GenerationWhereInput = {
   id?: Prisma.StringFilter<"Generation"> | string
   characterId?: Prisma.StringFilter<"Generation"> | string
   imageId?: Prisma.StringFilter<"Generation"> | string
+  userPrompt?: Prisma.StringNullableFilter<"Generation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Generation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Generation"> | Date | string
   character?: Prisma.XOR<Prisma.CharacterScalarRelationFilter, Prisma.CharacterWhereInput>
@@ -191,6 +199,7 @@ export type GenerationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   characterId?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
+  userPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   character?: Prisma.CharacterOrderByWithRelationInput
@@ -205,6 +214,7 @@ export type GenerationWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GenerationWhereInput | Prisma.GenerationWhereInput[]
   characterId?: Prisma.StringFilter<"Generation"> | string
   imageId?: Prisma.StringFilter<"Generation"> | string
+  userPrompt?: Prisma.StringNullableFilter<"Generation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Generation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Generation"> | Date | string
   character?: Prisma.XOR<Prisma.CharacterScalarRelationFilter, Prisma.CharacterWhereInput>
@@ -216,6 +226,7 @@ export type GenerationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   characterId?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
+  userPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.GenerationCountOrderByAggregateInput
@@ -230,12 +241,14 @@ export type GenerationScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Generation"> | string
   characterId?: Prisma.StringWithAggregatesFilter<"Generation"> | string
   imageId?: Prisma.StringWithAggregatesFilter<"Generation"> | string
+  userPrompt?: Prisma.StringNullableWithAggregatesFilter<"Generation"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Generation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Generation"> | Date | string
 }
 
 export type GenerationCreateInput = {
   id: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   character: Prisma.CharacterCreateNestedOneWithoutGenerationsInput
@@ -247,6 +260,7 @@ export type GenerationUncheckedCreateInput = {
   id: string
   characterId: string
   imageId: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
@@ -254,6 +268,7 @@ export type GenerationUncheckedCreateInput = {
 
 export type GenerationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   character?: Prisma.CharacterUpdateOneRequiredWithoutGenerationsNestedInput
@@ -265,6 +280,7 @@ export type GenerationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   characterId?: Prisma.StringFieldUpdateOperationsInput | string
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
@@ -274,12 +290,14 @@ export type GenerationCreateManyInput = {
   id: string
   characterId: string
   imageId: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type GenerationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -288,6 +306,7 @@ export type GenerationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   characterId?: Prisma.StringFieldUpdateOperationsInput | string
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -306,6 +325,7 @@ export type GenerationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   characterId?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
+  userPrompt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -314,6 +334,7 @@ export type GenerationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   characterId?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
+  userPrompt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -322,6 +343,7 @@ export type GenerationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   characterId?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
+  userPrompt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -431,6 +453,7 @@ export type GenerationUpdateOneRequiredWithoutEquipmentsNestedInput = {
 
 export type GenerationCreateWithoutImageInput = {
   id: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   character: Prisma.CharacterCreateNestedOneWithoutGenerationsInput
@@ -440,6 +463,7 @@ export type GenerationCreateWithoutImageInput = {
 export type GenerationUncheckedCreateWithoutImageInput = {
   id: string
   characterId: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
@@ -477,12 +501,14 @@ export type GenerationScalarWhereInput = {
   id?: Prisma.StringFilter<"Generation"> | string
   characterId?: Prisma.StringFilter<"Generation"> | string
   imageId?: Prisma.StringFilter<"Generation"> | string
+  userPrompt?: Prisma.StringNullableFilter<"Generation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Generation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Generation"> | Date | string
 }
 
 export type GenerationCreateWithoutCharacterInput = {
   id: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutGenerationsInput
@@ -492,6 +518,7 @@ export type GenerationCreateWithoutCharacterInput = {
 export type GenerationUncheckedCreateWithoutCharacterInput = {
   id: string
   imageId: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
@@ -524,6 +551,7 @@ export type GenerationUpdateManyWithWhereWithoutCharacterInput = {
 
 export type GenerationCreateWithoutEquipmentsInput = {
   id: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   character: Prisma.CharacterCreateNestedOneWithoutGenerationsInput
@@ -534,6 +562,7 @@ export type GenerationUncheckedCreateWithoutEquipmentsInput = {
   id: string
   characterId: string
   imageId: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -556,6 +585,7 @@ export type GenerationUpdateToOneWithWhereWithoutEquipmentsInput = {
 
 export type GenerationUpdateWithoutEquipmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   character?: Prisma.CharacterUpdateOneRequiredWithoutGenerationsNestedInput
@@ -566,6 +596,7 @@ export type GenerationUncheckedUpdateWithoutEquipmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   characterId?: Prisma.StringFieldUpdateOperationsInput | string
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -573,12 +604,14 @@ export type GenerationUncheckedUpdateWithoutEquipmentsInput = {
 export type GenerationCreateManyImageInput = {
   id: string
   characterId: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type GenerationUpdateWithoutImageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   character?: Prisma.CharacterUpdateOneRequiredWithoutGenerationsNestedInput
@@ -588,6 +621,7 @@ export type GenerationUpdateWithoutImageInput = {
 export type GenerationUncheckedUpdateWithoutImageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   characterId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
@@ -596,6 +630,7 @@ export type GenerationUncheckedUpdateWithoutImageInput = {
 export type GenerationUncheckedUpdateManyWithoutImageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   characterId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -603,12 +638,14 @@ export type GenerationUncheckedUpdateManyWithoutImageInput = {
 export type GenerationCreateManyCharacterInput = {
   id: string
   imageId: string
+  userPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type GenerationUpdateWithoutCharacterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutGenerationsNestedInput
@@ -618,6 +655,7 @@ export type GenerationUpdateWithoutCharacterInput = {
 export type GenerationUncheckedUpdateWithoutCharacterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
@@ -626,6 +664,7 @@ export type GenerationUncheckedUpdateWithoutCharacterInput = {
 export type GenerationUncheckedUpdateManyWithoutCharacterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -665,6 +704,7 @@ export type GenerationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   characterId?: boolean
   imageId?: boolean
+  userPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   character?: boolean | Prisma.CharacterDefaultArgs<ExtArgs>
@@ -677,6 +717,7 @@ export type GenerationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   characterId?: boolean
   imageId?: boolean
+  userPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   character?: boolean | Prisma.CharacterDefaultArgs<ExtArgs>
@@ -687,6 +728,7 @@ export type GenerationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   characterId?: boolean
   imageId?: boolean
+  userPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   character?: boolean | Prisma.CharacterDefaultArgs<ExtArgs>
@@ -697,11 +739,12 @@ export type GenerationSelectScalar = {
   id?: boolean
   characterId?: boolean
   imageId?: boolean
+  userPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GenerationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "characterId" | "imageId" | "createdAt" | "updatedAt", ExtArgs["result"]["generation"]>
+export type GenerationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "characterId" | "imageId" | "userPrompt" | "createdAt" | "updatedAt", ExtArgs["result"]["generation"]>
 export type GenerationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   character?: boolean | Prisma.CharacterDefaultArgs<ExtArgs>
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
@@ -728,6 +771,7 @@ export type $GenerationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     id: string
     characterId: string
     imageId: string
+    userPrompt: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["generation"]>
@@ -1159,6 +1203,7 @@ export interface GenerationFieldRefs {
   readonly id: Prisma.FieldRef<"Generation", 'String'>
   readonly characterId: Prisma.FieldRef<"Generation", 'String'>
   readonly imageId: Prisma.FieldRef<"Generation", 'String'>
+  readonly userPrompt: Prisma.FieldRef<"Generation", 'String'>
   readonly createdAt: Prisma.FieldRef<"Generation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Generation", 'DateTime'>
 }

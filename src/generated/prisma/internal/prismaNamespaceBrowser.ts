@@ -114,6 +114,7 @@ export const GenerationScalarFieldEnum = {
   id: 'id',
   characterId: 'characterId',
   imageId: 'imageId',
+  userPrompt: 'userPrompt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
