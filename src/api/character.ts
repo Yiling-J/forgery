@@ -26,7 +26,13 @@ const route = app
   .get('/', zValidator('query', listSchema), async (c) => {
     const { page, limit } = c.req.valid('query')
     const result = await characterService.listCharacters({ page, limit })
-    return c.json(result)
+    return c.json({
+      ...result,
+      items: result.items.map((item) => ({
+        ...item,
+        looksCount: item._count.generations,
+      })),
+    })
   })
   .post('/', zValidator('json', createSchema), async (c) => {
     const { name, description, imageId } = c.req.valid('json')
