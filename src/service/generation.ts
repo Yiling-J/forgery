@@ -2,7 +2,7 @@ import { join } from 'path'
 import { ulid } from 'ulidx'
 import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
-import { aiService } from './ai'
+import { aiService, type AIPart } from './ai'
 import { assetService } from './asset'
 
 export class GenerationService {
@@ -24,7 +24,7 @@ export class GenerationService {
     })
 
     // 3. Construct parts
-    const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = []
+    const parts: AIPart[] = []
 
     // Base Character
     const charPath = join('data/files', character.image.path)
@@ -79,7 +79,11 @@ category: ${eq.category}
     parts.push({ text: prompt })
 
     // 4. Generate Image
-    const generatedImageBase64 = await aiService.generateImageFromParts(parts)
+    const generatedImageBase64 = await aiService.generateImage(
+      parts,
+      undefined,
+      'step_generation_model',
+    )
 
     // 5. Save generated image as Asset
     const matches = generatedImageBase64.match(/^data:(.+);base64,(.+)$/)

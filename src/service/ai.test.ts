@@ -19,6 +19,9 @@ const mockOpenAIClient = {
   images: {
     generate: mock(),
   },
+  responses: {
+    create: mock(),
+  },
 }
 
 // We mock the default export which is the class, and also named exports
@@ -66,6 +69,7 @@ describe('UnifiedAIService', () => {
     mockSettingService.get.mockReset()
     mockOpenAIClient.chat.completions.create.mockReset()
     mockOpenAIClient.images.generate.mockReset()
+    mockOpenAIClient.responses.create.mockReset()
     mockGoogleGenAIClient.models.generateContent.mockReset()
   })
 
@@ -112,5 +116,65 @@ describe('UnifiedAIService', () => {
     const callArgs = mockGoogleGenAIClient.models.generateContent.mock.calls[0][0]
     expect(callArgs.model).toBe('gemini-1.5-pro')
     expect(mockOpenAIClient.chat.completions.create).not.toHaveBeenCalled()
+  })
+
+  it('should use OpenAI Responses API for image generation when configured', async () => {
+    mockSettingService.get.mockImplementation(async (key: string) => {
+      if (key === 'openai_api_key') return 'test_key'
+      if (key === 'step_generation_model') return 'openai:gpt-5'
+      return null
+    })
+
+    // Setup OpenAI response for image generation
+    mockOpenAIClient.responses.create.mockResolvedValue({
+      output: [
+        {
+          type: 'image_generation_call',
+          result: 'base64image',
+        },
+      ],
+    })
+
+    const parts = [{ text: 'test prompt' }]
+    const result = await aiService.generateImage(parts, [], 'step_generation_model')
+
+    expect(result).toBe('data:image/png;base64,base64image')
+    expect(mockOpenAIClient.responses.create).toHaveBeenCalled()
+    const callArgs = mockOpenAIClient.responses.create.mock.calls[0][0]
+    expect(callArgs.model).toBe('gpt-5')
+    expect(callArgs.tools).toEqual([{ type: 'image_generation' }])
+    expect(callArgs.input).toEqual([{ type: 'input_text', text: 'test prompt' }])
+  })
+
+  it('should use Google for image generation when configured', async () => {
+    mockSettingService.get.mockImplementation(async (key: string) => {
+      if (key === 'google_api_key') return 'test_key'
+      if (key === 'step_generation_model') return 'google:gemini-2.0-flash'
+      return null
+    })
+
+    mockGoogleGenAIClient.models.generateContent.mockResolvedValue({
+      candidates: [
+        {
+          content: {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: 'image/png',
+                  data: 'base64image',
+                },
+              },
+            ],
+          },
+        },
+      ],
+    })
+
+    const parts = [{ text: 'test prompt' }]
+    const result = await aiService.generateImage(parts, [], 'step_generation_model')
+
+    expect(result).toBe('data:image/png;base64,base64image')
+    expect(mockGoogleGenAIClient.models.generateContent).toHaveBeenCalled()
+    expect(mockOpenAIClient.responses.create).not.toHaveBeenCalled()
   })
 })
