@@ -5,7 +5,7 @@ import { InferResponseType } from 'hono/client'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
 import { Plus, ArrowLeft } from 'lucide-react'
-import { CreateOutfitDialog } from '../components/CreateOutfitDialog'
+import { CreateLookDialog } from '../components/CreateLookDialog'
 import { useNavigate } from 'react-router-dom'
 
 // Types - Define locally to avoid complex type extraction if client inference is tricky
@@ -21,7 +21,7 @@ export default function FittingRoom() {
   const [character, setCharacter] = useState<CharacterResponse | null>(null)
   const [generations, setGenerations] = useState<GenerationItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [createOpen, setCreateOpen] = useState(false)
+  const [createLookOpen, setCreateLookOpen] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -87,7 +87,7 @@ export default function FittingRoom() {
               Fitting Room
             </h1>
             <p className="text-stone-500 text-sm font-medium flex items-center gap-2">
-              Manage outfits for{' '}
+              Manage looks for{' '}
               <span className="text-stone-900 font-bold bg-stone-200 px-2 py-0.5 rounded text-xs uppercase">
                 {character.name}
               </span>
@@ -95,10 +95,10 @@ export default function FittingRoom() {
           </div>
         </div>
         <Button
-          onClick={() => setCreateOpen(true)}
+          onClick={() => setCreateLookOpen(true)}
           className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg hover:shadow-xl transition-all"
         >
-          <Plus className="mr-2 h-4 w-4" /> Create New Outfit
+          <Plus className="mr-2 h-4 w-4" /> Create New Look
         </Button>
       </div>
 
@@ -132,9 +132,9 @@ export default function FittingRoom() {
           <div className="p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
             <h3 className="font-bold text-stone-700 uppercase tracking-wider text-xs flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              Generated Outfits
+              Generated Looks
             </h3>
-            <span className="text-xs font-mono text-stone-400">{generations.length} OUTFITS</span>
+            <span className="text-xs font-mono text-stone-400">{generations.length} LOOKS</span>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
@@ -144,11 +144,11 @@ export default function FittingRoom() {
                   <Plus className="w-8 h-8 text-stone-300" />
                 </div>
                 <div className="text-center">
-                  <p className="font-medium text-stone-600">No outfits generated yet.</p>
-                  <p className="text-xs mt-1">Create your first outfit to get started.</p>
+                  <p className="font-medium text-stone-600">No looks generated yet.</p>
+                  <p className="text-xs mt-1">Create your first look to get started.</p>
                 </div>
-                <Button variant="outline" onClick={() => setCreateOpen(true)}>
-                  Create Outfit
+                <Button variant="outline" onClick={() => setCreateLookOpen(true)}>
+                  Create Look
                 </Button>
               </div>
             ) : (
@@ -193,9 +193,9 @@ export default function FittingRoom() {
         </div>
       </div>
 
-      <CreateOutfitDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
+      <CreateLookDialog
+        open={createLookOpen}
+        onOpenChange={setCreateLookOpen}
         characterId={id || ''}
         onSuccess={() => id && fetchData(id)}
       />
