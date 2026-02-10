@@ -4,13 +4,18 @@ import { zodResponseFormat } from 'openai/helpers/zod'
 import { z } from 'zod'
 import { settingService } from './setting'
 
+export interface AIPart {
+  text?: string
+  inlineData?: {
+    mimeType: string
+    data: string
+  }
+}
+
 // Generic AI service interface for flexibility
 export interface AIService {
   generateText<T>(prompt: string, images: File[], schema?: z.ZodType<T>, step?: string): Promise<T>
-  generateImage(prompt: string, referenceImages?: File[], step?: string): Promise<string>
-  generateImageFromParts(
-    parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }>,
-  ): Promise<string>
+  generateImage(input: string | AIPart[], referenceImages?: File[], step?: string): Promise<string>
 }
 
 // Configuration constants
@@ -22,6 +27,7 @@ const CONFIG_KEYS = {
   STEP_TEXTURE_MODEL: 'step_texture_model',
   STEP_BOUNDING_BOX_MODEL: 'step_bounding_box_model',
   STEP_REFINE_MODEL: 'step_refine_model',
+  STEP_GENERATION_MODEL: 'step_generation_model',
 }
 
 export class UnifiedAIService implements AIService {
@@ -67,11 +73,6 @@ export class UnifiedAIService implements AIService {
       }
       return { provider: 'google', model: 'gemini-2.0-flash' }
     }
-
-    // Assuming model string is stored as "provider:model_name" or just "model_name"
-    // But based on requirements, user selects provider/model.
-    // Let's assume the value is stored as "provider:model" e.g. "openai:gpt-4o" or "google:gemini-1.5-pro"
-    // If it doesn't have a prefix, we default to google for backward compat or error out.
 
     if (modelString.includes(':')) {
       const [provider, model] = modelString.split(':')
@@ -149,7 +150,7 @@ export class UnifiedAIService implements AIService {
   ): Promise<T> {
     const client = await this.getGoogleClient()
 
-    const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = []
+    const parts: AIPart[] = []
 
     for (const image of images) {
       const buffer = await image.arrayBuffer()
@@ -175,7 +176,7 @@ export class UnifiedAIService implements AIService {
 
     const result = await client.models.generateContent({
       model: model,
-      contents: { parts },
+      contents: { parts: parts as any[] }, // Type assertion due to slight mismatch or library version
       config: config,
     })
 
@@ -200,69 +201,21 @@ export class UnifiedAIService implements AIService {
   }
 
   async generateImage(
-    prompt: string,
+    input: string | AIPart[],
     referenceImages: File[] = [],
     step?: string,
   ): Promise<string> {
     const { provider, model } = await this.getModelForStep(step)
 
-    if (provider === 'openai') {
-      return this.generateImageOpenAI(model, prompt, referenceImages)
+    // Normalize input to AIPart[]
+    let parts: AIPart[] = []
+    if (typeof input === 'string') {
+      parts.push({ text: input })
     } else {
-      return this.generateImageGoogle(model, prompt, referenceImages)
-    }
-  }
-
-  private async generateImageOpenAI(
-    model: string,
-    prompt: string,
-    referenceImages: File[],
-  ): Promise<string> {
-    const client = await this.getOpenAIClient()
-
-    // OpenAI DALL-E 3 does not support image-to-image in the standard way via API yet easily for editing
-    // But if it's just generation based on prompt, we use embeddings or just prompt.
-    // However, the requirement might be editing.
-    // DALL-E 3 only takes text prompt.
-    // If reference images are needed, OpenAI might not be the best fit unless using Vision to describe then Generate.
-    // For now, if reference images are provided, we warn or try to describe them first?
-    // Or we assume the user knows what they are doing selecting OpenAI for a step that requires image input.
-    // Actually, `generateImage` in `extraction.ts` is used for Texture Sheet generation (from analyze result) and Refine Asset.
-    // Refine Asset takes an image. Texture sheet takes the original file.
-    // DALL-E 3 doesn't support input images directly for variations/edits in the same way.
-    // But `dall-e-2` does edits.
-
-    // For simplicity, if OpenAI is selected, we assume DALL-E 3 and just pass the prompt.
-    // If input images are critical, this might fail or be suboptimal.
-    // Let's implement standard generation.
-
-    if (referenceImages.length > 0) {
-      console.warn('OpenAI DALL-E 3 does not support input images directly. Using prompt only.')
+      parts = input
     }
 
-    const response = await client.images.generate({
-      model: model,
-      prompt: prompt,
-      n: 1,
-      size: '1024x1024',
-      response_format: 'b64_json',
-    })
-
-    const base64 = (response.data ?? [])[0].b64_json
-    if (!base64) throw new Error('No image generated from OpenAI')
-
-    return `data:image/png;base64,${base64}`
-  }
-
-  private async generateImageGoogle(
-    model: string,
-    prompt: string,
-    referenceImages: File[] = [],
-  ): Promise<string> {
-    const client = await this.getGoogleClient()
-
-    const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = []
-
+    // Append reference images if any (convert to parts)
     for (const image of referenceImages) {
       const buffer = await image.arrayBuffer()
       const base64 = Buffer.from(buffer).toString('base64')
@@ -274,28 +227,76 @@ export class UnifiedAIService implements AIService {
       })
     }
 
-    parts.push({ text: prompt })
-
-    return this.generateImageFromParts(parts, model, client)
+    if (provider === 'openai') {
+      return this.generateImageOpenAI(model, parts)
+    } else {
+      return this.generateImageGoogle(model, parts)
+    }
   }
 
-  async generateImageFromParts(
-    parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }>,
+  private async generateImageOpenAI(model: string, parts: AIPart[]): Promise<string> {
+    const client = await this.getOpenAIClient()
+
+    // Construct input for Responses API
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const input: any[] = []
+
+    for (const part of parts) {
+      if (part.text) {
+        input.push({
+          type: 'input_text',
+          text: part.text,
+        })
+      } else if (part.inlineData) {
+        input.push({
+          type: 'input_image',
+          image_url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`,
+        })
+      }
+    }
+
+    // Use Responses API with image_generation tool
+    // @ts-ignore - response API might not be fully typed in the SDK version installed yet
+    const response = await client.responses.create({
+      model: model,
+      input: input,
+      tools: [{ type: 'image_generation' }],
+    })
+
+    // Parse output to find image generation result
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const imageData = response.output
+      .filter((output: any) => output.type === 'image_generation_call')
+      .map((output: any) => output.result)
+
+    if (imageData.length > 0) {
+      const base64 = imageData[0]
+      // Assuming png by default or we could inspect headers, but base64 usually lacks mime prefix from this API
+      // The previous code appended `data:image/png;base64,` manually if needed.
+      // DALL-E usually returns just the base64 data.
+      return `data:image/png;base64,${base64}`
+    }
+
+    throw new Error('No image generated from OpenAI Responses API')
+  }
+
+  private async generateImageGoogle(model: string, parts: AIPart[]): Promise<string> {
+    return this.generateImageFromParts(parts, model)
+  }
+
+  private async generateImageFromParts(
+    parts: AIPart[],
     modelOverride?: string,
     clientOverride?: GoogleGenAI,
   ): Promise<string> {
-    // This method seems specific to Google's structure in previous code.
-    // We default to Google if called directly or internal usage.
-
     const client = clientOverride || (await this.getGoogleClient())
-    const model = modelOverride || 'gemini-2.0-flash' // Default fallback
+    const model = modelOverride || 'gemini-2.0-flash'
 
     const result = await client.models.generateContent({
       model: model,
-      contents: { parts },
+      contents: { parts: parts as any[] }, // Type assertion
     })
 
-    // Check for image in response
     const candidate = result.candidates?.[0]
     if (candidate?.content?.parts) {
       for (const part of candidate.content.parts) {
