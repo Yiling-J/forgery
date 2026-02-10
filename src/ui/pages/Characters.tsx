@@ -60,18 +60,17 @@ export default function Characters() {
         <div>
           <div className="flex items-center gap-2 text-cyan-600 mb-2 tracking-[0.3em] text-xs font-mono uppercase">
             <Hexagon size={12} className="animate-spin-slow" />
-            System // Operator_Select
+            System // Character_Select
           </div>
           <h1 className="text-3xl md:text-5xl font-display font-black uppercase text-slate-900 tracking-tighter">
-            Select{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
-              Operator
+              Characters
             </span>
           </h1>
         </div>
         <div className="flex items-center gap-4">
           <span className="font-mono text-slate-400 text-sm hidden sm:block">
-            UNITS: {characters.length}
+            COUNT: {characters.length}
           </span>
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> Create Character
