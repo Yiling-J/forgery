@@ -13,7 +13,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/characters" replace />} />
           <Route path="characters" element={<Characters />} />
-          <Route path="characters/:id/outfits" element={<FittingRoom />} />
+          <Route path="characters/:id/looks" element={<FittingRoom />} />
           <Route path="equipments" element={<Equipments />} />
           <Route path="settings" element={<Settings />} />
         </Route>

@@ -12,14 +12,14 @@ import { Loader2, X, Check } from 'lucide-react'
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
 type EquipmentItem = EquipmentResponse['items'][number]
 
-interface CreateOutfitDialogProps {
+interface CreateLookDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   characterId: string
   onSuccess: () => void
 }
 
-export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
+export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   open,
   onOpenChange,
   characterId,
@@ -91,7 +91,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
 
       if (!res.ok) {
         const errData = (await res.json()) as { error?: string }
-        throw new Error(errData.error || 'Failed to create outfit')
+        throw new Error(errData.error || 'Failed to create look')
       }
 
       onSuccess()

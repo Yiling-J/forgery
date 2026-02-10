@@ -63,7 +63,7 @@ export default function Characters() {
             <div
               key={char.id}
               className="border-transparent cursor-pointer"
-              onClick={() => navigate(`/characters/${char.id}/outfits`)}
+              onClick={() => navigate(`/characters/${char.id}/looks`)}
             >
               <div className="flex flex-col items-center p-6 gap-4">
                 <Avatar className="w-32 h-32 border-4 border-stone-100 shadow-inner">
