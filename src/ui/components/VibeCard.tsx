@@ -41,7 +41,7 @@ export const VibeCard: React.FC<VibeCardProps> = ({
               src={image}
               alt={name}
               loading="lazy"
-              className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 mix-blend-multiply"
+              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 mix-blend-multiply"
             />
             {/* Gradient overlay for text readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-90 group-hover:opacity-80 transition-opacity duration-300" />
