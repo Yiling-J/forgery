@@ -42,6 +42,33 @@ describe('Generation API', () => {
     const res = await generation.fetch(req)
     expect(res.status).toBe(201)
     expect(await res.json()).toEqual({ id: '1' })
-    expect(mockGenerationService.createGeneration).toHaveBeenCalledWith('char1', ['eq1', 'eq2'])
+    expect(mockGenerationService.createGeneration).toHaveBeenCalledWith(
+      'char1',
+      ['eq1', 'eq2'],
+      undefined,
+    )
+  })
+
+  it('POST / should create generation with userPrompt', async () => {
+    mockGenerationService.createGeneration.mockResolvedValue({ id: '1' })
+
+    const req = new Request('http://localhost/', {
+      method: 'POST',
+      body: JSON.stringify({
+        characterId: 'char1',
+        equipmentIds: ['eq1', 'eq2'],
+        userPrompt: 'test prompt',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    const res = await generation.fetch(req)
+    expect(res.status).toBe(201)
+    expect(await res.json()).toEqual({ id: '1' })
+    expect(mockGenerationService.createGeneration).toHaveBeenCalledWith(
+      'char1',
+      ['eq1', 'eq2'],
+      'test prompt',
+    )
   })
 })
