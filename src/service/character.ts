@@ -24,6 +24,9 @@ export class CharacterService {
         take: limit,
         include: {
           image: true,
+          _count: {
+            select: { generations: true },
+          },
         },
         orderBy: {
           createdAt: 'desc',
