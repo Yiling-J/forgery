@@ -283,6 +283,14 @@ export default function Settings() {
             googleModels={googleImageModels}
             onSelect={(val) => saveSetting('step_refine_model', val)}
           />
+          {/* Step: Generation (Image) */}
+          <StepSelector
+            label="Step: Character Generation (Image)"
+            value={settings['step_generation_model']}
+            openaiModels={openaiImageModels}
+            googleModels={googleImageModels}
+            onSelect={(val) => saveSetting('step_generation_model', val)}
+          />
         </CardContent>
       </Card>
     </div>
