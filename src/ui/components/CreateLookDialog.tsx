@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { client } from '../client'
 import { InferResponseType } from 'hono/client'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
-import { Textarea } from './ui/textarea'
-import { Label } from './ui/label'
-import { ScrollArea, ScrollBar } from './ui/scroll-area'
+import { Check, Download, Loader2, Save, X } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
+import { client } from '../client'
 import { cn } from '../lib/utils'
-import { Loader2, X, Check, Download, Save } from 'lucide-react'
 import { LoadOutfitDialog } from './LoadOutfitDialog'
 import { SaveOutfitDialog } from './SaveOutfitDialog'
-import { toast } from 'sonner'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
+import { Label } from './ui/label'
+import { ScrollArea, ScrollBar } from './ui/scroll-area'
+import { Textarea } from './ui/textarea'
 
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
 type EquipmentItem = EquipmentResponse['items'][number]
@@ -259,9 +259,9 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                 {error && <span className="text-red-500 text-xs font-medium">{error}</span>}
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-4 w-full">
                 <ScrollArea className="flex-1 whitespace-nowrap">
-                  <div className="flex gap-3 pb-2 min-h-[150px] items-center">
+                  <div className="flex gap-3 pb-2 h-[120px] items-center">
                     {selectedEquipments.length === 0 ? (
                       <div className="text-stone-400 text-sm italic w-full text-center py-8 border-2 border-dashed border-stone-100 rounded-xl">
                         Select items from the list above to equip them.
@@ -270,7 +270,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                       selectedEquipments.map((item) => (
                         <div
                           key={item.id}
-                          className="relative w-[150px] h-[150px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group"
+                          className="relative w-[100px] h-[100px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group"
                         >
                           <img
                             src={item.image?.path ? `/files/${item.image.path}` : ''}
@@ -286,26 +286,22 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                           >
                             <X className="w-3 h-3" />
                           </button>
-                          <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-1 text-[10px] truncate text-center font-medium border-t border-stone-100">
-                            {item.name}
-                          </div>
                         </div>
                       ))
                     )}
                   </div>
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
-
-                <div className="flex items-center pl-4 border-l border-stone-100">
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg border-0 h-full max-h-[150px] min-w-[120px]"
-                    disabled={submitting || selectedEquipments.length === 0}
-                    onClick={handleCreate}
-                  >
-                    {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Generate'}
-                  </Button>
-                </div>
+              </div>
+              <div className="h-10 items-center pl-4 border-l border-stone-100">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg border-0 h-full max-h-[150px] min-w-[120px]"
+                  disabled={submitting || selectedEquipments.length === 0}
+                  onClick={handleCreate}
+                >
+                  {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Generate'}
+                </Button>
               </div>
             </div>
           </div>

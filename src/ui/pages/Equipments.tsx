@@ -108,12 +108,31 @@ export default function Equipments() {
   }
 
   return (
-    <div className="w-full min-h-screen p-4 md:p-8 flex flex-col font-sans text-slate-900 relative">
+    <div className="w-full min-h-screen p-4 pt-2 flex flex-col font-sans text-slate-900 relative">
       <div className="mb-8 animate-fade-in-down flex justify-between items-end">
         <div>
           <div className="flex items-center gap-2 text-cyan-600 mb-2 tracking-[0.3em] text-xs font-mono uppercase">
             <Hexagon size={12} className="animate-spin-slow" />
-            System // Equipment_Select
+            System //{' '}
+            <span
+              className={cn(
+                'cursor-pointer',
+                viewMode === 'equipments' ? '' : 'text-muted-foreground/80',
+              )}
+              onClick={() => setViewMode('equipments')}
+            >
+              Equipment_List
+            </span>{' '}
+            <span>|</span>
+            <span
+              className={cn(
+                'cursor-pointer',
+                viewMode === 'outfits' ? '' : 'text-muted-foreground/80',
+              )}
+              onClick={() => setViewMode('outfits')}
+            >
+              Outfit_List
+            </span>
           </div>
           <h1 className="text-3xl md:text-5xl font-display font-black uppercase text-slate-900 tracking-tighter">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
@@ -122,31 +141,6 @@ export default function Equipments() {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="bg-slate-100 p-1 rounded-lg flex gap-1">
-            <button
-              onClick={() => setViewMode('equipments')}
-              className={cn(
-                'px-3 py-1.5 text-xs font-bold uppercase rounded-md transition-all',
-                viewMode === 'equipments'
-                  ? 'bg-white text-cyan-600 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-600',
-              )}
-            >
-              Equipments
-            </button>
-            <button
-              onClick={() => setViewMode('outfits')}
-              className={cn(
-                'px-3 py-1.5 text-xs font-bold uppercase rounded-md transition-all',
-                viewMode === 'outfits'
-                  ? 'bg-white text-cyan-600 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-600',
-              )}
-            >
-              Outfits
-            </button>
-          </div>
-
           {viewMode === 'equipments' ? (
             <Button onClick={() => setExtractorOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Extract Equipment
