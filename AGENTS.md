@@ -105,6 +105,7 @@ We use `bun:test` for testing.
 - Generated Client: `src/generated/prisma`
 - Config: `prisma.config.ts` (Required for Prisma 7+)
 - Adapter: We use `@prisma/adapter-libsql` for SQLite compatibility with Bun.
+- Migration Requirement: Whenever the Prisma schema is modified, you must also generate a corresponding migration file using Prisma Migrate (e.g., prisma migrate dev) and ensure the migration is committed.
 
 ### Commands
 
