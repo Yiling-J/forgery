@@ -43,6 +43,16 @@ export type Generation = Prisma.GenerationModel
  */
 export type GenerationEquipment = Prisma.GenerationEquipmentModel
 /**
+ * Model Outfit
+ *
+ */
+export type Outfit = Prisma.OutfitModel
+/**
+ * Model OutfitEquipment
+ *
+ */
+export type OutfitEquipment = Prisma.OutfitEquipmentModel
+/**
  * Model Setting
  *
  */

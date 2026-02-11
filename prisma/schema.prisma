@@ -56,6 +56,7 @@ model Equipment {
   // Relations
   image       Asset                 @relation(fields: [imageId], references: [id])
   generations GenerationEquipment[]
+  outfits     OutfitEquipment[]
 
   @@index([category, subCategory])
   @@map("equipments")
@@ -86,6 +87,30 @@ model GenerationEquipment {
 
   @@id([generationId, equipmentId])
   @@map("generation_equipments")
+}
+
+model Outfit {
+  id        String   @id
+  name      String
+  prompt    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  equipments OutfitEquipment[]
+
+  @@map("outfits")
+}
+
+model OutfitEquipment {
+  outfitId    String @map("outfit_id")
+  equipmentId String @map("equipment_id")
+
+  outfit    Outfit    @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@id([outfitId, equipmentId])
+  @@map("outfit_equipments")
 }
 
 model Setting {

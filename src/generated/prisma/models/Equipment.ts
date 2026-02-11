@@ -208,6 +208,7 @@ export type EquipmentWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
   image?: Prisma.XOR<Prisma.AssetScalarRelationFilter, Prisma.AssetWhereInput>
   generations?: Prisma.GenerationEquipmentListRelationFilter
+  outfits?: Prisma.OutfitEquipmentListRelationFilter
 }
 
 export type EquipmentOrderByWithRelationInput = {
@@ -221,6 +222,7 @@ export type EquipmentOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   image?: Prisma.AssetOrderByWithRelationInput
   generations?: Prisma.GenerationEquipmentOrderByRelationAggregateInput
+  outfits?: Prisma.OutfitEquipmentOrderByRelationAggregateInput
 }
 
 export type EquipmentWhereUniqueInput = Prisma.AtLeast<{
@@ -237,6 +239,7 @@ export type EquipmentWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
   image?: Prisma.XOR<Prisma.AssetScalarRelationFilter, Prisma.AssetWhereInput>
   generations?: Prisma.GenerationEquipmentListRelationFilter
+  outfits?: Prisma.OutfitEquipmentListRelationFilter
 }, "id">
 
 export type EquipmentOrderByWithAggregationInput = {
@@ -277,6 +280,7 @@ export type EquipmentCreateInput = {
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutEquipmentsInput
   generations?: Prisma.GenerationEquipmentCreateNestedManyWithoutEquipmentInput
+  outfits?: Prisma.OutfitEquipmentCreateNestedManyWithoutEquipmentInput
 }
 
 export type EquipmentUncheckedCreateInput = {
@@ -289,6 +293,7 @@ export type EquipmentUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutEquipmentInput
+  outfits?: Prisma.OutfitEquipmentUncheckedCreateNestedManyWithoutEquipmentInput
 }
 
 export type EquipmentUpdateInput = {
@@ -301,6 +306,7 @@ export type EquipmentUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutEquipmentsNestedInput
   generations?: Prisma.GenerationEquipmentUpdateManyWithoutEquipmentNestedInput
+  outfits?: Prisma.OutfitEquipmentUpdateManyWithoutEquipmentNestedInput
 }
 
 export type EquipmentUncheckedUpdateInput = {
@@ -313,6 +319,7 @@ export type EquipmentUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput
+  outfits?: Prisma.OutfitEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput
 }
 
 export type EquipmentCreateManyInput = {
@@ -451,6 +458,20 @@ export type EquipmentUpdateOneRequiredWithoutGenerationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EquipmentUpdateToOneWithWhereWithoutGenerationsInput, Prisma.EquipmentUpdateWithoutGenerationsInput>, Prisma.EquipmentUncheckedUpdateWithoutGenerationsInput>
 }
 
+export type EquipmentCreateNestedOneWithoutOutfitsInput = {
+  create?: Prisma.XOR<Prisma.EquipmentCreateWithoutOutfitsInput, Prisma.EquipmentUncheckedCreateWithoutOutfitsInput>
+  connectOrCreate?: Prisma.EquipmentCreateOrConnectWithoutOutfitsInput
+  connect?: Prisma.EquipmentWhereUniqueInput
+}
+
+export type EquipmentUpdateOneRequiredWithoutOutfitsNestedInput = {
+  create?: Prisma.XOR<Prisma.EquipmentCreateWithoutOutfitsInput, Prisma.EquipmentUncheckedCreateWithoutOutfitsInput>
+  connectOrCreate?: Prisma.EquipmentCreateOrConnectWithoutOutfitsInput
+  upsert?: Prisma.EquipmentUpsertWithoutOutfitsInput
+  connect?: Prisma.EquipmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EquipmentUpdateToOneWithWhereWithoutOutfitsInput, Prisma.EquipmentUpdateWithoutOutfitsInput>, Prisma.EquipmentUncheckedUpdateWithoutOutfitsInput>
+}
+
 export type EquipmentCreateWithoutImageInput = {
   id: string
   name: string
@@ -460,6 +481,7 @@ export type EquipmentCreateWithoutImageInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationEquipmentCreateNestedManyWithoutEquipmentInput
+  outfits?: Prisma.OutfitEquipmentCreateNestedManyWithoutEquipmentInput
 }
 
 export type EquipmentUncheckedCreateWithoutImageInput = {
@@ -471,6 +493,7 @@ export type EquipmentUncheckedCreateWithoutImageInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutEquipmentInput
+  outfits?: Prisma.OutfitEquipmentUncheckedCreateNestedManyWithoutEquipmentInput
 }
 
 export type EquipmentCreateOrConnectWithoutImageInput = {
@@ -521,6 +544,7 @@ export type EquipmentCreateWithoutGenerationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutEquipmentsInput
+  outfits?: Prisma.OutfitEquipmentCreateNestedManyWithoutEquipmentInput
 }
 
 export type EquipmentUncheckedCreateWithoutGenerationsInput = {
@@ -532,6 +556,7 @@ export type EquipmentUncheckedCreateWithoutGenerationsInput = {
   imageId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  outfits?: Prisma.OutfitEquipmentUncheckedCreateNestedManyWithoutEquipmentInput
 }
 
 export type EquipmentCreateOrConnectWithoutGenerationsInput = {
@@ -559,6 +584,7 @@ export type EquipmentUpdateWithoutGenerationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutEquipmentsNestedInput
+  outfits?: Prisma.OutfitEquipmentUpdateManyWithoutEquipmentNestedInput
 }
 
 export type EquipmentUncheckedUpdateWithoutGenerationsInput = {
@@ -570,6 +596,71 @@ export type EquipmentUncheckedUpdateWithoutGenerationsInput = {
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outfits?: Prisma.OutfitEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput
+}
+
+export type EquipmentCreateWithoutOutfitsInput = {
+  id: string
+  name: string
+  description: string
+  category: string
+  subCategory?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  image: Prisma.AssetCreateNestedOneWithoutEquipmentsInput
+  generations?: Prisma.GenerationEquipmentCreateNestedManyWithoutEquipmentInput
+}
+
+export type EquipmentUncheckedCreateWithoutOutfitsInput = {
+  id: string
+  name: string
+  description: string
+  category: string
+  subCategory?: string | null
+  imageId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  generations?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutEquipmentInput
+}
+
+export type EquipmentCreateOrConnectWithoutOutfitsInput = {
+  where: Prisma.EquipmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.EquipmentCreateWithoutOutfitsInput, Prisma.EquipmentUncheckedCreateWithoutOutfitsInput>
+}
+
+export type EquipmentUpsertWithoutOutfitsInput = {
+  update: Prisma.XOR<Prisma.EquipmentUpdateWithoutOutfitsInput, Prisma.EquipmentUncheckedUpdateWithoutOutfitsInput>
+  create: Prisma.XOR<Prisma.EquipmentCreateWithoutOutfitsInput, Prisma.EquipmentUncheckedCreateWithoutOutfitsInput>
+  where?: Prisma.EquipmentWhereInput
+}
+
+export type EquipmentUpdateToOneWithWhereWithoutOutfitsInput = {
+  where?: Prisma.EquipmentWhereInput
+  data: Prisma.XOR<Prisma.EquipmentUpdateWithoutOutfitsInput, Prisma.EquipmentUncheckedUpdateWithoutOutfitsInput>
+}
+
+export type EquipmentUpdateWithoutOutfitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  image?: Prisma.AssetUpdateOneRequiredWithoutEquipmentsNestedInput
+  generations?: Prisma.GenerationEquipmentUpdateManyWithoutEquipmentNestedInput
+}
+
+export type EquipmentUncheckedUpdateWithoutOutfitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput
 }
 
 export type EquipmentCreateManyImageInput = {
@@ -591,6 +682,7 @@ export type EquipmentUpdateWithoutImageInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationEquipmentUpdateManyWithoutEquipmentNestedInput
+  outfits?: Prisma.OutfitEquipmentUpdateManyWithoutEquipmentNestedInput
 }
 
 export type EquipmentUncheckedUpdateWithoutImageInput = {
@@ -602,6 +694,7 @@ export type EquipmentUncheckedUpdateWithoutImageInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput
+  outfits?: Prisma.OutfitEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput
 }
 
 export type EquipmentUncheckedUpdateManyWithoutImageInput = {
@@ -621,10 +714,12 @@ export type EquipmentUncheckedUpdateManyWithoutImageInput = {
 
 export type EquipmentCountOutputType = {
   generations: number
+  outfits: number
 }
 
 export type EquipmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   generations?: boolean | EquipmentCountOutputTypeCountGenerationsArgs
+  outfits?: boolean | EquipmentCountOutputTypeCountOutfitsArgs
 }
 
 /**
@@ -644,6 +739,13 @@ export type EquipmentCountOutputTypeCountGenerationsArgs<ExtArgs extends runtime
   where?: Prisma.GenerationEquipmentWhereInput
 }
 
+/**
+ * EquipmentCountOutputType without action
+ */
+export type EquipmentCountOutputTypeCountOutfitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OutfitEquipmentWhereInput
+}
+
 
 export type EquipmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -656,6 +758,7 @@ export type EquipmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   updatedAt?: boolean
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
   generations?: boolean | Prisma.Equipment$generationsArgs<ExtArgs>
+  outfits?: boolean | Prisma.Equipment$outfitsArgs<ExtArgs>
   _count?: boolean | Prisma.EquipmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["equipment"]>
 
@@ -698,6 +801,7 @@ export type EquipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type EquipmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
   generations?: boolean | Prisma.Equipment$generationsArgs<ExtArgs>
+  outfits?: boolean | Prisma.Equipment$outfitsArgs<ExtArgs>
   _count?: boolean | Prisma.EquipmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EquipmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -712,6 +816,7 @@ export type $EquipmentPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     image: Prisma.$AssetPayload<ExtArgs>
     generations: Prisma.$GenerationEquipmentPayload<ExtArgs>[]
+    outfits: Prisma.$OutfitEquipmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1118,6 +1223,7 @@ export interface Prisma__EquipmentClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   image<T extends Prisma.AssetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssetDefaultArgs<ExtArgs>>): Prisma.Prisma__AssetClient<runtime.Types.Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   generations<T extends Prisma.Equipment$generationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Equipment$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenerationEquipmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  outfits<T extends Prisma.Equipment$outfitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Equipment$outfitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OutfitEquipmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1570,6 +1676,30 @@ export type Equipment$generationsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.GenerationEquipmentScalarFieldEnum | Prisma.GenerationEquipmentScalarFieldEnum[]
+}
+
+/**
+ * Equipment.outfits
+ */
+export type Equipment$outfitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OutfitEquipment
+   */
+  select?: Prisma.OutfitEquipmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OutfitEquipment
+   */
+  omit?: Prisma.OutfitEquipmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OutfitEquipmentInclude<ExtArgs> | null
+  where?: Prisma.OutfitEquipmentWhereInput
+  orderBy?: Prisma.OutfitEquipmentOrderByWithRelationInput | Prisma.OutfitEquipmentOrderByWithRelationInput[]
+  cursor?: Prisma.OutfitEquipmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OutfitEquipmentScalarFieldEnum | Prisma.OutfitEquipmentScalarFieldEnum[]
 }
 
 /**

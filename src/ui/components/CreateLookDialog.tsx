@@ -9,10 +9,14 @@ import { Label } from './ui/label'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { cn } from '../lib/utils'
-import { Loader2, X, Check } from 'lucide-react'
+import { Loader2, X, Check, Download, Save } from 'lucide-react'
+import { LoadOutfitDialog } from './LoadOutfitDialog'
+import { SaveOutfitDialog } from './SaveOutfitDialog'
+import { toast } from 'sonner'
 
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
 type EquipmentItem = EquipmentResponse['items'][number]
+type OutfitItem = InferResponseType<typeof client.outfits.$get>[number]
 
 interface CreateLookDialogProps {
   open: boolean
@@ -34,6 +38,9 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const [loadOutfitOpen, setLoadOutfitOpen] = useState(false)
+  const [saveOutfitOpen, setSaveOutfitOpen] = useState(false)
 
   useEffect(() => {
     if (open) {
@@ -110,174 +117,213 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
     }
   }
 
+  const handleOutfitSelected = (outfit: OutfitItem) => {
+    const equipments = outfit.equipments.map((oe) => oe.equipment)
+    setSelectedEquipments(equipments)
+    if (outfit.prompt) {
+      setUserPrompt(outfit.prompt)
+    }
+    toast.success(`Loaded outfit: ${outfit.name}`)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 bg-stone-50 overflow-hidden">
-        <DialogHeader className="px-6 py-4 border-b border-stone-200 bg-white shrink-0">
-          <DialogTitle className="text-xl font-black uppercase tracking-tighter text-stone-800">
-            Select Equipment
-          </DialogTitle>
-          <DialogDescription>Choose items to equip on your character.</DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 bg-stone-50 overflow-hidden">
+          <DialogHeader className="px-6 py-4 border-b border-stone-200 bg-white shrink-0 flex flex-row items-center justify-between space-y-0">
+            <div>
+              <DialogTitle className="text-xl font-black uppercase tracking-tighter text-stone-800">
+                Select Equipment
+              </DialogTitle>
+              <DialogDescription>Choose items to equip on your character.</DialogDescription>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setLoadOutfitOpen(true)}>
+                <Download className="w-4 h-4 mr-2" /> Load Outfit
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSaveOutfitOpen(true)}
+                disabled={selectedEquipments.length === 0}
+              >
+                <Save className="w-4 h-4 mr-2" /> Save Outfit
+              </Button>
+            </div>
+          </DialogHeader>
 
-        {/* Categories */}
-        <div className="px-6 py-3 border-b border-stone-200 bg-white shrink-0">
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex w-max space-x-2 pb-2">
-              {EQUIPMENT_CATEGORIES.map((cat) => {
-                const isSelected = selectedCategories.includes(cat.main_category)
-                return (
-                  <Badge
-                    key={cat.main_category}
-                    variant={isSelected ? 'default' : 'outline'}
-                    className={cn(
-                      'cursor-pointer px-3 py-1.5 text-xs transition-all select-none hover:bg-stone-100',
-                      isSelected
-                        ? 'bg-stone-900 text-white border-stone-900 hover:bg-stone-800'
-                        : 'bg-white text-stone-600 border-stone-200',
-                    )}
-                    onClick={() => toggleCategory(cat.main_category)}
-                  >
-                    {cat.main_category}
-                  </Badge>
-                )
-              })}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-stone-50/50">
-          {loading ? (
-            <div className="flex justify-center items-center h-full">
-              <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
-            </div>
-          ) : items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-stone-400">
-              <p>No equipment found.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {items.map((item) => {
-                const isSelected = selectedEquipments.some((e) => e.id === item.id)
-                return (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      'group relative bg-white rounded-xl border transition-all cursor-pointer overflow-hidden',
-                      isSelected
-                        ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-lg'
-                        : 'border-stone-200 hover:border-stone-400 hover:shadow-md',
-                    )}
-                    onClick={() => toggleEquipment(item)}
-                  >
-                    <div className="aspect-square p-4 flex items-center justify-center relative">
-                      <img
-                        src={item.image?.path ? `/files/${item.image.path}` : ''}
-                        className="max-w-full max-h-full object-contain"
-                        alt={item.name}
-                      />
-                      {isSelected && (
-                        <div className="absolute top-2 right-2 bg-amber-500 text-white rounded-full p-1 shadow-sm">
-                          <Check className="w-3 h-3" />
-                        </div>
+          {/* Categories */}
+          <div className="px-6 py-3 border-b border-stone-200 bg-white shrink-0">
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex w-max space-x-2 pb-2">
+                {EQUIPMENT_CATEGORIES.map((cat) => {
+                  const isSelected = selectedCategories.includes(cat.main_category)
+                  return (
+                    <Badge
+                      key={cat.main_category}
+                      variant={isSelected ? 'default' : 'outline'}
+                      className={cn(
+                        'cursor-pointer px-3 py-1.5 text-xs transition-all select-none hover:bg-stone-100',
+                        isSelected
+                          ? 'bg-stone-900 text-white border-stone-900 hover:bg-stone-800'
+                          : 'bg-white text-stone-600 border-stone-200',
                       )}
-                    </div>
-                    <div className="p-2 border-t border-stone-100 bg-white">
-                      <p className="text-xs font-bold truncate text-stone-800">{item.name}</p>
-                      <p className="text-[10px] text-stone-400 uppercase truncate">
-                        {item.category}
-                      </p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
+                      onClick={() => toggleCategory(cat.main_category)}
+                    >
+                      {cat.main_category}
+                    </Badge>
+                  )
+                })}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
 
-        {/* User Prompt Area */}
-        <div className="px-6 py-4 border-t border-stone-200 bg-white shrink-0">
-          <Label
-            htmlFor="user-prompt"
-            className="text-xs font-bold text-stone-700 uppercase mb-2 block"
-          >
-            Extra Instructions (Optional)
-          </Label>
-          <Textarea
-            id="user-prompt"
-            placeholder="E.g. The sword should be worn on the back..."
-            className="resize-none bg-stone-50 border-stone-200 focus:border-stone-400"
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
-          />
-        </div>
-
-        {/* Bottom Dock - Selected Items */}
-        <div className="border-t border-stone-200 bg-white shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-bold text-stone-800 uppercase tracking-wide flex items-center gap-2">
-                Selected Items{' '}
-                <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs">
-                  {selectedEquipments.length}
-                </span>
-              </h4>
-              {error && <span className="text-red-500 text-xs font-medium">{error}</span>}
-            </div>
-
-            <div className="flex gap-4">
-              <ScrollArea className="flex-1 whitespace-nowrap">
-                <div className="flex gap-3 pb-2 min-h-[150px] items-center">
-                  {selectedEquipments.length === 0 ? (
-                    <div className="text-stone-400 text-sm italic w-full text-center py-8 border-2 border-dashed border-stone-100 rounded-xl">
-                      Select items from the list above to equip them.
-                    </div>
-                  ) : (
-                    selectedEquipments.map((item) => (
-                      <div
-                        key={item.id}
-                        className="relative w-[150px] h-[150px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group"
-                      >
+          {/* Main Content Area */}
+          <div className="flex-1 overflow-y-auto p-6 bg-stone-50/50">
+            {loading ? (
+              <div className="flex justify-center items-center h-full">
+                <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
+              </div>
+            ) : items.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-stone-400">
+                <p>No equipment found.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {items.map((item) => {
+                  const isSelected = selectedEquipments.some((e) => e.id === item.id)
+                  return (
+                    <div
+                      key={item.id}
+                      className={cn(
+                        'group relative bg-white rounded-xl border transition-all cursor-pointer overflow-hidden',
+                        isSelected
+                          ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-lg'
+                          : 'border-stone-200 hover:border-stone-400 hover:shadow-md',
+                      )}
+                      onClick={() => toggleEquipment(item)}
+                    >
+                      <div className="aspect-square p-4 flex items-center justify-center relative">
                         <img
                           src={item.image?.path ? `/files/${item.image.path}` : ''}
-                          className="max-w-full max-h-full object-contain p-2"
+                          className="max-w-full max-h-full object-contain"
                           alt={item.name}
                         />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            toggleEquipment(item)
-                          }}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                        <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-1 text-[10px] truncate text-center font-medium border-t border-stone-100">
-                          {item.name}
-                        </div>
+                        {isSelected && (
+                          <div className="absolute top-2 right-2 bg-amber-500 text-white rounded-full p-1 shadow-sm">
+                            <Check className="w-3 h-3" />
+                          </div>
+                        )}
                       </div>
-                    ))
-                  )}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
+                      <div className="p-2 border-t border-stone-100 bg-white">
+                        <p className="text-xs font-bold truncate text-stone-800">{item.name}</p>
+                        <p className="text-[10px] text-stone-400 uppercase truncate">
+                          {item.category}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
 
-              <div className="flex items-center pl-4 border-l border-stone-100">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg border-0 h-full max-h-[150px] min-w-[120px]"
-                  disabled={submitting || selectedEquipments.length === 0}
-                  onClick={handleCreate}
-                >
-                  {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Generate'}
-                </Button>
+          {/* User Prompt Area */}
+          <div className="px-6 py-4 border-t border-stone-200 bg-white shrink-0">
+            <Label
+              htmlFor="user-prompt"
+              className="text-xs font-bold text-stone-700 uppercase mb-2 block"
+            >
+              Extra Instructions (Optional)
+            </Label>
+            <Textarea
+              id="user-prompt"
+              placeholder="E.g. The sword should be worn on the back..."
+              className="resize-none bg-stone-50 border-stone-200 focus:border-stone-400"
+              value={userPrompt}
+              onChange={(e) => setUserPrompt(e.target.value)}
+            />
+          </div>
+
+          {/* Bottom Dock - Selected Items */}
+          <div className="border-t border-stone-200 bg-white shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+            <div className="px-6 py-4">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-bold text-stone-800 uppercase tracking-wide flex items-center gap-2">
+                  Selected Items{' '}
+                  <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs">
+                    {selectedEquipments.length}
+                  </span>
+                </h4>
+                {error && <span className="text-red-500 text-xs font-medium">{error}</span>}
+              </div>
+
+              <div className="flex gap-4">
+                <ScrollArea className="flex-1 whitespace-nowrap">
+                  <div className="flex gap-3 pb-2 min-h-[150px] items-center">
+                    {selectedEquipments.length === 0 ? (
+                      <div className="text-stone-400 text-sm italic w-full text-center py-8 border-2 border-dashed border-stone-100 rounded-xl">
+                        Select items from the list above to equip them.
+                      </div>
+                    ) : (
+                      selectedEquipments.map((item) => (
+                        <div
+                          key={item.id}
+                          className="relative w-[150px] h-[150px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group"
+                        >
+                          <img
+                            src={item.image?.path ? `/files/${item.image.path}` : ''}
+                            className="max-w-full max-h-full object-contain p-2"
+                            alt={item.name}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              toggleEquipment(item)
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-1 text-[10px] truncate text-center font-medium border-t border-stone-100">
+                            {item.name}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+
+                <div className="flex items-center pl-4 border-l border-stone-100">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg border-0 h-full max-h-[150px] min-w-[120px]"
+                    disabled={submitting || selectedEquipments.length === 0}
+                    onClick={handleCreate}
+                  >
+                    {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Generate'}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <LoadOutfitDialog
+        open={loadOutfitOpen}
+        onOpenChange={setLoadOutfitOpen}
+        onSelect={handleOutfitSelected}
+      />
+      <SaveOutfitDialog
+        open={saveOutfitOpen}
+        onOpenChange={setSaveOutfitOpen}
+        selectedEquipments={selectedEquipments}
+        prompt={userPrompt}
+        onSuccess={() => toast.success('Outfit saved successfully')}
+      />
+    </>
   )
 }
