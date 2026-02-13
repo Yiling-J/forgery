@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { client } from '../client'
 import { CreateLookDialog } from '../components/CreateLookDialog'
+import { LookDetailsDialog } from '../components/LookDetailsDialog'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
 
@@ -21,6 +22,8 @@ export default function FittingRoom() {
   const [generations, setGenerations] = useState<GenerationItem[]>([])
   const [loading, setLoading] = useState(true)
   const [createLookOpen, setCreateLookOpen] = useState(false)
+  const [selectedLook, setSelectedLook] = useState<GenerationItem | null>(null)
+  const [lookDetailsOpen, setLookDetailsOpen] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -156,6 +159,10 @@ export default function FittingRoom() {
                   <div
                     key={gen.id}
                     className="group relative aspect-[3/4] bg-stone-100 rounded-xl overflow-hidden border border-stone-200 hover:border-stone-900 hover:shadow-xl transition-all cursor-pointer"
+                    onClick={() => {
+                      setSelectedLook(gen)
+                      setLookDetailsOpen(true)
+                    }}
                   >
                     <img
                       src={gen.image?.path ? `/files/${gen.image.path}` : ''}
@@ -197,6 +204,12 @@ export default function FittingRoom() {
         onOpenChange={setCreateLookOpen}
         characterId={id || ''}
         onSuccess={() => id && fetchData(id)}
+      />
+
+      <LookDetailsDialog
+        open={lookDetailsOpen}
+        onOpenChange={setLookDetailsOpen}
+        generation={selectedLook}
       />
     </div>
   )

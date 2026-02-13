@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { client } from '../client'
 import { CreateOutfitDialog } from '../components/CreateOutfitDialog'
+import { EquipmentDetailsDialog } from '../components/EquipmentDetailsDialog'
 import { ExtractorDialog } from '../components/ExtractorDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
@@ -39,6 +40,8 @@ export default function Equipments() {
   const [extractorOpen, setExtractorOpen] = useState(false)
   const [createOutfitOpen, setCreateOutfitOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'equipments' | 'outfits'>('equipments')
+  const [selectedEquipment, setSelectedEquipment] = useState<EquipmentItem | null>(null)
+  const [equipmentDetailsOpen, setEquipmentDetailsOpen] = useState(false)
 
   useEffect(() => {
     if (viewMode === 'equipments') {
@@ -196,6 +199,10 @@ export default function Equipments() {
                 subtitle={item.category}
                 image={item.image?.path ? `/files/${item.image.path}` : ''}
                 color={getEquipmentColor(item.name)}
+                onClick={() => {
+                  setSelectedEquipment(item)
+                  setEquipmentDetailsOpen(true)
+                }}
               />
             ))}
           </div>
@@ -264,6 +271,13 @@ export default function Equipments() {
         onSuccess={() => {
           fetchOutfits()
         }}
+      />
+
+      <EquipmentDetailsDialog
+        open={equipmentDetailsOpen}
+        onOpenChange={setEquipmentDetailsOpen}
+        equipment={selectedEquipment}
+        onUpdate={fetchItems}
       />
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>

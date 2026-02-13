@@ -24,4 +24,22 @@ const route = app.get('/', zValidator('query', listSchema), async (c) => {
   return c.json(result)
 })
 
-export default route
+const patchSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+})
+
+const routeWithPatch = route.patch('/:id', zValidator('json', patchSchema), async (c) => {
+  const { id } = c.req.param()
+  const { name, description } = c.req.valid('json')
+
+  try {
+    const result = await equipmentService.updateEquipment(id, { name, description })
+    return c.json(result)
+  } catch (e) {
+    console.error('Failed to update equipment', e)
+    return c.json({ error: 'Failed to update equipment' }, 500)
+  }
+})
+
+export default routeWithPatch

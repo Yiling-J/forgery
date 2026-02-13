@@ -4,6 +4,7 @@ const mockPrisma = {
   equipment: {
     findMany: mock(),
     count: mock(),
+    update: mock(),
   },
 }
 
@@ -15,6 +16,7 @@ describe('EquipmentService', () => {
   afterEach(() => {
     mockPrisma.equipment.findMany.mockClear()
     mockPrisma.equipment.count.mockClear()
+    mockPrisma.equipment.update.mockClear()
   })
 
   it('listEquipments should filter by category', async () => {
@@ -29,6 +31,28 @@ describe('EquipmentService', () => {
       expect.objectContaining({
         where: expect.objectContaining({
           category: { in: ['Headwear'] },
+        }),
+      }),
+    )
+  })
+
+  it('updateEquipment should update equipment details', async () => {
+    // @ts-ignore
+    const { equipmentService } = await import(`./equipment?v=${Date.now()}`)
+    mockPrisma.equipment.update.mockResolvedValue({
+      id: '1',
+      name: 'New Name',
+      description: 'New Description',
+    })
+
+    await equipmentService.updateEquipment('1', { name: 'New Name', description: 'New Description' })
+
+    expect(mockPrisma.equipment.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: '1' },
+        data: expect.objectContaining({
+          name: 'New Name',
+          description: 'New Description',
         }),
       }),
     )
