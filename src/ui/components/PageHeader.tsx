@@ -26,7 +26,8 @@ export function PageHeader({
     <div
       className={cn(
         'w-full flex flex-col gap-4 pb-4 pt-2 transition-all duration-300',
-        sticky && 'sticky z-20 bg-transparent backdrop-blur-none',
+        sticky &&
+          'sticky z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60',
         className,
       )}
       style={sticky ? { top: topOffset } : undefined}
