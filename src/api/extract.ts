@@ -57,6 +57,16 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
         })
       }
 
+      // 2.5 Emit texture sheet to client
+      const dimensions = extractionService.getGridDimensions(analysis.assets.length)
+      await stream.writeSSE({
+        event: 'texture_generated',
+        data: JSON.stringify({
+          image: sheetBase64,
+          grid: dimensions,
+        }),
+      })
+
       // 3. Crop Assets (Splitting)
       await stream.writeSSE({
         event: 'status',
