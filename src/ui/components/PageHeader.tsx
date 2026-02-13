@@ -1,7 +1,6 @@
 import { Hexagon } from 'lucide-react'
 import { ReactNode } from 'react'
 import { cn } from '../lib/utils'
-import { Separator } from './ui/separator'
 
 interface PageHeaderProps {
   title: ReactNode
@@ -49,7 +48,6 @@ export function PageHeader({
         {actions && <div className="flex items-center gap-4">{actions}</div>}
       </div>
       {children && <div className="animate-fade-in-down delay-100">{children}</div>}
-      <Separator className="mt-2 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20" />
     </div>
   )
 }

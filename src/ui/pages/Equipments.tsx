@@ -109,7 +109,7 @@ export default function Equipments() {
   }
 
   return (
-    <div className="w-full min-h-screen p-4 pt-2 flex flex-col font-sans text-slate-900 relative">
+    <div className="w-full h-full p-4 pt-2 flex flex-col font-sans text-slate-900 relative">
       <PageHeader
         title={viewMode === 'equipments' ? 'Equipments' : 'Outfits'}
         subtitle={

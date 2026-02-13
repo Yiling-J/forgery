@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+import { client } from '@/ui/client'
+import { ExtractionFlowDesigner } from '@/ui/components/ExtractionFlowDesigner'
+import { PageHeader } from '@/ui/components/PageHeader'
 import { Button } from '@/ui/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/ui/card'
 import { Input } from '@/ui/components/ui/input'
 import { Label } from '@/ui/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/ui/card'
-import { client } from '@/ui/client'
-import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { useToast } from '@/ui/hooks/use-toast'
-import { PageHeader } from '@/ui/components/PageHeader'
-import { ExtractionFlowDesigner } from '@/ui/components/ExtractionFlowDesigner'
+import { Loader2, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export default function Settings() {
   const { toast } = useToast()
@@ -121,7 +121,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="w-full min-h-screen p-4 pt-2 flex flex-col font-sans text-slate-900 relative space-y-8">
+    <div className="w-full h-full p-4 pt-2 flex flex-col font-sans text-slate-900 relative space-y-8">
       <PageHeader title="Settings" subtitle="System // Configuration" />
 
       <div className="max-w-4xl mx-auto w-full grid gap-8">
