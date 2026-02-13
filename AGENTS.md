@@ -113,6 +113,7 @@ Whenever you modify the `prisma/schema.prisma` file, you **must** generate a cor
 **Do not create migration SQL files manually.**
 
 Instead, follow this workflow:
+
 1. Ensure you have a local SQLite database configured (e.g., via `.env` setting `DATABASE_URL="file:./dev.db"`).
 2. Run the migration command:
    ```bash

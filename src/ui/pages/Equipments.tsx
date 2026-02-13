@@ -1,11 +1,12 @@
 import { InferResponseType } from 'hono/client'
-import { Hexagon, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { client } from '../client'
 import { CreateOutfitDialog } from '../components/CreateOutfitDialog'
 import { ExtractorDialog } from '../components/ExtractorDialog'
+import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
@@ -109,39 +110,34 @@ export default function Equipments() {
 
   return (
     <div className="w-full min-h-screen p-4 pt-2 flex flex-col font-sans text-slate-900 relative">
-      <div className="mb-8 animate-fade-in-down flex justify-between items-end">
-        <div>
-          <div className="flex items-center gap-2 text-cyan-600 mb-2 tracking-[0.3em] text-xs font-mono uppercase">
-            <Hexagon size={12} className="animate-spin-slow" />
+      <PageHeader
+        title={viewMode === 'equipments' ? 'Equipments' : 'Outfits'}
+        subtitle={
+          <>
             System //{' '}
             <span
               className={cn(
-                'cursor-pointer',
+                'cursor-pointer hover:text-cyan-500 transition-colors',
                 viewMode === 'equipments' ? '' : 'text-muted-foreground/80',
               )}
               onClick={() => setViewMode('equipments')}
             >
               Equipment_List
             </span>{' '}
-            <span>|</span>
+            <span>|</span>{' '}
             <span
               className={cn(
-                'cursor-pointer',
+                'cursor-pointer hover:text-cyan-500 transition-colors',
                 viewMode === 'outfits' ? '' : 'text-muted-foreground/80',
               )}
               onClick={() => setViewMode('outfits')}
             >
               Outfit_List
             </span>
-          </div>
-          <h1 className="text-3xl md:text-5xl font-display font-black uppercase text-slate-900 tracking-tighter">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
-              {viewMode === 'equipments' ? 'Equipments' : 'Outfits'}
-            </span>
-          </h1>
-        </div>
-        <div className="flex items-center gap-4">
-          {viewMode === 'equipments' ? (
+          </>
+        }
+        actions={
+          viewMode === 'equipments' ? (
             <Button onClick={() => setExtractorOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Extract Equipment
             </Button>
@@ -149,13 +145,12 @@ export default function Equipments() {
             <Button onClick={() => setCreateOutfitOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Create Outfit
             </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Category Filter */}
-      {viewMode === 'equipments' && (
-        <div className="mb-8 animate-fade-in-down delay-100">
+          )
+        }
+        className="mb-8"
+      >
+        {/* Category Filter - Sticky inside PageHeader */}
+        {viewMode === 'equipments' && (
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex w-max space-x-2 p-1">
               {EQUIPMENT_CATEGORIES.map((cat) => {
@@ -179,8 +174,8 @@ export default function Equipments() {
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
-        </div>
-      )}
+        )}
+      </PageHeader>
 
       {loading ? (
         <div className="p-12 text-center text-slate-400 font-mono tracking-widest animate-pulse">

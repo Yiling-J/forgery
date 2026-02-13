@@ -1,9 +1,10 @@
 import { InferResponseType } from 'hono/client'
-import { Hexagon, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { client } from '../client'
 import { CreateCharacterDialog } from '../components/CreateCharacterDialog'
+import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
 
@@ -61,24 +62,16 @@ export default function Characters() {
 
   return (
     <div className="w-full min-h-screen p-4 pt-2 flex flex-col font-sans text-slate-900 relative">
-      <div className="mb-8 animate-fade-in-down flex justify-between items-end">
-        <div>
-          <div className="flex items-center gap-2 text-cyan-600 mb-2 tracking-[0.3em] text-xs font-mono uppercase">
-            <Hexagon size={12} className="animate-spin-slow" />
-            System // Character_List
-          </div>
-          <h1 className="text-3xl md:text-5xl font-display font-black uppercase text-slate-900 tracking-tighter">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
-              Characters
-            </span>
-          </h1>
-        </div>
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title="Characters"
+        subtitle="System // Character_List"
+        actions={
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> Create Character
           </Button>
-        </div>
-      </div>
+        }
+        className="mb-8"
+      />
 
       {characters.length === 0 ? (
         <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
