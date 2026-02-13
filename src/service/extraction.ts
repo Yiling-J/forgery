@@ -85,6 +85,7 @@ Core Constraints:
 6. Ghost Mannequin Style: Extract ONLY the items. Remove the character's body entirely. Clothing and armor must appear as empty, 3D shells as if worn by an invisible person.
 7. Pure White Background: The entire background of the image and each cell must be pure white (#FFFFFF). No shadows, no gradients.
 8. Output Format: Generate a square texture sheet. Ignore the original image aspect ratio for the final output canvas.
+9. EXACT REPLICA: You MUST reproduce the items exactly as they appear in the original image. Maintain all textures, patterns, logos, weathering, materials, and small details. Do not simplify or stylize.
 
 Assets to Extract (in order):
 ${assetList}
@@ -161,7 +162,8 @@ Instructions:
 2. Remove any remaining background artifacts and ensure a pure white or transparent background.
 3. Upscale the image and enhance details for high-quality game asset presentation.
 4. Ensure the object is centered and fully visible.
-5. Return only the image.
+5. EXTREME DETAIL: Preserve every existing detail, texture, and pattern from the input image. Do not change the design. Only sharpen and clarify.
+6. Return only the image.
 `
     // Using generateImage with image input
     return aiService.generateImage(prompt, [file], 'step_refine_model')
