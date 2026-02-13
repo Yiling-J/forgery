@@ -1,5 +1,5 @@
 import { AlertCircle, Loader2 } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { client } from '../client'
 import { ExtractedAsset, ExtractionStatus } from '../types'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
@@ -10,7 +10,10 @@ interface ExtractorDialogProps {
   onSuccess: (assets: ExtractedAsset[]) => void
 }
 
-import { useEffect } from 'react'
+interface GridDimensions {
+  rows: number
+  cols: number
+}
 
 export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   open,
@@ -23,6 +26,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const [statusMessage, setStatusMessage] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<ExtractedAsset[]>([])
+  const [textureSheet, setTextureSheet] = useState<string | null>(null)
+  const [gridDimensions, setGridDimensions] = useState<GridDimensions | null>(null)
 
   const processFile = (f: File) => {
     setFile(f)
@@ -30,6 +35,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setResults([])
     setError(null)
     setStatus('idle')
+    setTextureSheet(null)
+    setGridDimensions(null)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +67,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setError(null)
     setStatus('analyzing')
     setStatusMessage('Starting extraction...')
+    setTextureSheet(null)
+    setGridDimensions(null)
 
     try {
       const response = await client.extract.$post({
@@ -95,6 +104,9 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               if (event === 'status') {
                 setStatus(data.status)
                 setStatusMessage(data.message)
+              } else if (event === 'texture_generated') {
+                setTextureSheet(data.image)
+                setGridDimensions(data.grid)
               } else if (event === 'asset_refined') {
                 setResults((prev) => [...prev, data.asset])
               } else if (event === 'complete') {
@@ -124,11 +136,13 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setResults([])
     setStatus('idle')
     setError(null)
+    setTextureSheet(null)
+    setGridDimensions(null)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-stone-50/50 backdrop-blur-sm border-stone-200 shadow-2xl">
+      <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto bg-stone-50/50 backdrop-blur-sm border-stone-200 shadow-2xl">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-2xl font-black text-stone-800 uppercase tracking-tighter">
             Equipment Extractor
@@ -195,7 +209,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
                 <div className="flex flex-col md:flex-row gap-8">
                   {/* Source Image */}
-                  <div className="w-full md:w-1/3 shrink-0">
+                  <div className="w-full md:w-1/3 shrink-0 space-y-4">
                     <div className="aspect-[3/4] rounded-xl overflow-hidden border-2 border-stone-100 shadow-inner bg-stone-50 relative group">
                       <img src={preview || ''} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -205,6 +219,42 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                       </div>
                     </div>
                   </div>
+
+                  {/* Generated Texture Sheet (with Grid Overlay) */}
+                  {textureSheet && gridDimensions && (
+                    <div className="w-full md:w-1/3 shrink-0 space-y-4 animate-fade-in">
+                      <div className="aspect-square rounded-xl overflow-hidden border-2 border-amber-200 shadow-inner bg-stone-50 relative group">
+                        <img src={textureSheet} className="w-full h-full object-contain" />
+
+                        {/* Grid Overlay */}
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            display: 'grid',
+                            gridTemplateRows: `repeat(${gridDimensions.rows}, 1fr)`,
+                            gridTemplateColumns: `repeat(${gridDimensions.cols}, 1fr)`,
+                          }}
+                        >
+                          {Array.from({ length: gridDimensions.rows * gridDimensions.cols }).map(
+                            (_, i) => (
+                              <div
+                                key={i}
+                                className="border border-red-500/30 bg-red-500/5 text-[10px] text-red-500 p-1 font-mono"
+                              >
+                                {i + 1}
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="text-white text-xs font-bold uppercase tracking-widest bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
+                            Generated Sheet
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Controls & Status */}
                   <div className="flex-1 flex flex-col justify-center space-y-6">
