@@ -38,9 +38,9 @@ export const LookDetailsDialog: React.FC<LookDetailsDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
-          {/* Left: Full Image */}
-          <div className="flex-1 bg-stone-900 flex items-center justify-center p-4 overflow-hidden relative">
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {/* Top: Full Image */}
+          <div className="h-[60%] bg-stone-900 flex items-center justify-center p-4 overflow-hidden relative shrink-0">
             <div
               className="absolute inset-0 opacity-20 pointer-events-none"
               style={{
@@ -55,8 +55,8 @@ export const LookDetailsDialog: React.FC<LookDetailsDialogProps> = ({
             />
           </div>
 
-          {/* Right: Details */}
-          <div className="w-full md:w-80 bg-white border-l border-stone-200 flex flex-col overflow-hidden shrink-0">
+          {/* Bottom: Details */}
+          <div className="flex-1 bg-white border-t border-stone-200 flex flex-col overflow-hidden shrink-0">
             <ScrollArea className="flex-1">
               <div className="p-6 flex flex-col gap-6">
                 {/* Equipments Used */}
