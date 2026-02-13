@@ -99,6 +99,8 @@ We use `bun:test` for testing.
 - Fixes must be iterated until **no check causes any other check to fail**.
 - Do **not** submit intermediate states where some checks pass and others fail, even temporarily.
 
+- **Cleanup Requirement**: Remove all verification related files (scripts, screenshots, `verification/` folder) before submit.
+
 ## Prisma Configuration & Migrations
 
 - Schema: `prisma/schema.prisma`
