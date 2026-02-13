@@ -3,6 +3,7 @@ import equipment from './equipment'
 
 const mockEquipmentService = {
   listEquipments: mock(),
+  updateEquipment: mock(),
 }
 
 mock.module('../service/equipment', () => ({
@@ -12,6 +13,7 @@ mock.module('../service/equipment', () => ({
 describe('Equipment API', () => {
   afterEach(() => {
     mockEquipmentService.listEquipments.mockClear()
+    mockEquipmentService.updateEquipment.mockClear()
   })
 
   it('GET / should list equipments with filters', async () => {
@@ -27,5 +29,21 @@ describe('Equipment API', () => {
       { page: 1, limit: 20 },
       { category: ['Headwear'], subCategory: undefined },
     )
+  })
+
+  it('PATCH /:id should update equipment', async () => {
+    mockEquipmentService.updateEquipment.mockResolvedValue({ id: '1', name: 'Updated' })
+
+    const req = new Request('http://localhost/1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Updated' }),
+    })
+
+    const res = await equipment.fetch(req)
+    expect(res.status).toBe(200)
+    expect(mockEquipmentService.updateEquipment).toHaveBeenCalledWith('1', {
+      name: 'Updated',
+    })
   })
 })

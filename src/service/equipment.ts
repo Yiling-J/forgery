@@ -65,6 +65,28 @@ export class EquipmentService {
       },
     })
   }
+
+  /**
+   * Updates an existing equipment item.
+   */
+  async updateEquipment(
+    id: string,
+    data: {
+      name?: string
+      description?: string
+    },
+  ) {
+    return prisma.equipment.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+      },
+      include: {
+        image: true,
+      },
+    })
+  }
 }
 
 export const equipmentService = new EquipmentService()

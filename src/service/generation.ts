@@ -139,7 +139,11 @@ category: ${eq.category}
         character: true,
         equipments: {
           include: {
-            equipment: true,
+            equipment: {
+              include: {
+                image: true,
+              },
+            },
           },
         },
       },
@@ -177,7 +181,11 @@ category: ${eq.category}
           character: true,
           equipments: {
             include: {
-              equipment: true,
+              equipment: {
+                include: {
+                  image: true,
+                },
+              },
             },
           },
         },
