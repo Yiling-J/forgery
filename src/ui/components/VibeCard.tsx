@@ -25,17 +25,15 @@ export const VibeCard: React.FC<VibeCardProps> = ({
         animation: `fadeIn 0.5s ease-out ${Math.min(index * 0.03, 0.5)}s backwards`,
       }}
     >
-      {/* Wrapper for the Drop Shadow (Outer Glow) */}
       <div className={`absolute inset-0`}>
         {/* 1. Base Border (Static Slate - Always visible as the thin border) */}
         <div className="absolute inset-0 bg-slate-200 clip-path-slant" />
 
         {/* 2. Highlight Border (Blue - Fades in on hover, pre-scaled to avoid growth animation) */}
-        {/* Scale 1.035 is approx 70% of the previous 1.05 scale. */}
-        <div className="absolute inset-0 bg-cyan-500 clip-path-slant opacity-0 group-hover:opacity-100 transition-opacity duration-0 scale-[1.035]" />
+        <div className="absolute inset-[-3px] bg-cyan-500 clip-path-slant-highlight opacity-0 group-hover:opacity-100 transition-opacity duration-0" />
 
         {/* 3. Content Layer - Stays fixed size relative to parent, creating the cutout effect */}
-        <div className="absolute inset-[1px] bg-slate-100 clip-path-slant overflow-hidden z-10">
+        <div className="absolute inset-[1px] bg-slate-100 clip-path-slant overflow-hidden">
           <div className="absolute inset-0 bg-slate-100">
             <img
               src={image}

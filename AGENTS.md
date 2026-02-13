@@ -99,18 +99,35 @@ We use `bun:test` for testing.
 - Fixes must be iterated until **no check causes any other check to fail**.
 - Do **not** submit intermediate states where some checks pass and others fail, even temporarily.
 
-## Prisma Configuration
+## Prisma Configuration & Migrations
 
 - Schema: `prisma/schema.prisma`
 - Generated Client: `src/generated/prisma`
 - Config: `prisma.config.ts` (Required for Prisma 7+)
 - Adapter: We use `@prisma/adapter-libsql` for SQLite compatibility with Bun.
-- Migration Requirement: Whenever the Prisma schema is modified, you must also generate a corresponding migration file using Prisma Migrate (e.g., prisma migrate dev) and ensure the migration is committed.
+
+### Migration Workflow
+
+Whenever you modify the `prisma/schema.prisma` file, you **must** generate a corresponding migration file.
+
+**Do not create migration SQL files manually.**
+
+Instead, follow this workflow:
+1. Ensure you have a local SQLite database configured (e.g., via `.env` setting `DATABASE_URL="file:./dev.db"`).
+2. Run the migration command:
+   ```bash
+   bun x prisma migrate dev --name <migration_name>
+   ```
+   This command will automatically:
+   - Detect changes in `schema.prisma`.
+   - Generate the SQL migration file in `prisma/migrations/`.
+   - Apply the changes to your local development database.
+   - Regenerate the Prisma Client.
 
 ### Commands
 
 - Generate Client: `bun --bun run prisma generate`
-- Push Schema to DB: `bun --bun run prisma db push`
+- Push Schema to DB (Prototyping only): `bun --bun run prisma db push`
 
 ## Environment Variables
 

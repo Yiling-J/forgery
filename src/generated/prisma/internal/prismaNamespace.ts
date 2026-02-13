@@ -389,6 +389,8 @@ export const ModelName = {
   Equipment: 'Equipment',
   Generation: 'Generation',
   GenerationEquipment: 'GenerationEquipment',
+  Outfit: 'Outfit',
+  OutfitEquipment: 'OutfitEquipment',
   Setting: 'Setting'
 } as const
 
@@ -405,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "asset" | "character" | "equipment" | "generation" | "generationEquipment" | "setting"
+    modelProps: "asset" | "character" | "equipment" | "generation" | "generationEquipment" | "outfit" | "outfitEquipment" | "setting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -779,6 +781,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Outfit: {
+      payload: Prisma.$OutfitPayload<ExtArgs>
+      fields: Prisma.OutfitFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OutfitFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OutfitFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>
+        }
+        findFirst: {
+          args: Prisma.OutfitFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OutfitFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>
+        }
+        findMany: {
+          args: Prisma.OutfitFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>[]
+        }
+        create: {
+          args: Prisma.OutfitCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>
+        }
+        createMany: {
+          args: Prisma.OutfitCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OutfitCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>[]
+        }
+        delete: {
+          args: Prisma.OutfitDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>
+        }
+        update: {
+          args: Prisma.OutfitUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>
+        }
+        deleteMany: {
+          args: Prisma.OutfitDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OutfitUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OutfitUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>[]
+        }
+        upsert: {
+          args: Prisma.OutfitUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitPayload>
+        }
+        aggregate: {
+          args: Prisma.OutfitAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOutfit>
+        }
+        groupBy: {
+          args: Prisma.OutfitGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutfitGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OutfitCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutfitCountAggregateOutputType> | number
+        }
+      }
+    }
+    OutfitEquipment: {
+      payload: Prisma.$OutfitEquipmentPayload<ExtArgs>
+      fields: Prisma.OutfitEquipmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OutfitEquipmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OutfitEquipmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>
+        }
+        findFirst: {
+          args: Prisma.OutfitEquipmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OutfitEquipmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>
+        }
+        findMany: {
+          args: Prisma.OutfitEquipmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>[]
+        }
+        create: {
+          args: Prisma.OutfitEquipmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>
+        }
+        createMany: {
+          args: Prisma.OutfitEquipmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OutfitEquipmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>[]
+        }
+        delete: {
+          args: Prisma.OutfitEquipmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>
+        }
+        update: {
+          args: Prisma.OutfitEquipmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.OutfitEquipmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OutfitEquipmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OutfitEquipmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.OutfitEquipmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutfitEquipmentPayload>
+        }
+        aggregate: {
+          args: Prisma.OutfitEquipmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOutfitEquipment>
+        }
+        groupBy: {
+          args: Prisma.OutfitEquipmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutfitEquipmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OutfitEquipmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutfitEquipmentCountAggregateOutputType> | number
+        }
+      }
+    }
     Setting: {
       payload: Prisma.$SettingPayload<ExtArgs>
       fields: Prisma.SettingFieldRefs
@@ -947,6 +1097,25 @@ export const GenerationEquipmentScalarFieldEnum = {
 export type GenerationEquipmentScalarFieldEnum = (typeof GenerationEquipmentScalarFieldEnum)[keyof typeof GenerationEquipmentScalarFieldEnum]
 
 
+export const OutfitScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  prompt: 'prompt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutfitScalarFieldEnum = (typeof OutfitScalarFieldEnum)[keyof typeof OutfitScalarFieldEnum]
+
+
+export const OutfitEquipmentScalarFieldEnum = {
+  outfitId: 'outfitId',
+  equipmentId: 'equipmentId'
+} as const
+
+export type OutfitEquipmentScalarFieldEnum = (typeof OutfitEquipmentScalarFieldEnum)[keyof typeof OutfitEquipmentScalarFieldEnum]
+
+
 export const SettingScalarFieldEnum = {
   key: 'key',
   value: 'value',
@@ -1099,6 +1268,8 @@ export type GlobalOmitConfig = {
   equipment?: Prisma.EquipmentOmit
   generation?: Prisma.GenerationOmit
   generationEquipment?: Prisma.GenerationEquipmentOmit
+  outfit?: Prisma.OutfitOmit
+  outfitEquipment?: Prisma.OutfitEquipmentOmit
   setting?: Prisma.SettingOmit
 }
 

@@ -7,6 +7,7 @@ import character from './api/character'
 import equipment from './api/equipment'
 import extract from './api/extract'
 import generation from './api/generation'
+import outfit from './api/outfit'
 import setting from './api/setting'
 import index from './ui/index.html'
 
@@ -23,6 +24,7 @@ const route = api
   .route('/equipments', equipment)
   .route('/generations', generation)
   .route('/extract', extract)
+  .route('/outfits', outfit)
   .route('/settings', setting)
 
 // Mount API

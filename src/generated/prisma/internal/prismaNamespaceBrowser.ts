@@ -56,6 +56,8 @@ export const ModelName = {
   Equipment: 'Equipment',
   Generation: 'Generation',
   GenerationEquipment: 'GenerationEquipment',
+  Outfit: 'Outfit',
+  OutfitEquipment: 'OutfitEquipment',
   Setting: 'Setting'
 } as const
 
@@ -128,6 +130,25 @@ export const GenerationEquipmentScalarFieldEnum = {
 } as const
 
 export type GenerationEquipmentScalarFieldEnum = (typeof GenerationEquipmentScalarFieldEnum)[keyof typeof GenerationEquipmentScalarFieldEnum]
+
+
+export const OutfitScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  prompt: 'prompt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutfitScalarFieldEnum = (typeof OutfitScalarFieldEnum)[keyof typeof OutfitScalarFieldEnum]
+
+
+export const OutfitEquipmentScalarFieldEnum = {
+  outfitId: 'outfitId',
+  equipmentId: 'equipmentId'
+} as const
+
+export type OutfitEquipmentScalarFieldEnum = (typeof OutfitEquipmentScalarFieldEnum)[keyof typeof OutfitEquipmentScalarFieldEnum]
 
 
 export const SettingScalarFieldEnum = {
