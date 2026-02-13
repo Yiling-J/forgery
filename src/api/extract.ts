@@ -57,25 +57,22 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
         })
       }
 
-      // 3. Detect Bounding Boxes
+      // 3. Crop Assets (Splitting)
       await stream.writeSSE({
         event: 'status',
-        data: JSON.stringify({ status: 'splitting', message: 'Detecting asset boundaries...' }),
+        data: JSON.stringify({ status: 'splitting', message: 'Splitting texture sheet...' }),
       })
 
-      let boxes
+      let crops
       try {
-        boxes = await extractionService.detectBoundingBoxes(sheetBase64, analysis.assets)
+        crops = await extractionService.cropAssets(sheetBase64, analysis.assets)
       } catch (err: unknown) {
-        throw new Error(`Detection failed: ${err instanceof Error ? err.message : String(err)}`, {
+        throw new Error(`Splitting failed: ${err instanceof Error ? err.message : String(err)}`, {
           cause: err,
         })
       }
 
-      // 4. Crop Assets
-      const crops = await extractionService.cropAssets(sheetBase64, boxes)
-
-      // 5. Refine & Save
+      // 4. Refine & Save
       await stream.writeSSE({
         event: 'status',
         data: JSON.stringify({ status: 'refining', message: 'Refining and saving assets...' }),
@@ -85,12 +82,12 @@ const route = app.post('/', zValidator('form', extractSchema), async (c) => {
 
       for (const crop of crops) {
         // Find matching asset from analysis to get category/description
+        // Since crop.name comes from analysis.assets, this should always find it.
         const originalMeta = analysis.assets.find((a) => a.item_name === crop.name) || {
           item_name: crop.name,
           description: 'Extracted asset',
           category: 'Others',
           sub_category: 'Others',
-          background_color: 'unknown',
         }
 
         // Refine image

@@ -45,7 +45,10 @@ describe('EquipmentService', () => {
       description: 'New Description',
     })
 
-    await equipmentService.updateEquipment('1', { name: 'New Name', description: 'New Description' })
+    await equipmentService.updateEquipment('1', {
+      name: 'New Name',
+      description: 'New Description',
+    })
 
     expect(mockPrisma.equipment.update).toHaveBeenCalledWith(
       expect.objectContaining({

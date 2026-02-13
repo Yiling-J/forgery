@@ -1,13 +1,7 @@
 import React from 'react'
 import { InferResponseType } from 'hono/client'
 import { client } from '../client'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
 
 type GenerationResponse = InferResponseType<typeof client.generations.$get>
