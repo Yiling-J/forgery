@@ -36,7 +36,7 @@ export default function Equipments() {
   const [items, setItems] = useState<EquipmentItem[]>([])
   const [outfits, setOutfits] = useState<OutfitItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [extractorOpen, setExtractorOpen] = useState(false)
   const [createOutfitOpen, setCreateOutfitOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'equipments' | 'outfits'>('equipments')
@@ -49,7 +49,7 @@ export default function Equipments() {
     } else {
       fetchOutfits()
     }
-  }, [viewMode, selectedCategories])
+  }, [viewMode, selectedCategory])
 
   const fetchItems = async () => {
     setLoading(true)
@@ -58,8 +58,8 @@ export default function Equipments() {
         limit: '100',
       }
 
-      if (selectedCategories.length > 0) {
-        query.category = selectedCategories
+      if (selectedCategory) {
+        query.category = [selectedCategory]
       }
 
       const res = await client.equipments.$get({
@@ -106,9 +106,7 @@ export default function Equipments() {
   }
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
-    )
+    setSelectedCategory((prev) => (prev === category ? null : category))
   }
 
   return (
@@ -157,7 +155,7 @@ export default function Equipments() {
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex w-max space-x-2 p-1">
               {EQUIPMENT_CATEGORIES.map((cat) => {
-                const isSelected = selectedCategories.includes(cat.main_category)
+                const isSelected = selectedCategory === cat.main_category
                 return (
                   <Badge
                     key={cat.main_category}

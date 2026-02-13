@@ -6,6 +6,7 @@ interface PageHeaderProps {
   title: ReactNode
   subtitle?: ReactNode
   actions?: ReactNode
+  backButton?: ReactNode
   children?: ReactNode
   className?: string
   sticky?: boolean
@@ -16,6 +17,7 @@ export function PageHeader({
   title,
   subtitle,
   actions,
+  backButton,
   children,
   className,
   sticky = true,
@@ -32,18 +34,21 @@ export function PageHeader({
       style={sticky ? { top: topOffset } : undefined}
     >
       <div className="flex justify-between items-end animate-fade-in-down">
-        <div>
-          {subtitle && (
-            <div className="flex items-center gap-2 text-cyan-600 mb-2 tracking-[0.3em] text-xs font-mono uppercase">
-              <Hexagon size={12} className="animate-spin-slow" />
-              {subtitle}
-            </div>
-          )}
-          <h1 className="text-3xl md:text-5xl font-display font-black uppercase text-slate-900 tracking-tighter">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
-              {title}
-            </span>
-          </h1>
+        <div className="flex items-center gap-4">
+          {backButton}
+          <div>
+            {subtitle && (
+              <div className="flex items-center gap-2 text-cyan-600 mb-2 tracking-[0.3em] text-xs font-mono uppercase">
+                <Hexagon size={12} className="animate-spin-slow" />
+                {subtitle}
+              </div>
+            )}
+            <h1 className="text-3xl md:text-5xl font-display font-black uppercase text-slate-900 tracking-tighter">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
+                {title}
+              </span>
+            </h1>
+          </div>
         </div>
         {actions && <div className="flex items-center gap-4">{actions}</div>}
       </div>
