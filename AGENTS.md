@@ -99,6 +99,8 @@ We use `bun:test` for testing.
 - Fixes must be iterated until **no check causes any other check to fail**.
 - Do **not** submit intermediate states where some checks pass and others fail, even temporarily.
 
+- **Cleanup Requirement**: Remove all verification related files (scripts, screenshots, `verification/` folder) before submit.
+
 ## Prisma Configuration & Migrations
 
 - Schema: `prisma/schema.prisma`
@@ -113,6 +115,7 @@ Whenever you modify the `prisma/schema.prisma` file, you **must** generate a cor
 **Do not create migration SQL files manually.**
 
 Instead, follow this workflow:
+
 1. Ensure you have a local SQLite database configured (e.g., via `.env` setting `DATABASE_URL="file:./dev.db"`).
 2. Run the migration command:
    ```bash
