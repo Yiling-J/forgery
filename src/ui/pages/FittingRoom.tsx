@@ -73,10 +73,10 @@ export default function FittingRoom() {
   }
 
   return (
-    <div className="p-8 animate-fade-in-up h-screen flex flex-col overflow-hidden bg-stone-50/30">
+    <div className="p-8 pt-2 h-full flex flex-col bg-stone-50/30 relative">
       <PageHeader
         title="Fitting Room"
-        subtitle="System // FITTING_ROOM/"
+        subtitle="System // FITTING_ROOM"
         backButton={
           <Button
             variant="ghost"
