@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { client } from '../client'
 import { CreateLookDialog } from '../components/CreateLookDialog'
 import { LookDetailsDialog } from '../components/LookDetailsDialog'
+import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
 
@@ -72,37 +73,30 @@ export default function FittingRoom() {
   }
 
   return (
-    <div className="p-8 animate-fade-in-up h-screen flex flex-col overflow-hidden bg-stone-50/30">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6 shrink-0">
-        <div className="flex items-center gap-4">
+    <div className="p-8 pt-2 h-full flex flex-col bg-stone-50/30 relative">
+      <PageHeader
+        title="Fitting Room"
+        subtitle="System // FITTING_ROOM"
+        backButton={
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate('/characters')}
-            className="rounded-full hover:bg-stone-200"
+            className="rounded-full hover:bg-stone-200 text-stone-600"
           >
-            <ArrowLeft className="w-5 h-5 text-stone-600" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-black text-stone-800 uppercase tracking-tighter">
-              Fitting Room
-            </h1>
-            <p className="text-stone-500 text-sm font-medium flex items-center gap-2">
-              Manage looks for{' '}
-              <span className="text-stone-900 font-bold bg-stone-200 px-2 py-0.5 rounded text-xs uppercase">
-                {character.name}
-              </span>
-            </p>
-          </div>
-        </div>
-        <Button
-          onClick={() => setCreateLookOpen(true)}
-          className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg hover:shadow-xl transition-all"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Create New Look
-        </Button>
-      </div>
+        }
+        actions={
+          <Button
+            onClick={() => setCreateLookOpen(true)}
+            className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg hover:shadow-xl transition-all"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Create New Look
+          </Button>
+        }
+        className="mb-6 shrink-0"
+      />
 
       <div className="flex flex-col lg:flex-row flex-1 gap-6 overflow-hidden pb-4">
         {/* Left: Character Preview */}

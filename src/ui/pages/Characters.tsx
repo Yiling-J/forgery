@@ -61,7 +61,7 @@ export default function Characters() {
   }
 
   return (
-    <div className="w-full h-full p-4 pt-2 flex flex-col font-sans text-slate-900 relative">
+    <div className="w-full h-full p-4 pt-2 flex flex-col text-slate-900 relative">
       <PageHeader
         title="Characters"
         subtitle="System // Character_List"
