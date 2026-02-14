@@ -392,7 +392,8 @@ export const ModelName = {
   Outfit: 'Outfit',
   OutfitEquipment: 'OutfitEquipment',
   Setting: 'Setting',
-  Pose: 'Pose'
+  Pose: 'Pose',
+  Expression: 'Expression'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -408,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "asset" | "character" | "equipment" | "generation" | "generationEquipment" | "outfit" | "outfitEquipment" | "setting" | "pose"
+    modelProps: "asset" | "character" | "equipment" | "generation" | "generationEquipment" | "outfit" | "outfitEquipment" | "setting" | "pose" | "expression"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1078,6 +1079,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Expression: {
+      payload: Prisma.$ExpressionPayload<ExtArgs>
+      fields: Prisma.ExpressionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExpressionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExpressionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>
+        }
+        findFirst: {
+          args: Prisma.ExpressionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExpressionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>
+        }
+        findMany: {
+          args: Prisma.ExpressionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>[]
+        }
+        create: {
+          args: Prisma.ExpressionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>
+        }
+        createMany: {
+          args: Prisma.ExpressionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExpressionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>[]
+        }
+        delete: {
+          args: Prisma.ExpressionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>
+        }
+        update: {
+          args: Prisma.ExpressionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExpressionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExpressionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExpressionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExpressionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpressionPayload>
+        }
+        aggregate: {
+          args: Prisma.ExpressionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExpression>
+        }
+        groupBy: {
+          args: Prisma.ExpressionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExpressionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExpressionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExpressionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1158,6 +1233,7 @@ export const GenerationScalarFieldEnum = {
   imageId: 'imageId',
   userPrompt: 'userPrompt',
   pose: 'pose',
+  expression: 'expression',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1211,6 +1287,17 @@ export const PoseScalarFieldEnum = {
 } as const
 
 export type PoseScalarFieldEnum = (typeof PoseScalarFieldEnum)[keyof typeof PoseScalarFieldEnum]
+
+
+export const ExpressionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  imageId: 'imageId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExpressionScalarFieldEnum = (typeof ExpressionScalarFieldEnum)[keyof typeof ExpressionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1359,6 +1446,7 @@ export type GlobalOmitConfig = {
   outfitEquipment?: Prisma.OutfitEquipmentOmit
   setting?: Prisma.SettingOmit
   pose?: Prisma.PoseOmit
+  expression?: Prisma.ExpressionOmit
 }
 
 /* Types for Logging */

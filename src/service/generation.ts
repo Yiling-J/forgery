@@ -4,6 +4,7 @@ import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
 import { aiService, type AIPart } from './ai'
 import { assetService } from './asset'
+import { expressionService } from './expression'
 import { poseService } from './pose'
 
 export class GenerationService {
@@ -12,6 +13,7 @@ export class GenerationService {
     equipmentIds: string[],
     userPrompt?: string,
     poseId?: string,
+    expressionId?: string,
   ) {
     // 1. Fetch character and its image
     const character = await prisma.character.findUnique({
@@ -112,6 +114,48 @@ category: ${eq.category}
         "6. Use the 'Target Pose Reference' image for the character's pose and angle."
     }
 
+    // Handle Expression
+    let expressionInstruction = '7. Maintain the facial expression of the Base Character.'
+
+    if (expressionId) {
+      let expressionBuffer: ArrayBuffer
+      let expressionMimeType: string
+
+      const builtinExpression = expressionService.getBuiltinExpression(expressionId)
+      if (builtinExpression) {
+        const expressionPath = join('public/expressions', expressionId)
+        const file = Bun.file(expressionPath)
+        expressionBuffer = await file.arrayBuffer()
+        expressionMimeType = file.type || 'image/webp'
+      } else {
+        const customExpression = await prisma.expression.findUnique({
+          where: { id: expressionId },
+          include: { image: true },
+        })
+
+        if (!customExpression) {
+          throw new Error(`Expression not found: ${expressionId}`)
+        }
+
+        const expressionPath = join('data/files', customExpression.image.path)
+        const file = Bun.file(expressionPath)
+        expressionBuffer = await file.arrayBuffer()
+        expressionMimeType = customExpression.image.type
+      }
+
+      const expressionBase64 = Buffer.from(expressionBuffer).toString('base64')
+      parts.push({
+        inlineData: {
+          mimeType: expressionMimeType,
+          data: expressionBase64,
+        },
+      })
+      parts.push({ text: 'Target Expression Reference' })
+
+      expressionInstruction =
+        "7. Use the 'Target Expression Reference' image for the character's facial expression."
+    }
+
     let prompt = `
     Task: Character Synthesis and Equipment Modification.
 
@@ -121,7 +165,8 @@ category: ${eq.category}
     4. The items should replace existing clothing/armor in that slot (e.g. new helmet replaces old hat, armor replaces shirt).
     5. Seamlessly blend the items into the character's style.
     ${poseInstruction}
-    7. High quality, detailed, game art style.
+    ${expressionInstruction}
+    8. High quality, detailed, game art style.
   `
 
     if (userPrompt) {
@@ -167,6 +212,7 @@ category: ${eq.category}
         imageId: asset.id,
         userPrompt: userPrompt,
         pose: poseId,
+        expression: expressionId,
       },
     })
 

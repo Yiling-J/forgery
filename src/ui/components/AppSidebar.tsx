@@ -1,4 +1,4 @@
-import { Backpack, Frame, Settings, Users } from 'lucide-react'
+import { Backpack, Frame, Settings, Smile, Users } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   Sidebar,
@@ -26,6 +26,11 @@ const items = [
     title: 'Poses',
     url: '/poses',
     icon: Frame,
+  },
+  {
+    title: 'Expressions',
+    url: '/expressions',
+    icon: Smile,
   },
   {
     title: 'Settings',

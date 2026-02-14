@@ -17,6 +17,7 @@ const createSchema = z.object({
   equipmentIds: z.array(z.string()),
   userPrompt: z.string().optional(),
   poseId: z.string().optional(),
+  expressionId: z.string().optional(),
 })
 
 const route = app
@@ -30,13 +31,14 @@ const route = app
     return c.json(result)
   })
   .post('/', zValidator('json', createSchema), async (c) => {
-    const { characterId, equipmentIds, userPrompt, poseId } = c.req.valid('json')
+    const { characterId, equipmentIds, userPrompt, poseId, expressionId } = c.req.valid('json')
     try {
       const result = await generationService.createGeneration(
         characterId,
         equipmentIds,
         userPrompt,
         poseId,
+        expressionId,
       )
       return c.json(result, 201)
     } catch (e) {

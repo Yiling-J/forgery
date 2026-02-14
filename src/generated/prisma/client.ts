@@ -84,3 +84,8 @@ export type Setting = Prisma.SettingModel
  *
  */
 export type Pose = Prisma.PoseModel
+/**
+ * Model Expression
+ *
+ */
+export type Expression = Prisma.ExpressionModel
