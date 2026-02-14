@@ -8,6 +8,7 @@ import equipment from './api/equipment'
 import extract from './api/extract'
 import generation from './api/generation'
 import outfit from './api/outfit'
+import pose from './api/pose'
 import setting from './api/setting'
 import index from './ui/index.html'
 
@@ -25,6 +26,7 @@ const route = api
   .route('/generations', generation)
   .route('/extract', extract)
   .route('/outfits', outfit)
+  .route('/poses', pose)
   .route('/settings', setting)
 
 // Mount API
@@ -32,6 +34,9 @@ app.route('/api', route)
 
 // Serve static files from data/files under /files path
 app.use('/files/*', serveStatic({ root: './data' }))
+
+// Serve static files from public/poses under /poses path
+app.use('/poses/*', serveStatic({ root: './public' }))
 
 // Export type for RPC
 export type AppType = typeof route
@@ -46,6 +51,7 @@ const server = Bun.serve({
     // Proxy API requests to Hono
     '/api/*': app.fetch,
     '/files/*': app.fetch,
+    '/poses/*': app.fetch,
 
     // Catch-all for SPA routing (fallback to index.html)
     '/*': index,

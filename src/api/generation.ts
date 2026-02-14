@@ -16,6 +16,7 @@ const createSchema = z.object({
   characterId: z.string().min(1),
   equipmentIds: z.array(z.string()),
   userPrompt: z.string().optional(),
+  poseId: z.string().optional(),
 })
 
 const route = app
@@ -29,9 +30,14 @@ const route = app
     return c.json(result)
   })
   .post('/', zValidator('json', createSchema), async (c) => {
-    const { characterId, equipmentIds, userPrompt } = c.req.valid('json')
+    const { characterId, equipmentIds, userPrompt, poseId } = c.req.valid('json')
     try {
-      const result = await generationService.createGeneration(characterId, equipmentIds, userPrompt)
+      const result = await generationService.createGeneration(
+        characterId,
+        equipmentIds,
+        userPrompt,
+        poseId,
+      )
       return c.json(result, 201)
     } catch (e) {
       console.error('Failed to create generation', e)
