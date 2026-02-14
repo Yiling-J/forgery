@@ -1,12 +1,13 @@
 import { InferResponseType } from 'hono/client'
 import { Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { client } from '../client'
 import { CreateCharacterDialog } from '../components/CreateCharacterDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 
 type CharacterResponse = InferResponseType<typeof client.characters.$get>
 type Character = CharacterResponse['items'][number]
@@ -25,40 +26,25 @@ const getCharacterColor = (name: string) => {
 }
 
 export default function Characters() {
-  const [characters, setCharacters] = useState<Character[]>([])
-  const [loading, setLoading] = useState(true)
   const [createOpen, setCreateOpen] = useState(false)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    fetchCharacters()
-  }, [])
-
-  const fetchCharacters = async () => {
-    try {
+  const { items, loading, ref, reset } = useInfiniteScroll<Character>({
+    fetchData: async (page, limit) => {
       const res = await client.characters.$get({
         query: {
-          limit: '100',
+          page: page.toString(),
+          limit: limit.toString(),
         },
       })
       if (res.ok) {
         const data = await res.json()
-        setCharacters(data.items)
+        return data.items
       }
-    } catch (e) {
-      console.error('Failed to load characters', e)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="p-8 text-slate-400 font-mono tracking-widest animate-pulse">
-        INITIALIZING...
-      </div>
-    )
-  }
+      return []
+    },
+    limit: 20,
+  })
 
   return (
     <div className="w-full h-full p-4 pt-2 flex flex-col text-slate-900 relative">
@@ -73,13 +59,13 @@ export default function Characters() {
         className="mb-8"
       />
 
-      {characters.length === 0 ? (
+      {items.length === 0 && !loading ? (
         <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
           <p className="text-slate-500 font-mono">No characters found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 max-w-[1920px] mx-auto w-full pb-10">
-          {characters.map((char, index) => (
+          {items.map((char, index) => (
             <VibeCard
               key={char.id}
               index={index}
@@ -94,10 +80,17 @@ export default function Characters() {
         </div>
       )}
 
+      {/* Loading Indicator */}
+      <div ref={ref} className="h-10 w-full flex items-center justify-center p-4">
+        {loading && (
+          <div className="text-slate-400 font-mono tracking-widest animate-pulse">LOADING...</div>
+        )}
+      </div>
+
       <CreateCharacterDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
-        onSuccess={fetchCharacters}
+        onSuccess={reset}
       />
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>

@@ -7,7 +7,7 @@ const app = new Hono()
 
 const listSchema = z.object({
   page: z.coerce.number().optional().default(1),
-  limit: z.coerce.number().optional().default(10),
+  limit: z.coerce.number().optional().default(20),
 })
 
 const createSchema = z.object({

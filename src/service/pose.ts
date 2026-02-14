@@ -17,20 +17,42 @@ export const BUILTIN_POSES: PoseItem[] = Array.from({ length: 9 }, (_, i) => i +
 }))
 
 export class PoseService {
-  async listPoses(): Promise<PoseItem[]> {
-    const customPoses = await prisma.pose.findMany({
-      include: { image: true },
-      orderBy: { createdAt: 'desc' },
-    })
+  async listPoses(options: { page?: number; limit?: number } = {}): Promise<PoseItem[]> {
+    const { page = 1, limit = 20 } = options
+    const skip = (page - 1) * limit
 
-    const formattedCustomPoses: PoseItem[] = customPoses.map((p) => ({
-      id: p.id,
-      name: p.name,
-      type: 'custom',
-      imageUrl: `/files/${p.image.path}`,
-    }))
+    // Logic for mixed pagination
+    const builtinCount = BUILTIN_POSES.length
 
-    return [...BUILTIN_POSES, ...formattedCustomPoses]
+    // Calculate how many builtin items to include
+    const builtinStart = skip
+    const builtinEnd = Math.min(builtinCount, skip + limit)
+    const builtinSlice =
+      builtinStart < builtinCount ? BUILTIN_POSES.slice(builtinStart, builtinEnd) : []
+
+    // Calculate how many db items to fetch
+    const remainingLimit = limit - builtinSlice.length
+    const dbSkip = Math.max(0, skip - builtinCount)
+
+    let formattedCustomPoses: PoseItem[] = []
+
+    if (remainingLimit > 0) {
+      const customPoses = await prisma.pose.findMany({
+        include: { image: true },
+        orderBy: { createdAt: 'desc' },
+        skip: dbSkip,
+        take: remainingLimit,
+      })
+
+      formattedCustomPoses = customPoses.map((p) => ({
+        id: p.id,
+        name: p.name,
+        type: 'custom',
+        imageUrl: `/files/${p.image.path}`,
+      }))
+    }
+
+    return [...builtinSlice, ...formattedCustomPoses]
   }
 
   async createPose(name: string, file: File) {

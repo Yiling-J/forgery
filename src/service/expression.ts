@@ -19,20 +19,42 @@ export const BUILTIN_EXPRESSIONS: ExpressionItem[] = Array.from({ length: 9 }, (
 )
 
 export class ExpressionService {
-  async listExpressions(): Promise<ExpressionItem[]> {
-    const customExpressions = await prisma.expression.findMany({
-      include: { image: true },
-      orderBy: { createdAt: 'desc' },
-    })
+  async listExpressions(options: { page?: number; limit?: number } = {}): Promise<ExpressionItem[]> {
+    const { page = 1, limit = 20 } = options
+    const skip = (page - 1) * limit
 
-    const formattedCustomExpressions: ExpressionItem[] = customExpressions.map((e) => ({
-      id: e.id,
-      name: e.name,
-      type: 'custom',
-      imageUrl: `/files/${e.image.path}`,
-    }))
+    // Logic for mixed pagination
+    const builtinCount = BUILTIN_EXPRESSIONS.length
 
-    return [...BUILTIN_EXPRESSIONS, ...formattedCustomExpressions]
+    // Calculate how many builtin items to include
+    const builtinStart = skip
+    const builtinEnd = Math.min(builtinCount, skip + limit)
+    const builtinSlice =
+      builtinStart < builtinCount ? BUILTIN_EXPRESSIONS.slice(builtinStart, builtinEnd) : []
+
+    // Calculate how many db items to fetch
+    const remainingLimit = limit - builtinSlice.length
+    const dbSkip = Math.max(0, skip - builtinCount)
+
+    let formattedCustomExpressions: ExpressionItem[] = []
+
+    if (remainingLimit > 0) {
+      const customExpressions = await prisma.expression.findMany({
+        include: { image: true },
+        orderBy: { createdAt: 'desc' },
+        skip: dbSkip,
+        take: remainingLimit,
+      })
+
+      formattedCustomExpressions = customExpressions.map((e) => ({
+        id: e.id,
+        name: e.name,
+        type: 'custom',
+        imageUrl: `/files/${e.image.path}`,
+      }))
+    }
+
+    return [...builtinSlice, ...formattedCustomExpressions]
   }
 
   async createExpression(name: string, file: File) {

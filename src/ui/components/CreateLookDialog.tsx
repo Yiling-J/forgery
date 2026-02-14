@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { client } from '../client'
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 import { cn } from '../lib/utils'
 import { LoadOutfitDialog } from './LoadOutfitDialog'
 import { SaveOutfitDialog } from './SaveOutfitDialog'
@@ -45,13 +46,9 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   onSuccess,
 }) => {
   const [activeTab, setActiveTab] = useState<Tab>('equipment')
-  const [items, setItems] = useState<EquipmentItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedEquipments, setSelectedEquipments] = useState<EquipmentItem[]>([])
-  const [poses, setPoses] = useState<PoseItem[]>([])
   const [selectedPoseId, setSelectedPoseId] = useState<string | null>(null)
-  const [expressions, setExpressions] = useState<ExpressionItem[]>([])
   const [selectedExpressionId, setSelectedExpressionId] = useState<string | null>(null)
   const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -60,19 +57,16 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [loadOutfitOpen, setLoadOutfitOpen] = useState(false)
   const [saveOutfitOpen, setSaveOutfitOpen] = useState(false)
 
-  useEffect(() => {
-    if (open) {
-      fetchItems()
-      fetchPoses()
-      fetchExpressions()
-    }
-  }, [open, selectedCategories])
-
-  const fetchItems = async () => {
-    setLoading(true)
-    try {
-      const query: { limit: string; category?: string[] } = {
-        limit: '100',
+  const {
+    items: items,
+    loading: equipmentLoading,
+    ref: equipmentRef,
+    reset: resetEquipment,
+  } = useInfiniteScroll<EquipmentItem>({
+    fetchData: async (page, limit) => {
+      const query: { limit: string; page: string; category?: string[] } = {
+        limit: limit.toString(),
+        page: page.toString(),
       }
       if (selectedCategories.length > 0) {
         query.category = selectedCategories
@@ -81,38 +75,56 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
       const res = await client.equipments.$get({ query })
       if (res.ok) {
         const data = await res.json()
-        setItems(data.items)
+        return data.items
       }
-    } catch (e) {
-      console.error('Failed to load equipment', e)
-    } finally {
-      setLoading(false)
-    }
-  }
+      return []
+    },
+    limit: 20,
+  })
 
-  const fetchPoses = async () => {
-    try {
-      const res = await client.poses.$get()
+  const {
+    items: poses,
+    loading: posesLoading,
+    ref: poseRef,
+  } = useInfiniteScroll<PoseItem>({
+    fetchData: async (page, limit) => {
+      const res = await client.poses.$get({
+        query: {
+          page: page.toString(),
+          limit: limit.toString(),
+        },
+      })
       if (res.ok) {
-        const data = await res.json()
-        setPoses(data)
+        return await res.json()
       }
-    } catch (e) {
-      console.error('Failed to load poses', e)
-    }
-  }
+      return []
+    },
+    limit: 20,
+  })
 
-  const fetchExpressions = async () => {
-    try {
-      const res = await client.expressions.$get()
+  const {
+    items: expressions,
+    loading: expressionsLoading,
+    ref: expressionRef,
+  } = useInfiniteScroll<ExpressionItem>({
+    fetchData: async (page, limit) => {
+      const res = await client.expressions.$get({
+        query: {
+          page: page.toString(),
+          limit: limit.toString(),
+        },
+      })
       if (res.ok) {
-        const data = await res.json()
-        setExpressions(data)
+        return await res.json()
       }
-    } catch (e) {
-      console.error('Failed to load expressions', e)
-    }
-  }
+      return []
+    },
+    limit: 20,
+  })
+
+  useEffect(() => {
+    resetEquipment()
+  }, [selectedCategories, resetEquipment])
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -269,11 +281,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
 
                   {/* Equipment Grid */}
                   <ScrollArea className="flex-1 p-6 h-full">
-                    {loading ? (
-                      <div className="flex justify-center items-center h-full min-h-[200px]">
-                        <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
-                      </div>
-                    ) : items.length === 0 ? (
+                    {items.length === 0 && !equipmentLoading ? (
                       <div className="flex flex-col items-center justify-center h-full min-h-[200px] text-stone-400">
                         <p>No equipment found.</p>
                       </div>
@@ -317,6 +325,15 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                         })}
                       </div>
                     )}
+                    {/* Loading Indicator */}
+                    <div
+                      ref={equipmentRef}
+                      className="h-10 w-full flex items-center justify-center p-4"
+                    >
+                      {equipmentLoading && (
+                        <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
+                      )}
+                    </div>
                   </ScrollArea>
 
                   {/* Selected Items (Persistent in Equipment Tab) */}
@@ -410,6 +427,13 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                       </div>
                     ))}
                   </div>
+                  {/* Loading Indicator */}
+                  <div
+                    ref={poseRef}
+                    className="h-10 w-full flex items-center justify-center p-4"
+                  >
+                    {posesLoading && <Loader2 className="w-8 h-8 animate-spin text-stone-400" />}
+                  </div>
                 </ScrollArea>
               )}
 
@@ -457,6 +481,15 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                         )}
                       </div>
                     ))}
+                  </div>
+                  {/* Loading Indicator */}
+                  <div
+                    ref={expressionRef}
+                    className="h-10 w-full flex items-center justify-center p-4"
+                  >
+                    {expressionsLoading && (
+                      <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
+                    )}
                   </div>
                 </ScrollArea>
               )}

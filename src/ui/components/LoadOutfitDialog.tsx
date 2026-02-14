@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { client } from '../client'
 import { InferResponseType } from 'hono/client'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 import { Loader2 } from 'lucide-react'
+import React from 'react'
+import { client } from '../client'
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 
 type OutfitResponse = InferResponseType<typeof client.outfits.$get>
 type OutfitItem = OutfitResponse[number]
@@ -18,29 +19,21 @@ export const LoadOutfitDialog: React.FC<LoadOutfitDialogProps> = ({
   onOpenChange,
   onSelect,
 }) => {
-  const [outfits, setOutfits] = useState<OutfitItem[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (open) {
-      fetchOutfits()
-    }
-  }, [open])
-
-  const fetchOutfits = async () => {
-    setLoading(true)
-    try {
-      const res = await client.outfits.$get({ query: {} })
+  const { items: outfits, loading, ref } = useInfiniteScroll<OutfitItem>({
+    fetchData: async (page, limit) => {
+      const res = await client.outfits.$get({
+        query: {
+          page: page.toString(),
+          limit: limit.toString(),
+        },
+      })
       if (res.ok) {
-        const data = await res.json()
-        setOutfits(data)
+        return await res.json()
       }
-    } catch (e) {
-      console.error('Failed to load outfits', e)
-    } finally {
-      setLoading(false)
-    }
-  }
+      return []
+    },
+    limit: 20,
+  })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -53,11 +46,7 @@ export const LoadOutfitDialog: React.FC<LoadOutfitDialogProps> = ({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-6 bg-stone-50/50">
-          {loading ? (
-            <div className="flex justify-center items-center h-full">
-              <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
-            </div>
-          ) : outfits.length === 0 ? (
+          {outfits.length === 0 && !loading ? (
             <div className="flex flex-col items-center justify-center h-full text-stone-400">
               <p>No saved outfits found.</p>
             </div>
@@ -107,6 +96,10 @@ export const LoadOutfitDialog: React.FC<LoadOutfitDialogProps> = ({
               ))}
             </div>
           )}
+          {/* Loading Indicator */}
+          <div ref={ref} className="h-10 w-full flex items-center justify-center p-4">
+            {loading && <Loader2 className="w-8 h-8 animate-spin text-stone-400" />}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

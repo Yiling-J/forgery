@@ -7,6 +7,8 @@ const app = new Hono()
 
 // Define schemas for validation
 const listSchema = z.object({
+  page: z.coerce.number().optional().default(1),
+  limit: z.coerce.number().optional().default(20),
   equipmentId: z.string().optional(),
 })
 
@@ -24,8 +26,8 @@ const updateSchema = z.object({
 
 const route = app
   .get('/', zValidator('query', listSchema), async (c) => {
-    const { equipmentId } = c.req.valid('query')
-    const result = await outfitService.listOutfits(equipmentId)
+    const { page, limit, equipmentId } = c.req.valid('query')
+    const result = await outfitService.listOutfits({ page, limit }, equipmentId)
     return c.json(result)
   })
   .post('/', zValidator('json', createSchema), async (c) => {
