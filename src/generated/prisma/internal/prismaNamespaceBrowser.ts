@@ -58,7 +58,8 @@ export const ModelName = {
   GenerationEquipment: 'GenerationEquipment',
   Outfit: 'Outfit',
   OutfitEquipment: 'OutfitEquipment',
-  Setting: 'Setting'
+  Setting: 'Setting',
+  Pose: 'Pose'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -117,6 +118,7 @@ export const GenerationScalarFieldEnum = {
   characterId: 'characterId',
   imageId: 'imageId',
   userPrompt: 'userPrompt',
+  pose: 'pose',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -159,6 +161,17 @@ export const SettingScalarFieldEnum = {
 } as const
 
 export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
+
+
+export const PoseScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  imageId: 'imageId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PoseScalarFieldEnum = (typeof PoseScalarFieldEnum)[keyof typeof PoseScalarFieldEnum]
 
 
 export const SortOrder = {

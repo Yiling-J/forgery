@@ -24,6 +24,7 @@ model Asset {
   characters  Character[]
   equipments  Equipment[]
   generations Generation[]
+  poses       Pose[]
 
   @@map("assets")
 }
@@ -67,6 +68,7 @@ model Generation {
   characterId String   @map("character_id")
   imageId     String   @map("image_id")
   userPrompt  String?  @map("user_prompt")
+  pose        String?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -121,4 +123,17 @@ model Setting {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("settings")
+}
+
+model Pose {
+  id        String   @id
+  name      String
+  imageId   String   @map("image_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  image Asset @relation(fields: [imageId], references: [id])
+
+  @@map("poses")
 }

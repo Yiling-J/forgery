@@ -57,3 +57,8 @@ export type OutfitEquipment = Prisma.OutfitEquipmentModel
  *
  */
 export type Setting = Prisma.SettingModel
+/**
+ * Model Pose
+ *
+ */
+export type Pose = Prisma.PoseModel

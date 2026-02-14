@@ -193,6 +193,7 @@ export type AssetWhereInput = {
   characters?: Prisma.CharacterListRelationFilter
   equipments?: Prisma.EquipmentListRelationFilter
   generations?: Prisma.GenerationListRelationFilter
+  poses?: Prisma.PoseListRelationFilter
 }
 
 export type AssetOrderByWithRelationInput = {
@@ -205,6 +206,7 @@ export type AssetOrderByWithRelationInput = {
   characters?: Prisma.CharacterOrderByRelationAggregateInput
   equipments?: Prisma.EquipmentOrderByRelationAggregateInput
   generations?: Prisma.GenerationOrderByRelationAggregateInput
+  poses?: Prisma.PoseOrderByRelationAggregateInput
 }
 
 export type AssetWhereUniqueInput = Prisma.AtLeast<{
@@ -220,6 +222,7 @@ export type AssetWhereUniqueInput = Prisma.AtLeast<{
   characters?: Prisma.CharacterListRelationFilter
   equipments?: Prisma.EquipmentListRelationFilter
   generations?: Prisma.GenerationListRelationFilter
+  poses?: Prisma.PoseListRelationFilter
 }, "id">
 
 export type AssetOrderByWithAggregationInput = {
@@ -256,6 +259,7 @@ export type AssetCreateInput = {
   characters?: Prisma.CharacterCreateNestedManyWithoutImageInput
   equipments?: Prisma.EquipmentCreateNestedManyWithoutImageInput
   generations?: Prisma.GenerationCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseCreateNestedManyWithoutImageInput
 }
 
 export type AssetUncheckedCreateInput = {
@@ -268,6 +272,7 @@ export type AssetUncheckedCreateInput = {
   characters?: Prisma.CharacterUncheckedCreateNestedManyWithoutImageInput
   equipments?: Prisma.EquipmentUncheckedCreateNestedManyWithoutImageInput
   generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseUncheckedCreateNestedManyWithoutImageInput
 }
 
 export type AssetUpdateInput = {
@@ -280,6 +285,7 @@ export type AssetUpdateInput = {
   characters?: Prisma.CharacterUpdateManyWithoutImageNestedInput
   equipments?: Prisma.EquipmentUpdateManyWithoutImageNestedInput
   generations?: Prisma.GenerationUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUpdateManyWithoutImageNestedInput
 }
 
 export type AssetUncheckedUpdateInput = {
@@ -292,6 +298,7 @@ export type AssetUncheckedUpdateInput = {
   characters?: Prisma.CharacterUncheckedUpdateManyWithoutImageNestedInput
   equipments?: Prisma.EquipmentUncheckedUpdateManyWithoutImageNestedInput
   generations?: Prisma.GenerationUncheckedUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUncheckedUpdateManyWithoutImageNestedInput
 }
 
 export type AssetCreateManyInput = {
@@ -403,6 +410,20 @@ export type AssetUpdateOneRequiredWithoutGenerationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AssetUpdateToOneWithWhereWithoutGenerationsInput, Prisma.AssetUpdateWithoutGenerationsInput>, Prisma.AssetUncheckedUpdateWithoutGenerationsInput>
 }
 
+export type AssetCreateNestedOneWithoutPosesInput = {
+  create?: Prisma.XOR<Prisma.AssetCreateWithoutPosesInput, Prisma.AssetUncheckedCreateWithoutPosesInput>
+  connectOrCreate?: Prisma.AssetCreateOrConnectWithoutPosesInput
+  connect?: Prisma.AssetWhereUniqueInput
+}
+
+export type AssetUpdateOneRequiredWithoutPosesNestedInput = {
+  create?: Prisma.XOR<Prisma.AssetCreateWithoutPosesInput, Prisma.AssetUncheckedCreateWithoutPosesInput>
+  connectOrCreate?: Prisma.AssetCreateOrConnectWithoutPosesInput
+  upsert?: Prisma.AssetUpsertWithoutPosesInput
+  connect?: Prisma.AssetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AssetUpdateToOneWithWhereWithoutPosesInput, Prisma.AssetUpdateWithoutPosesInput>, Prisma.AssetUncheckedUpdateWithoutPosesInput>
+}
+
 export type AssetCreateWithoutCharactersInput = {
   id: string
   name: string
@@ -412,6 +433,7 @@ export type AssetCreateWithoutCharactersInput = {
   updatedAt?: Date | string
   equipments?: Prisma.EquipmentCreateNestedManyWithoutImageInput
   generations?: Prisma.GenerationCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseCreateNestedManyWithoutImageInput
 }
 
 export type AssetUncheckedCreateWithoutCharactersInput = {
@@ -423,6 +445,7 @@ export type AssetUncheckedCreateWithoutCharactersInput = {
   updatedAt?: Date | string
   equipments?: Prisma.EquipmentUncheckedCreateNestedManyWithoutImageInput
   generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseUncheckedCreateNestedManyWithoutImageInput
 }
 
 export type AssetCreateOrConnectWithoutCharactersInput = {
@@ -450,6 +473,7 @@ export type AssetUpdateWithoutCharactersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.EquipmentUpdateManyWithoutImageNestedInput
   generations?: Prisma.GenerationUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUpdateManyWithoutImageNestedInput
 }
 
 export type AssetUncheckedUpdateWithoutCharactersInput = {
@@ -461,6 +485,7 @@ export type AssetUncheckedUpdateWithoutCharactersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.EquipmentUncheckedUpdateManyWithoutImageNestedInput
   generations?: Prisma.GenerationUncheckedUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUncheckedUpdateManyWithoutImageNestedInput
 }
 
 export type AssetCreateWithoutEquipmentsInput = {
@@ -472,6 +497,7 @@ export type AssetCreateWithoutEquipmentsInput = {
   updatedAt?: Date | string
   characters?: Prisma.CharacterCreateNestedManyWithoutImageInput
   generations?: Prisma.GenerationCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseCreateNestedManyWithoutImageInput
 }
 
 export type AssetUncheckedCreateWithoutEquipmentsInput = {
@@ -483,6 +509,7 @@ export type AssetUncheckedCreateWithoutEquipmentsInput = {
   updatedAt?: Date | string
   characters?: Prisma.CharacterUncheckedCreateNestedManyWithoutImageInput
   generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseUncheckedCreateNestedManyWithoutImageInput
 }
 
 export type AssetCreateOrConnectWithoutEquipmentsInput = {
@@ -510,6 +537,7 @@ export type AssetUpdateWithoutEquipmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   characters?: Prisma.CharacterUpdateManyWithoutImageNestedInput
   generations?: Prisma.GenerationUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUpdateManyWithoutImageNestedInput
 }
 
 export type AssetUncheckedUpdateWithoutEquipmentsInput = {
@@ -521,6 +549,7 @@ export type AssetUncheckedUpdateWithoutEquipmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   characters?: Prisma.CharacterUncheckedUpdateManyWithoutImageNestedInput
   generations?: Prisma.GenerationUncheckedUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUncheckedUpdateManyWithoutImageNestedInput
 }
 
 export type AssetCreateWithoutGenerationsInput = {
@@ -532,6 +561,7 @@ export type AssetCreateWithoutGenerationsInput = {
   updatedAt?: Date | string
   characters?: Prisma.CharacterCreateNestedManyWithoutImageInput
   equipments?: Prisma.EquipmentCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseCreateNestedManyWithoutImageInput
 }
 
 export type AssetUncheckedCreateWithoutGenerationsInput = {
@@ -543,6 +573,7 @@ export type AssetUncheckedCreateWithoutGenerationsInput = {
   updatedAt?: Date | string
   characters?: Prisma.CharacterUncheckedCreateNestedManyWithoutImageInput
   equipments?: Prisma.EquipmentUncheckedCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseUncheckedCreateNestedManyWithoutImageInput
 }
 
 export type AssetCreateOrConnectWithoutGenerationsInput = {
@@ -570,6 +601,7 @@ export type AssetUpdateWithoutGenerationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   characters?: Prisma.CharacterUpdateManyWithoutImageNestedInput
   equipments?: Prisma.EquipmentUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUpdateManyWithoutImageNestedInput
 }
 
 export type AssetUncheckedUpdateWithoutGenerationsInput = {
@@ -581,6 +613,71 @@ export type AssetUncheckedUpdateWithoutGenerationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   characters?: Prisma.CharacterUncheckedUpdateManyWithoutImageNestedInput
   equipments?: Prisma.EquipmentUncheckedUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUncheckedUpdateManyWithoutImageNestedInput
+}
+
+export type AssetCreateWithoutPosesInput = {
+  id: string
+  name: string
+  type: string
+  path: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  characters?: Prisma.CharacterCreateNestedManyWithoutImageInput
+  equipments?: Prisma.EquipmentCreateNestedManyWithoutImageInput
+  generations?: Prisma.GenerationCreateNestedManyWithoutImageInput
+}
+
+export type AssetUncheckedCreateWithoutPosesInput = {
+  id: string
+  name: string
+  type: string
+  path: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  characters?: Prisma.CharacterUncheckedCreateNestedManyWithoutImageInput
+  equipments?: Prisma.EquipmentUncheckedCreateNestedManyWithoutImageInput
+  generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutImageInput
+}
+
+export type AssetCreateOrConnectWithoutPosesInput = {
+  where: Prisma.AssetWhereUniqueInput
+  create: Prisma.XOR<Prisma.AssetCreateWithoutPosesInput, Prisma.AssetUncheckedCreateWithoutPosesInput>
+}
+
+export type AssetUpsertWithoutPosesInput = {
+  update: Prisma.XOR<Prisma.AssetUpdateWithoutPosesInput, Prisma.AssetUncheckedUpdateWithoutPosesInput>
+  create: Prisma.XOR<Prisma.AssetCreateWithoutPosesInput, Prisma.AssetUncheckedCreateWithoutPosesInput>
+  where?: Prisma.AssetWhereInput
+}
+
+export type AssetUpdateToOneWithWhereWithoutPosesInput = {
+  where?: Prisma.AssetWhereInput
+  data: Prisma.XOR<Prisma.AssetUpdateWithoutPosesInput, Prisma.AssetUncheckedUpdateWithoutPosesInput>
+}
+
+export type AssetUpdateWithoutPosesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  characters?: Prisma.CharacterUpdateManyWithoutImageNestedInput
+  equipments?: Prisma.EquipmentUpdateManyWithoutImageNestedInput
+  generations?: Prisma.GenerationUpdateManyWithoutImageNestedInput
+}
+
+export type AssetUncheckedUpdateWithoutPosesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  characters?: Prisma.CharacterUncheckedUpdateManyWithoutImageNestedInput
+  equipments?: Prisma.EquipmentUncheckedUpdateManyWithoutImageNestedInput
+  generations?: Prisma.GenerationUncheckedUpdateManyWithoutImageNestedInput
 }
 
 
@@ -592,12 +689,14 @@ export type AssetCountOutputType = {
   characters: number
   equipments: number
   generations: number
+  poses: number
 }
 
 export type AssetCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   characters?: boolean | AssetCountOutputTypeCountCharactersArgs
   equipments?: boolean | AssetCountOutputTypeCountEquipmentsArgs
   generations?: boolean | AssetCountOutputTypeCountGenerationsArgs
+  poses?: boolean | AssetCountOutputTypeCountPosesArgs
 }
 
 /**
@@ -631,6 +730,13 @@ export type AssetCountOutputTypeCountGenerationsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.GenerationWhereInput
 }
 
+/**
+ * AssetCountOutputType without action
+ */
+export type AssetCountOutputTypeCountPosesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PoseWhereInput
+}
+
 
 export type AssetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -642,6 +748,7 @@ export type AssetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   characters?: boolean | Prisma.Asset$charactersArgs<ExtArgs>
   equipments?: boolean | Prisma.Asset$equipmentsArgs<ExtArgs>
   generations?: boolean | Prisma.Asset$generationsArgs<ExtArgs>
+  poses?: boolean | Prisma.Asset$posesArgs<ExtArgs>
   _count?: boolean | Prisma.AssetCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["asset"]>
 
@@ -677,6 +784,7 @@ export type AssetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   characters?: boolean | Prisma.Asset$charactersArgs<ExtArgs>
   equipments?: boolean | Prisma.Asset$equipmentsArgs<ExtArgs>
   generations?: boolean | Prisma.Asset$generationsArgs<ExtArgs>
+  poses?: boolean | Prisma.Asset$posesArgs<ExtArgs>
   _count?: boolean | Prisma.AssetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AssetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -688,6 +796,7 @@ export type $AssetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     characters: Prisma.$CharacterPayload<ExtArgs>[]
     equipments: Prisma.$EquipmentPayload<ExtArgs>[]
     generations: Prisma.$GenerationPayload<ExtArgs>[]
+    poses: Prisma.$PosePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1093,6 +1202,7 @@ export interface Prisma__AssetClient<T, Null = never, ExtArgs extends runtime.Ty
   characters<T extends Prisma.Asset$charactersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Asset$charactersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CharacterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   equipments<T extends Prisma.Asset$equipmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Asset$equipmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EquipmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   generations<T extends Prisma.Asset$generationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Asset$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  poses<T extends Prisma.Asset$posesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Asset$posesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1583,6 +1693,30 @@ export type Asset$generationsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.GenerationScalarFieldEnum | Prisma.GenerationScalarFieldEnum[]
+}
+
+/**
+ * Asset.poses
+ */
+export type Asset$posesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Pose
+   */
+  select?: Prisma.PoseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Pose
+   */
+  omit?: Prisma.PoseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PoseInclude<ExtArgs> | null
+  where?: Prisma.PoseWhereInput
+  orderBy?: Prisma.PoseOrderByWithRelationInput | Prisma.PoseOrderByWithRelationInput[]
+  cursor?: Prisma.PoseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PoseScalarFieldEnum | Prisma.PoseScalarFieldEnum[]
 }
 
 /**

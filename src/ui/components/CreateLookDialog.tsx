@@ -1,5 +1,5 @@
 import { InferResponseType } from 'hono/client'
-import { Check, Download, Loader2, Save, X } from 'lucide-react'
+import { Check, Download, Loader2, Save, User, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
@@ -17,6 +17,8 @@ import { Textarea } from './ui/textarea'
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
 type EquipmentItem = EquipmentResponse['items'][number]
 type OutfitItem = InferResponseType<typeof client.outfits.$get>[number]
+type PoseResponse = InferResponseType<typeof client.poses.$get>
+type PoseItem = PoseResponse[number]
 
 interface CreateLookDialogProps {
   open: boolean
@@ -35,6 +37,8 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [loading, setLoading] = useState(true)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedEquipments, setSelectedEquipments] = useState<EquipmentItem[]>([])
+  const [poses, setPoses] = useState<PoseItem[]>([])
+  const [selectedPoseId, setSelectedPoseId] = useState<string | null>(null)
   const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -45,6 +49,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   useEffect(() => {
     if (open) {
       fetchItems()
+      fetchPoses()
     }
   }, [open, selectedCategories])
 
@@ -67,6 +72,18 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
       console.error('Failed to load equipment', e)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchPoses = async () => {
+    try {
+      const res = await client.poses.$get()
+      if (res.ok) {
+        const data = await res.json()
+        setPoses(data)
+      }
+    } catch (e) {
+      console.error('Failed to load poses', e)
     }
   }
 
@@ -97,6 +114,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
           characterId,
           equipmentIds: selectedEquipments.map((e) => e.id),
           userPrompt: userPrompt.trim() || undefined,
+          poseId: selectedPoseId || undefined,
         },
       })
 
@@ -151,6 +169,59 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
               </Button>
             </div>
           </DialogHeader>
+
+          {/* Pose Selection */}
+          <div className="px-6 py-3 border-b border-stone-200 bg-white shrink-0">
+            <div className="mb-2 text-xs font-bold text-stone-700 uppercase">Select Pose</div>
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex w-max space-x-2 pb-2">
+                <div
+                  className={cn(
+                    'w-16 h-20 border rounded-lg cursor-pointer flex flex-col items-center justify-center bg-stone-50 shrink-0 transition-all',
+                    selectedPoseId === null
+                      ? 'border-amber-500 ring-2 ring-amber-500/20 bg-amber-50'
+                      : 'border-stone-200 hover:border-stone-400',
+                  )}
+                  onClick={() => setSelectedPoseId(null)}
+                >
+                  <User className="w-6 h-6 text-stone-400 mb-1" />
+                  <span className="text-[10px] font-medium text-stone-600">Default</span>
+                </div>
+                {poses.map((pose) => {
+                  const isSelected = selectedPoseId === pose.id
+                  return (
+                    <div
+                      key={pose.id}
+                      className={cn(
+                        'w-16 h-20 border rounded-lg cursor-pointer overflow-hidden shrink-0 transition-all relative',
+                        isSelected
+                          ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-md'
+                          : 'border-stone-200 hover:border-stone-400',
+                      )}
+                      onClick={() => setSelectedPoseId(pose.id)}
+                    >
+                      <img
+                        src={pose.imageUrl}
+                        alt={pose.name}
+                        className="w-full h-full object-cover"
+                      />
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-amber-500/10 flex items-center justify-center">
+                          <Check className="w-6 h-6 text-amber-500 drop-shadow-md" />
+                        </div>
+                      )}
+                      <div className="absolute bottom-0 inset-x-0 bg-black/50 p-0.5 text-center">
+                        <span className="text-[8px] text-white font-medium truncate block">
+                          {pose.name}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
 
           {/* Categories */}
           <div className="px-6 py-3 border-b border-stone-200 bg-white shrink-0">

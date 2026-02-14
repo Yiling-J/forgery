@@ -4,9 +4,15 @@ import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
 import { aiService, type AIPart } from './ai'
 import { assetService } from './asset'
+import { poseService } from './pose'
 
 export class GenerationService {
-  async createGeneration(characterId: string, equipmentIds: string[], userPrompt?: string) {
+  async createGeneration(
+    characterId: string,
+    equipmentIds: string[],
+    userPrompt?: string,
+    poseId?: string,
+  ) {
     // 1. Fetch character and its image
     const character = await prisma.character.findUnique({
       where: { id: characterId },
@@ -64,6 +70,48 @@ category: ${eq.category}
       })
     }
 
+    // Handle Pose
+    let poseInstruction = '6. Maintain the exact pose and angle of the Base Character.'
+
+    if (poseId) {
+      let poseBuffer: ArrayBuffer
+      let poseMimeType: string
+
+      const builtinPose = poseService.getBuiltinPose(poseId)
+      if (builtinPose) {
+        const posePath = join('public/poses', poseId)
+        const file = Bun.file(posePath)
+        poseBuffer = await file.arrayBuffer()
+        poseMimeType = file.type || 'image/webp'
+      } else {
+        const customPose = await prisma.pose.findUnique({
+          where: { id: poseId },
+          include: { image: true },
+        })
+
+        if (!customPose) {
+          throw new Error(`Pose not found: ${poseId}`)
+        }
+
+        const posePath = join('data/files', customPose.image.path)
+        const file = Bun.file(posePath)
+        poseBuffer = await file.arrayBuffer()
+        poseMimeType = customPose.image.type
+      }
+
+      const poseBase64 = Buffer.from(poseBuffer).toString('base64')
+      parts.push({
+        inlineData: {
+          mimeType: poseMimeType,
+          data: poseBase64,
+        },
+      })
+      parts.push({ text: 'Target Pose Reference' })
+
+      poseInstruction =
+        "6. Use the 'Target Pose Reference' image for the character's pose and angle."
+    }
+
     let prompt = `
     Task: Character Synthesis and Equipment Modification.
 
@@ -72,7 +120,7 @@ category: ${eq.category}
     3. Generate a new image of the Base Character wearing the provided items.
     4. The items should replace existing clothing/armor in that slot (e.g. new helmet replaces old hat, armor replaces shirt).
     5. Seamlessly blend the items into the character's style.
-    6. Maintain the exact pose and angle of the Base Character.
+    ${poseInstruction}
     7. High quality, detailed, game art style.
   `
 
@@ -118,6 +166,7 @@ category: ${eq.category}
         characterId: character.id,
         imageId: asset.id,
         userPrompt: userPrompt,
+        pose: poseId,
       },
     })
 
