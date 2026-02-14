@@ -1,5 +1,5 @@
 import { InferResponseType } from 'hono/client'
-import { Check, Download, Loader2, Save, User, X } from 'lucide-react'
+import { Check, Download, Loader2, Save, Smile, User, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
@@ -19,6 +19,8 @@ type EquipmentItem = EquipmentResponse['items'][number]
 type OutfitItem = InferResponseType<typeof client.outfits.$get>[number]
 type PoseResponse = InferResponseType<typeof client.poses.$get>
 type PoseItem = PoseResponse[number]
+type ExpressionResponse = InferResponseType<typeof client.expressions.$get>
+type ExpressionItem = ExpressionResponse[number]
 
 interface CreateLookDialogProps {
   open: boolean
@@ -39,6 +41,8 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [selectedEquipments, setSelectedEquipments] = useState<EquipmentItem[]>([])
   const [poses, setPoses] = useState<PoseItem[]>([])
   const [selectedPoseId, setSelectedPoseId] = useState<string | null>(null)
+  const [expressions, setExpressions] = useState<ExpressionItem[]>([])
+  const [selectedExpressionId, setSelectedExpressionId] = useState<string | null>(null)
   const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -50,6 +54,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
     if (open) {
       fetchItems()
       fetchPoses()
+      fetchExpressions()
     }
   }, [open, selectedCategories])
 
@@ -87,6 +92,18 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
     }
   }
 
+  const fetchExpressions = async () => {
+    try {
+      const res = await client.expressions.$get()
+      if (res.ok) {
+        const data = await res.json()
+        setExpressions(data)
+      }
+    } catch (e) {
+      console.error('Failed to load expressions', e)
+    }
+  }
+
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
@@ -115,6 +132,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
           equipmentIds: selectedEquipments.map((e) => e.id),
           userPrompt: userPrompt.trim() || undefined,
           poseId: selectedPoseId || undefined,
+          expressionId: selectedExpressionId || undefined,
         },
       })
 
@@ -213,6 +231,59 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                       <div className="absolute bottom-0 inset-x-0 bg-black/50 p-0.5 text-center">
                         <span className="text-[8px] text-white font-medium truncate block">
                           {pose.name}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
+
+          {/* Expression Selection */}
+          <div className="px-6 py-3 border-b border-stone-200 bg-white shrink-0">
+            <div className="mb-2 text-xs font-bold text-stone-700 uppercase">Select Expression</div>
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex w-max space-x-2 pb-2">
+                <div
+                  className={cn(
+                    'w-16 h-20 border rounded-lg cursor-pointer flex flex-col items-center justify-center bg-stone-50 shrink-0 transition-all',
+                    selectedExpressionId === null
+                      ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50'
+                      : 'border-stone-200 hover:border-stone-400',
+                  )}
+                  onClick={() => setSelectedExpressionId(null)}
+                >
+                  <Smile className="w-6 h-6 text-stone-400 mb-1" />
+                  <span className="text-[10px] font-medium text-stone-600">Default</span>
+                </div>
+                {expressions.map((expression) => {
+                  const isSelected = selectedExpressionId === expression.id
+                  return (
+                    <div
+                      key={expression.id}
+                      className={cn(
+                        'w-16 h-20 border rounded-lg cursor-pointer overflow-hidden shrink-0 transition-all relative',
+                        isSelected
+                          ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-md'
+                          : 'border-stone-200 hover:border-stone-400',
+                      )}
+                      onClick={() => setSelectedExpressionId(expression.id)}
+                    >
+                      <img
+                        src={expression.imageUrl}
+                        alt={expression.name}
+                        className="w-full h-full object-cover"
+                      />
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
+                          <Check className="w-6 h-6 text-emerald-500 drop-shadow-md" />
+                        </div>
+                      )}
+                      <div className="absolute bottom-0 inset-x-0 bg-black/50 p-0.5 text-center">
+                        <span className="text-[8px] text-white font-medium truncate block">
+                          {expression.name}
                         </span>
                       </div>
                     </div>

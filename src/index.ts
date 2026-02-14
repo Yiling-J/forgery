@@ -6,6 +6,7 @@ import asset from './api/asset'
 import character from './api/character'
 import equipment from './api/equipment'
 import extract from './api/extract'
+import expression from './api/expression'
 import generation from './api/generation'
 import outfit from './api/outfit'
 import pose from './api/pose'
@@ -27,6 +28,7 @@ const route = api
   .route('/extract', extract)
   .route('/outfits', outfit)
   .route('/poses', pose)
+  .route('/expressions', expression)
   .route('/settings', setting)
 
 // Mount API
@@ -37,6 +39,9 @@ app.use('/files/*', serveStatic({ root: './data' }))
 
 // Serve static files from public/poses under /poses path
 app.use('/poses/*', serveStatic({ root: './public' }))
+
+// Serve static files from public/expressions under /expressions path
+app.use('/expressions/*', serveStatic({ root: './public' }))
 
 // Export type for RPC
 export type AppType = typeof route
@@ -52,6 +57,7 @@ const server = Bun.serve({
     '/api/*': app.fetch,
     '/files/*': app.fetch,
     '/poses/*': app.fetch,
+    '/expressions/*': app.fetch,
 
     // Catch-all for SPA routing (fallback to index.html)
     '/*': index,

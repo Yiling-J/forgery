@@ -5,6 +5,7 @@ import Characters from './pages/Characters'
 import Equipments from './pages/Equipments'
 import FittingRoom from './pages/FittingRoom'
 import Poses from './pages/Poses'
+import Expressions from './pages/Expressions'
 import Settings from './pages/Settings'
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="characters/:id/looks" element={<FittingRoom />} />
           <Route path="equipments" element={<Equipments />} />
           <Route path="poses" element={<Poses />} />
+          <Route path="expressions" element={<Expressions />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>

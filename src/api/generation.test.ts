@@ -47,6 +47,7 @@ describe('Generation API', () => {
       ['eq1', 'eq2'],
       undefined,
       undefined,
+      undefined,
     )
   })
 
@@ -70,6 +71,7 @@ describe('Generation API', () => {
       'char1',
       ['eq1', 'eq2'],
       'test prompt',
+      undefined,
       undefined,
     )
   })
