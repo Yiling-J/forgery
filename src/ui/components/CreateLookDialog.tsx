@@ -268,7 +268,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                   </div>
 
                   {/* Equipment Grid */}
-                  <ScrollArea className="flex-1 p-6">
+                  <ScrollArea className="flex-1 p-6 h-full">
                     {loading ? (
                       <div className="flex justify-center items-center h-full min-h-[200px]">
                         <Loader2 className="w-8 h-8 animate-spin text-stone-400" />
@@ -367,8 +367,8 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
 
               {/* Pose Tab */}
               {activeTab === 'pose' && (
-                <ScrollArea className="flex-1 p-6">
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                <ScrollArea className="flex-1 p-6 h-full">
+                  <div className="grid grid-cols-2 gap-6">
                     <div
                       className={cn(
                         'aspect-[3/4] border rounded-lg cursor-pointer flex flex-col items-center justify-center bg-white transition-all hover:bg-stone-50',
@@ -415,8 +415,8 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
 
               {/* Expression Tab */}
               {activeTab === 'expression' && (
-                <ScrollArea className="flex-1 p-6">
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                <ScrollArea className="flex-1 p-6 h-full">
+                  <div className="grid grid-cols-2 gap-6">
                     <div
                       className={cn(
                         'aspect-[3/4] border rounded-lg cursor-pointer flex flex-col items-center justify-center bg-white transition-all hover:bg-stone-50',
