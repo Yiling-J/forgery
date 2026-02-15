@@ -1,13 +1,15 @@
 import { Backpack, Frame, Settings, Smile, Users } from 'lucide-react'
+import logo from 'public/logo.webp'
 import { Link, useLocation } from 'react-router-dom'
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
 } from './ui/sidebar'
 
 // Menu items.
@@ -66,6 +68,11 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="w-full flex items-center justify-center mb-3">
+          <img src={logo} alt="Logo" className="w-14 h-14 rotate-10" />
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }

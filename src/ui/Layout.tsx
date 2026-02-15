@@ -1,8 +1,8 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from './components/ui/sidebar'
-import { AppSidebar } from './components/AppSidebar'
-import { Outlet } from 'react-router-dom'
-import { Separator } from './components/ui/separator'
 import { Github } from 'lucide-react'
+import { Outlet } from 'react-router-dom'
+import { AppSidebar } from './components/AppSidebar'
+import { Separator } from './components/ui/separator'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
 
 export default function Layout() {
   return (
@@ -13,7 +13,7 @@ export default function Layout() {
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <span className="font-semibold">Forgery</span>
+            <span className="font-black tracking-wider text-lg">Forgery</span>
           </div>
           <a
             href="#"
