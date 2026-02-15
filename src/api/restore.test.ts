@@ -1,4 +1,4 @@
-import { describe, expect, test, mock } from 'bun:test'
+import { describe, expect, test, mock, afterEach, beforeEach } from 'bun:test'
 import restore from './restore'
 
 const mockBackupService = {
@@ -10,6 +10,18 @@ mock.module('../service/backup', () => ({
 }))
 
 describe('Restore API', () => {
+  let originalConsoleError: typeof console.error
+
+  beforeEach(() => {
+    originalConsoleError = console.error
+    console.error = mock() // Suppress console.error
+  })
+
+  afterEach(() => {
+    console.error = originalConsoleError // Restore console.error
+    mockBackupService.restoreBackup.mockClear()
+  })
+
   test('POST / should restore data', async () => {
     const file = new File(['test'], 'backup.tar', { type: 'application/x-tar' })
     const res = await restore.request('/', {
@@ -33,5 +45,8 @@ describe('Restore API', () => {
 
     expect(res.status).toBe(500)
     expect(await res.json()).toEqual({ success: false, error: 'Test Error' })
+
+    // Verify error was logged (but suppressed from output)
+    expect(console.error).toHaveBeenCalled()
   })
 })
