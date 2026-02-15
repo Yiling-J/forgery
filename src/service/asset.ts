@@ -1,24 +1,18 @@
 import { ulid } from 'ulidx'
 import { prisma } from '../db'
-import { join, extname } from 'path'
-// import { writeFile } from '../lib/fileSystem' // Using Bun.write
+import { fileService } from './file'
 
 export class AssetService {
   async createAsset(file: File, meta: { name: string; type: string }) {
+    const saved = await fileService.saveFile(file, meta.name)
     const id = ulid()
-    const ext = extname(file.name) || '.bin'
-    const filename = `${id}${ext}`
-    const path = join('data/files', filename)
-
-    // await writeFile(path, file)
-    await Bun.write(path, await file.arrayBuffer())
 
     const asset = await prisma.asset.create({
       data: {
         id,
         name: meta.name,
-        type: meta.type,
-        path: filename, // Save only filename or relative path
+        type: saved.mimeType,
+        path: saved.filename,
       },
     })
 
@@ -29,19 +23,15 @@ export class AssetService {
     buffer: Buffer | ArrayBuffer,
     meta: { name: string; type: string; ext?: string },
   ) {
+    const saved = await fileService.saveBuffer(buffer, meta.name, meta.type)
     const id = ulid()
-    const ext = meta.ext || '.bin'
-    const filename = `${id}${ext}`
-    const path = join('data/files', filename)
-
-    await Bun.write(path, buffer)
 
     const asset = await prisma.asset.create({
       data: {
         id,
         name: meta.name,
-        type: meta.type,
-        path: filename,
+        type: saved.mimeType,
+        path: saved.filename,
       },
     })
 

@@ -1,14 +1,20 @@
 import { describe, expect, test, mock, beforeAll } from 'bun:test'
 
+// Mock ulidx
+mock.module('ulidx', () => ({
+  ulid: () => 'test-ulid',
+}))
+
 // Mock sharp
+const sharpChain: any = {
+  resize: mock(() => sharpChain),
+  webp: mock(() => sharpChain),
+  toBuffer: mock(() => Promise.resolve(Buffer.from([1, 2, 3]))),
+}
+
 mock.module('sharp', () => {
-  const sharpInstance = {
-    webp: () => ({
-      toBuffer: () => Promise.resolve(Buffer.from([1, 2, 3])),
-    }),
-  }
   return {
-    default: () => sharpInstance,
+    default: () => sharpChain,
   }
 })
 
@@ -38,7 +44,7 @@ describe('FileService', () => {
     const file = new File([VALID_PNG_BUFFER], 'test.png', { type: 'image/png' })
     const result = await fileService.saveFile(file)
 
-    expect(result.filename.endsWith('.webp')).toBe(true)
+    expect(result.filename).toBe('test-ulid.webp')
     expect(result.mimeType).toBe('image/webp')
     // Check if write was called
     expect(mockWrite).toHaveBeenCalled()
@@ -46,13 +52,40 @@ describe('FileService', () => {
     const writeCalls = mockWrite.mock.calls
     const lastCall = writeCalls[writeCalls.length - 1]
     expect(lastCall[0]).toContain('data/files')
+
+    // Check if sharp resize was called
+    expect(sharpChain.resize).toHaveBeenCalled()
+    expect(sharpChain.resize).toHaveBeenCalledWith({
+        width: 2048,
+        height: 2048,
+        fit: 'outside',
+        withoutEnlargement: true,
+    })
   })
 
   test('saveBase64Image saves a base64 string as webp', async () => {
     // Pass valid base64
     const result = await fileService.saveBase64Image(VALID_PNG_BASE64)
 
-    expect(result.filename.endsWith('.webp')).toBe(true)
+    expect(result.filename).toBe('test-ulid.webp')
     expect(mockWrite).toHaveBeenCalled()
+    expect(sharpChain.resize).toHaveBeenCalled()
+  })
+
+  test('saveBuffer saves a buffer and converts to webp if mimeType is image', async () => {
+      const result = await fileService.saveBuffer(VALID_PNG_BUFFER, 'test.png', 'image/png')
+
+      expect(result.filename).toBe('test-ulid.webp')
+      expect(result.mimeType).toBe('image/webp')
+      expect(mockWrite).toHaveBeenCalled()
+      expect(sharpChain.resize).toHaveBeenCalled()
+  })
+
+  test('saveBuffer saves original if not image', async () => {
+      const result = await fileService.saveBuffer(VALID_PNG_BUFFER, 'test.bin', 'application/octet-stream')
+
+      expect(result.filename).toBe('test-ulid.bin')
+      expect(result.mimeType).toBe('application/octet-stream')
+      expect(mockWrite).toHaveBeenCalled()
   })
 })

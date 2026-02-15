@@ -7,21 +7,29 @@ const mockPrisma = {
   },
 }
 
+mock.module('ulidx', () => ({
+  ulid: () => 'mocked-ulid',
+}))
+
 mock.module('../db', () => ({
   prisma: mockPrisma,
 }))
 
-const mockBunWrite = mock((_path: string, content: unknown) =>
-  Promise.resolve((content as Blob | string).toString().length),
-)
-// @ts-ignore
-Bun.write = mockBunWrite
+const mockFileService = {
+  saveFile: mock(() => Promise.resolve({ path: 'data/files/mock.webp', filename: 'mock.webp', mimeType: 'image/webp' })),
+  saveBuffer: mock(() => Promise.resolve({ path: 'data/files/mock.webp', filename: 'mock.webp', mimeType: 'image/webp' })),
+}
+
+mock.module('./file', () => ({
+  fileService: mockFileService,
+}))
 
 describe('AssetService', () => {
   afterEach(() => {
     mockPrisma.asset.create.mockClear()
     mockPrisma.asset.findUnique.mockClear()
-    mockBunWrite.mockClear()
+    mockFileService.saveFile.mockClear()
+    mockFileService.saveBuffer.mockClear()
   })
 
   it('createAsset should save file and create db record', async () => {
@@ -31,18 +39,28 @@ describe('AssetService', () => {
     const meta = { name: 'Test Asset', type: 'image/png' }
 
     mockPrisma.asset.create.mockResolvedValue({
-      id: '01HRKV...',
+      id: 'mocked-ulid',
       name: meta.name,
-      type: meta.type,
-      path: 'data/files/01HRKV....png',
+      type: 'image/webp',
+      path: 'mock.webp',
       createdAt: new Date(),
       updatedAt: new Date(),
     })
 
     const result = await assetService.createAsset(file, meta)
 
-    expect(mockBunWrite).toHaveBeenCalled()
+    expect(mockFileService.saveFile).toHaveBeenCalled()
     expect(mockPrisma.asset.create).toHaveBeenCalled()
+
+    // Check call arguments
+    // Use expect.objectContaining for partial match
+    const createCall = mockPrisma.asset.create.mock.calls[0][0]
+    expect(createCall.data).toEqual(expect.objectContaining({
+        type: 'image/webp',
+        path: 'mock.webp',
+        id: 'mocked-ulid'
+    }))
+
     expect(result.name).toBe(meta.name)
   })
 })
