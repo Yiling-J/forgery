@@ -107,11 +107,7 @@ export default function Expressions() {
         )}
       </div>
 
-      <CreateExpressionDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        onSuccess={reset}
-      />
+      <CreateExpressionDialog open={createOpen} onOpenChange={setCreateOpen} onSuccess={reset} />
     </div>
   )
 }

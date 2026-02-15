@@ -2,14 +2,14 @@ import { Backpack, Frame, Settings, Smile, Users } from 'lucide-react'
 import logo from 'public/logo.webp'
 import { Link, useLocation } from 'react-router-dom'
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from './ui/sidebar'
 
 // Menu items.

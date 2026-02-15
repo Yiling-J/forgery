@@ -19,7 +19,11 @@ export const LoadOutfitDialog: React.FC<LoadOutfitDialogProps> = ({
   onOpenChange,
   onSelect,
 }) => {
-  const { items: outfits, loading, ref } = useInfiniteScroll<OutfitItem>({
+  const {
+    items: outfits,
+    loading,
+    ref,
+  } = useInfiniteScroll<OutfitItem>({
     fetchData: async (page, limit) => {
       const res = await client.outfits.$get({
         query: {

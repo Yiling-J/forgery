@@ -3,10 +3,7 @@ import { ulid } from 'ulidx'
 import { Prisma } from '../generated/prisma/client'
 
 export class OutfitService {
-  async listOutfits(
-    options: { page?: number; limit?: number } = {},
-    equipmentId?: string,
-  ) {
+  async listOutfits(options: { page?: number; limit?: number } = {}, equipmentId?: string) {
     const { page = 1, limit = 20 } = options
     const skip = (page - 1) * limit
 
