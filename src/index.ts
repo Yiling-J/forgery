@@ -4,6 +4,7 @@ import { serveStatic } from 'hono/bun'
 import { cors } from 'hono/cors'
 import { existsSync, mkdirSync } from 'node:fs'
 import asset from './api/asset'
+import backup from './api/backup'
 import character from './api/character'
 import equipment from './api/equipment'
 import extract from './api/extract'
@@ -11,6 +12,7 @@ import expression from './api/expression'
 import generation from './api/generation'
 import outfit from './api/outfit'
 import pose from './api/pose'
+import restore from './api/restore'
 import setting from './api/setting'
 import index from './ui/index.html'
 
@@ -28,12 +30,14 @@ app.use('/*', cors())
 const api = new Hono()
 const route = api
   .route('/assets', asset)
+  .route('/backup', backup)
   .route('/characters', character)
   .route('/equipments', equipment)
   .route('/generations', generation)
   .route('/extract', extract)
   .route('/outfits', outfit)
   .route('/poses', pose)
+  .route('/restore', restore)
   .route('/expressions', expression)
   .route('/settings', setting)
 
