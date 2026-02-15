@@ -1,23 +1,26 @@
 <div align="center">
   <img src="public/logo-large.webp" alt="Forgery Logo" width="200" height="200" />
   <h1>Forgery</h1>
-  <p><strong>Your personal AI studio for character creation and outfit fitting.</strong></p>
+  <p><strong>Your personal AI studio for equipment extraction and character look generation.</strong></p>
 </div>
 
 ---
 
 ## About
 
-Forgery is a local-first application designed to help you generate, manage, and refine AI-generated characters and assets. With a focus on creative freedom and ease of use, Forgery provides a dedicated "Fitting Room" where you can experiment with different looks, poses, and expressions for your characters.
+Forgery is a local-first application designed to help you build a digital wardrobe and generate stunning new looks for your characters. It specializes in two key workflows: **extracting equipment from existing images** and **fitting that equipment onto your characters**.
+
+Unlike traditional character generators, Forgery focuses on consistency and customization. You start by uploading a base image for your character, then use the powerful "Fitting Room" to generate new variations (Looks) by mixing and matching extracted equipment, poses, and expressions.
 
 ## Features
 
-- **Character Management**: Create and organize your AI characters.
-- **Equipment Library**: Manage outfits, accessories, and other equipment assets.
-- **Fitting Room**: A powerful generation interface to mix and match characters with equipment, poses, and expressions.
-- **Pose & Expression Control**: Fine-tune your character's look with a library of poses and facial expressions.
-- **Local & Private**: All data and generated images are stored locally on your machine.
-- **Flexible AI Integration**: seamlessly switch between Google Gemini and OpenAI models for different stages of the generation pipeline.
+- **Equipment Extraction**: Analyze images to identify and extract equipment (outfits, weapons, accessories) into your library.
+- **Look Generation**: Generate new images of your character wearing selected equipment.
+- **Character Management**: Organize your characters and their base reference images.
+- **Fitting Room**: The core studio interface for combining characters, equipment, poses, and expressions into new Looks.
+- **Pose & Expression Control**: Fine-tune your generation with a library of poses and facial expressions.
+- **Local & Private**: All data, including your image library and generated results, is stored locally on your machine.
+- **Flexible AI Integration**: seamlessly switch between Google Gemini and OpenAI models for different stages of the extraction and generation pipeline.
 
 ## Prerequisites
 
