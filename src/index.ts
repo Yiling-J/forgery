@@ -49,25 +49,35 @@ app.use('/poses/*', serveStatic({ root: './public' }))
 // Serve static files from public/expressions under /expressions path
 app.use('/expressions/*', serveStatic({ root: './public' }))
 
+// Serve built frontend in production
+if (process.env.NODE_ENV === 'production') {
+  app.use('/*', serveStatic({ root: './dist' }))
+  app.get('*', serveStatic({ path: './dist/index.html' }))
+}
+
 // Export type for RPC
 export type AppType = typeof route
 
 // Serve the frontend
 const server = Bun.serve({
   port: 3000,
-  routes: {
-    // Serve index.html for root
-    '/': index,
+  fetch: app.fetch,
+  routes:
+    process.env.NODE_ENV === 'production'
+      ? undefined
+      : {
+          // Serve index.html for root
+          '/': index,
 
-    // Proxy API requests to Hono
-    '/api/*': app.fetch,
-    '/files/*': app.fetch,
-    '/poses/*': app.fetch,
-    '/expressions/*': app.fetch,
+          // Proxy API requests to Hono
+          '/api/*': app.fetch,
+          '/files/*': app.fetch,
+          '/poses/*': app.fetch,
+          '/expressions/*': app.fetch,
 
-    // Catch-all for SPA routing (fallback to index.html)
-    '/*': index,
-  },
+          // Catch-all for SPA routing (fallback to index.html)
+          '/*': index,
+        },
   development: process.env.NODE_ENV !== 'production',
   idleTimeout: 200,
 })
