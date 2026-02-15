@@ -428,10 +428,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
                     ))}
                   </div>
                   {/* Loading Indicator */}
-                  <div
-                    ref={poseRef}
-                    className="h-10 w-full flex items-center justify-center p-4"
-                  >
+                  <div ref={poseRef} className="h-10 w-full flex items-center justify-center p-4">
                     {posesLoading && <Loader2 className="w-8 h-8 animate-spin text-stone-400" />}
                   </div>
                 </ScrollArea>

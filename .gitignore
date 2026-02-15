@@ -6,8 +6,5 @@ out
 *.log
 .env
 .env.*
-!.env.example
-!.env.test
-data/files/*
-!data/files/.gitkeep
+data/
 *.db

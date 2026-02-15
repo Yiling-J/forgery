@@ -2,6 +2,7 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { cors } from 'hono/cors'
+import { existsSync, mkdirSync } from 'node:fs'
 import asset from './api/asset'
 import character from './api/character'
 import equipment from './api/equipment'
@@ -12,6 +13,11 @@ import outfit from './api/outfit'
 import pose from './api/pose'
 import setting from './api/setting'
 import index from './ui/index.html'
+
+// Ensure data directories exist
+if (!existsSync('data/files')) {
+  mkdirSync('data/files', { recursive: true })
+}
 
 const app = new Hono()
 

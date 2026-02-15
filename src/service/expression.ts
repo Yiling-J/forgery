@@ -19,7 +19,9 @@ export const BUILTIN_EXPRESSIONS: ExpressionItem[] = Array.from({ length: 9 }, (
 )
 
 export class ExpressionService {
-  async listExpressions(options: { page?: number; limit?: number } = {}): Promise<ExpressionItem[]> {
+  async listExpressions(
+    options: { page?: number; limit?: number } = {},
+  ): Promise<ExpressionItem[]> {
     const { page = 1, limit = 20 } = options
     const skip = (page - 1) * limit
 
