@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
 import { existsSync, renameSync, mkdirSync, rmSync } from 'node:fs'
+import { extract as extractTar } from 'tar'
 import { prisma } from '../db'
+import { Readable } from 'node:stream'
 
 const app = new Hono()
 
@@ -19,22 +21,33 @@ app.post('/', async (c) => {
     // Create new data directory
     mkdirSync('data')
 
-    // Extract the uploaded tar stream to the new data directory
-    // We expect the body to be the tar file content directly
-    const proc = Bun.spawn(['tar', '-xf', '-', '-C', 'data'], {
-      stdin: c.req.raw.body,
-      stdout: 'pipe',
-      stderr: 'pipe',
-    })
-
-    const exitCode = await proc.exited
-
-    if (exitCode !== 0) {
-      const stderr = await new Response(proc.stderr).text()
-      throw new Error(`Tar extraction failed with code ${exitCode}: ${stderr}`)
+    // Convert request body to a readable stream for node-tar
+    // Hono/Bun's Request.body is a web ReadableStream, node-tar needs a Node Readable
+    // We can use Readable.fromWeb() if available in Bun (it should be) or handle chunks manually
+    const webStream = c.req.raw.body
+    if (!webStream) {
+        throw new Error('No file uploaded')
     }
 
-    // Remove the backup directory
+    // Use Readable.fromWeb to convert standard Web Stream to Node Stream
+    // @ts-ignore: Bun implements fromWeb but types might be outdated in some environments
+    const nodeStream = Readable.fromWeb(webStream)
+
+    // Extract the uploaded tar stream to the new data directory
+    await new Promise((resolve, reject) => {
+        const extractor = extractTar({
+            cwd: 'data',
+            gzip: true // Auto-detects gzip, but good to be explicit we expect compressed or allow it
+        })
+
+        nodeStream.pipe(extractor)
+
+        extractor.on('finish', resolve)
+        extractor.on('error', reject)
+        nodeStream.on('error', reject)
+    })
+
+    // Remove the backup directory if successful
     rmSync(backupDir, { recursive: true, force: true })
 
     // Reconnect prisma

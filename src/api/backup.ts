@@ -1,15 +1,28 @@
 import { Hono } from 'hono'
+import { create as createTar } from 'tar'
+import { PassThrough } from 'node:stream'
 
 const app = new Hono()
 
 app.get('/', async () => {
-  // Stream the content of the data directory as a tar file
-  const proc = Bun.spawn(['tar', '-cf', '-', '-C', 'data', '.'])
+  // Create a PassThrough stream to pipe the tar output
+  const stream = new PassThrough()
 
-  return new Response(proc.stdout, {
+  // Create tar stream with gzip, archiving everything in the 'data' directory
+  // We use cwd: 'data' so the archive structure starts relative to data folder
+  createTar(
+    {
+      gzip: true,
+      cwd: 'data',
+    },
+    ['.']
+  ).pipe(stream)
+
+  // @ts-ignore: Bun supports Readable in Response, but TS doesn't know fully
+  return new Response(stream, {
     headers: {
-      'Content-Type': 'application/x-tar',
-      'Content-Disposition': 'attachment; filename="backup.tar"',
+      'Content-Type': 'application/gzip',
+      'Content-Disposition': 'attachment; filename="backup.tar.gz"',
     },
   })
 })
