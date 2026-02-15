@@ -37,7 +37,7 @@ app.post('/', async (c) => {
     await new Promise((resolve, reject) => {
         const extractor = extractTar({
             cwd: 'data',
-            gzip: true // Auto-detects gzip, but good to be explicit we expect compressed or allow it
+            gzip: false
         })
 
         nodeStream.pipe(extractor)

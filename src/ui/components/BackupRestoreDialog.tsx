@@ -39,7 +39,7 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
       const response = await fetch('/api/restore', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/gzip',
+            'Content-Type': 'application/x-tar',
         },
         body: file,
       })
@@ -83,7 +83,7 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
             </p>
             <Button onClick={handleDownloadBackup} variant="outline" className="w-full">
               <Download className="mr-2 h-4 w-4" />
-              Download Backup (gzip)
+              Download Backup (tar)
             </Button>
           </div>
 
@@ -101,7 +101,7 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
             <div className="relative">
               <input
                 type="file"
-                accept=".tar.gz,.tgz,.tar"
+                accept=".tar"
                 onChange={handleRestore}
                 disabled={isRestoring}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
