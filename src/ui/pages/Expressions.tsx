@@ -1,38 +1,41 @@
 import { InferResponseType } from 'hono/client'
 import { Plus, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { CreateExpressionDialog } from '../components/CreateExpressionDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 
 type ExpressionResponse = InferResponseType<typeof client.expressions.$get>
 type ExpressionItem = ExpressionResponse[number]
 
 export default function Expressions() {
-  const [expressions, setExpressions] = useState<ExpressionItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [createOpen, setCreateOpen] = useState(false)
 
-  const fetchExpressions = async () => {
-    try {
-      const res = await client.expressions.$get()
+  const {
+    items: expressions,
+    loading,
+    ref,
+    reset,
+    setItems: setExpressions,
+  } = useInfiniteScroll<ExpressionItem>({
+    fetchData: async (page, limit) => {
+      const res = await client.expressions.$get({
+        query: {
+          page: page.toString(),
+          limit: limit.toString(),
+        },
+      })
       if (res.ok) {
-        const data = await res.json()
-        setExpressions(data)
+        return await res.json()
       }
-    } catch (e) {
-      console.error('Failed to load expressions', e)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchExpressions()
-  }, [])
+      return []
+    },
+    limit: 20,
+  })
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this expression?')) return
@@ -41,7 +44,7 @@ export default function Expressions() {
       const res = await client.expressions[':id'].$delete({ param: { id } })
       if (res.ok) {
         toast.success('Expression deleted')
-        fetchExpressions()
+        setExpressions((prev) => prev.filter((e) => e.id !== id))
       } else {
         const err = await res.json()
         // @ts-ignore
@@ -50,14 +53,6 @@ export default function Expressions() {
     } catch {
       toast.error('Failed to delete expression')
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="p-8 text-slate-400 font-mono tracking-widest animate-pulse">
-        INITIALIZING...
-      </div>
-    )
   }
 
   return (
@@ -73,7 +68,7 @@ export default function Expressions() {
         className="mb-8"
       />
 
-      {expressions.length === 0 ? (
+      {expressions.length === 0 && !loading ? (
         <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
           <p className="text-slate-500 font-mono">No expressions found.</p>
         </div>
@@ -105,10 +100,17 @@ export default function Expressions() {
         </div>
       )}
 
+      {/* Loading Indicator */}
+      <div ref={ref} className="h-10 w-full flex items-center justify-center p-4">
+        {loading && (
+          <div className="text-slate-400 font-mono tracking-widest animate-pulse">LOADING...</div>
+        )}
+      </div>
+
       <CreateExpressionDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
-        onSuccess={fetchExpressions}
+        onSuccess={reset}
       />
     </div>
   )

@@ -140,3 +140,14 @@ Instead, follow this workflow:
 ## Known Issues
 
 - `bun test` module mocking can be sticky across test files running in the same process/worker. Use the dynamic import workaround in Service tests.
+
+## Infinite Scroll & Pagination
+
+- **Frontend**: Use the `useInfiniteScroll` hook for all list UIs.
+  - Located in `src/ui/hooks/use-infinite-scroll.ts`.
+  - Pass a `fetchData` function that accepts `page` and `limit`.
+- **Backend**:
+  - All list APIs must support pagination via `page` and `limit` query parameters.
+  - The default `limit` should be **20**.
+  - Services should implement pagination logic (Prisma `skip`/`take`).
+  - For mixed lists (built-in + DB), implement custom pagination logic in the Service layer.

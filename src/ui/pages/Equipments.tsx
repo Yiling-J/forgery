@@ -12,6 +12,7 @@ import { VibeCard } from '../components/VibeCard'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { ScrollArea, ScrollBar } from '../components/ui/scroll-area'
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 import { cn } from '../lib/utils'
 
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
@@ -33,9 +34,6 @@ const getEquipmentColor = (name: string) => {
 }
 
 export default function Equipments() {
-  const [items, setItems] = useState<EquipmentItem[]>([])
-  const [outfits, setOutfits] = useState<OutfitItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [extractorOpen, setExtractorOpen] = useState(false)
   const [createOutfitOpen, setCreateOutfitOpen] = useState(false)
@@ -43,53 +41,55 @@ export default function Equipments() {
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentItem | null>(null)
   const [equipmentDetailsOpen, setEquipmentDetailsOpen] = useState(false)
 
-  useEffect(() => {
-    if (viewMode === 'equipments') {
-      fetchItems()
-    } else {
-      fetchOutfits()
-    }
-  }, [viewMode, selectedCategory])
-
-  const fetchItems = async () => {
-    setLoading(true)
-    try {
-      const query: { limit: string; category?: string[] } = {
-        limit: '100',
+  const {
+    items: items,
+    loading: equipmentLoading,
+    ref: equipmentRef,
+    reset: resetEquipment,
+  } = useInfiniteScroll<EquipmentItem>({
+    fetchData: async (page, limit) => {
+      const query: { limit: string; page: string; category?: string[] } = {
+        limit: limit.toString(),
+        page: page.toString(),
       }
-
       if (selectedCategory) {
         query.category = [selectedCategory]
       }
+      const res = await client.equipments.$get({ query })
+      if (res.ok) {
+        const data = await res.json()
+        return data.items
+      }
+      return []
+    },
+    limit: 20,
+  })
 
-      const res = await client.equipments.$get({
-        query,
+  const {
+    items: outfits,
+    loading: outfitLoading,
+    ref: outfitRef,
+    reset: resetOutfits,
+    setItems: setOutfits,
+  } = useInfiniteScroll<OutfitItem>({
+    fetchData: async (page, limit) => {
+      const res = await client.outfits.$get({
+        query: {
+          page: page.toString(),
+          limit: limit.toString(),
+        },
       })
       if (res.ok) {
-        const data = await res.json()
-        setItems(data.items)
+        return await res.json()
       }
-    } catch (e) {
-      console.error('Failed to load equipment', e)
-    } finally {
-      setLoading(false)
-    }
-  }
+      return []
+    },
+    limit: 20,
+  })
 
-  const fetchOutfits = async () => {
-    setLoading(true)
-    try {
-      const res = await client.outfits.$get({ query: {} })
-      if (res.ok) {
-        const data = await res.json()
-        setOutfits(data)
-      }
-    } catch (e) {
-      console.error('Failed to load outfits', e)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    resetEquipment()
+  }, [selectedCategory, resetEquipment])
 
   const handleDeleteOutfit = async (id: string) => {
     if (!confirm('Are you sure you want to delete this outfit?')) return
@@ -97,7 +97,7 @@ export default function Equipments() {
       const res = await client.outfits[':id'].$delete({ param: { id } })
       if (res.ok) {
         toast.success('Outfit deleted')
-        fetchOutfits()
+        setOutfits((prev) => prev.filter((o) => o.id !== id))
       }
     } catch (e) {
       console.error(e)
@@ -178,88 +178,108 @@ export default function Equipments() {
         )}
       </PageHeader>
 
-      {loading ? (
-        <div className="p-12 text-center text-slate-400 font-mono tracking-widest animate-pulse">
-          INITIALIZING...
-        </div>
-      ) : viewMode === 'equipments' ? (
-        items.length === 0 ? (
-          <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
-            <p className="text-slate-500 font-mono">No equipment found.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 max-w-[1920px] mx-auto w-full pb-10">
-            {items.map((item, index) => (
-              <VibeCard
-                key={item.id}
-                index={index}
-                name={item.name}
-                subtitle={item.category}
-                image={item.image?.path ? `/files/${item.image.path}` : ''}
-                color={getEquipmentColor(item.name)}
-                onClick={() => {
-                  setSelectedEquipment(item)
-                  setEquipmentDetailsOpen(true)
-                }}
-              />
-            ))}
-          </div>
-        )
-      ) : outfits.length === 0 ? (
-        <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
-          <p className="text-slate-500 font-mono">No outfits found.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4 max-w-[1200px] mx-auto w-full pb-10">
-          {outfits.map((outfit) => (
-            <div
-              key={outfit.id}
-              className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex-1">
-                <h3 className="font-bold text-slate-800 text-lg mb-2">{outfit.name}</h3>
-                <div className="flex gap-2 flex-wrap">
-                  {outfit.equipments.map((eq) => (
-                    <div
-                      key={eq.equipment.id}
-                      className="w-10 h-10 rounded-md border border-slate-200 bg-slate-50 overflow-hidden relative group"
-                      title={eq.equipment.name}
-                    >
-                      <img
-                        src={eq.equipment.image?.path ? `/files/${eq.equipment.image.path}` : ''}
-                        alt={eq.equipment.name}
-                        className="w-full h-full object-contain p-1"
-                      />
-                    </div>
-                  ))}
-                  {outfit.prompt && (
-                    <Badge variant="outline" className="ml-2 h-auto self-center">
-                      + Prompt
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 pl-4 border-l border-slate-100">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDeleteOutfit(outfit.id)}
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </Button>
-              </div>
+      {viewMode === 'equipments' ? (
+        <>
+          {items.length === 0 && !equipmentLoading ? (
+            <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
+              <p className="text-slate-500 font-mono">No equipment found.</p>
             </div>
-          ))}
-        </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 max-w-[1920px] mx-auto w-full pb-10">
+              {items.map((item, index) => (
+                <VibeCard
+                  key={item.id}
+                  index={index}
+                  name={item.name}
+                  subtitle={item.category}
+                  image={item.image?.path ? `/files/${item.image.path}` : ''}
+                  color={getEquipmentColor(item.name)}
+                  onClick={() => {
+                    setSelectedEquipment(item)
+                    setEquipmentDetailsOpen(true)
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          {/* Loading Indicator */}
+          <div ref={equipmentRef} className="h-10 w-full flex items-center justify-center p-4">
+            {equipmentLoading && (
+              <div className="text-slate-400 font-mono tracking-widest animate-pulse">
+                LOADING...
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          {outfits.length === 0 && !outfitLoading ? (
+            <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
+              <p className="text-slate-500 font-mono">No outfits found.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4 max-w-[1200px] mx-auto w-full pb-10">
+              {outfits.map((outfit) => (
+                <div
+                  key={outfit.id}
+                  className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex-1">
+                    <h3 className="font-bold text-slate-800 text-lg mb-2">{outfit.name}</h3>
+                    <div className="flex gap-2 flex-wrap">
+                      {outfit.equipments.map((eq) => (
+                        <div
+                          key={eq.equipment.id}
+                          className="w-10 h-10 rounded-md border border-slate-200 bg-slate-50 overflow-hidden relative group"
+                          title={eq.equipment.name}
+                        >
+                          <img
+                            src={
+                              eq.equipment.image?.path ? `/files/${eq.equipment.image.path}` : ''
+                            }
+                            alt={eq.equipment.name}
+                            className="w-full h-full object-contain p-1"
+                          />
+                        </div>
+                      ))}
+                      {outfit.prompt && (
+                        <Badge variant="outline" className="ml-2 h-auto self-center">
+                          + Prompt
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 pl-4 border-l border-slate-100">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteOutfit(outfit.id)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Loading Indicator */}
+          <div ref={outfitRef} className="h-10 w-full flex items-center justify-center p-4">
+            {outfitLoading && (
+              <div className="text-slate-400 font-mono tracking-widest animate-pulse">
+                LOADING...
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       <ExtractorDialog
         open={extractorOpen}
         onOpenChange={setExtractorOpen}
         onSuccess={() => {
-          fetchItems() // Refresh list on success
+          resetEquipment() // Refresh list on success
           setExtractorOpen(false)
         }}
       />
@@ -267,7 +287,7 @@ export default function Equipments() {
         open={createOutfitOpen}
         onOpenChange={setCreateOutfitOpen}
         onSuccess={() => {
-          fetchOutfits()
+          resetOutfits()
         }}
       />
 
@@ -275,7 +295,7 @@ export default function Equipments() {
         open={equipmentDetailsOpen}
         onOpenChange={setEquipmentDetailsOpen}
         equipment={selectedEquipment}
-        onUpdate={fetchItems}
+        onUpdate={resetEquipment}
       />
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>

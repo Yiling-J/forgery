@@ -1,38 +1,41 @@
 import { InferResponseType } from 'hono/client'
 import { Plus, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { CreatePoseDialog } from '../components/CreatePoseDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
+import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 
 type PoseResponse = InferResponseType<typeof client.poses.$get>
 type PoseItem = PoseResponse[number]
 
 export default function Poses() {
-  const [poses, setPoses] = useState<PoseItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [createOpen, setCreateOpen] = useState(false)
 
-  const fetchPoses = async () => {
-    try {
-      const res = await client.poses.$get()
+  const {
+    items: poses,
+    loading,
+    ref,
+    reset,
+    setItems: setPoses,
+  } = useInfiniteScroll<PoseItem>({
+    fetchData: async (page, limit) => {
+      const res = await client.poses.$get({
+        query: {
+          page: page.toString(),
+          limit: limit.toString(),
+        },
+      })
       if (res.ok) {
-        const data = await res.json()
-        setPoses(data)
+        return await res.json()
       }
-    } catch (e) {
-      console.error('Failed to load poses', e)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchPoses()
-  }, [])
+      return []
+    },
+    limit: 20,
+  })
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this pose?')) return
@@ -41,7 +44,7 @@ export default function Poses() {
       const res = await client.poses[':id'].$delete({ param: { id } })
       if (res.ok) {
         toast.success('Pose deleted')
-        fetchPoses()
+        setPoses((prev) => prev.filter((p) => p.id !== id))
       } else {
         const err = await res.json()
         // @ts-ignore
@@ -50,14 +53,6 @@ export default function Poses() {
     } catch {
       toast.error('Failed to delete pose')
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="p-8 text-slate-400 font-mono tracking-widest animate-pulse">
-        INITIALIZING...
-      </div>
-    )
   }
 
   return (
@@ -73,7 +68,7 @@ export default function Poses() {
         className="mb-8"
       />
 
-      {poses.length === 0 ? (
+      {poses.length === 0 && !loading ? (
         <div className="text-center p-12 bg-white clip-path-slant border border-slate-200">
           <p className="text-slate-500 font-mono">No poses found.</p>
         </div>
@@ -105,7 +100,14 @@ export default function Poses() {
         </div>
       )}
 
-      <CreatePoseDialog open={createOpen} onOpenChange={setCreateOpen} onSuccess={fetchPoses} />
+      {/* Loading Indicator */}
+      <div ref={ref} className="h-10 w-full flex items-center justify-center p-4">
+        {loading && (
+          <div className="text-slate-400 font-mono tracking-widest animate-pulse">LOADING...</div>
+        )}
+      </div>
+
+      <CreatePoseDialog open={createOpen} onOpenChange={setCreateOpen} onSuccess={reset} />
     </div>
   )
 }

@@ -35,6 +35,7 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-intersection-observer": "^10.0.2",
     "react-router-dom": "^7.13.0",
     "sharp": "^0.34.5",
     "sonner": "^2.0.7",

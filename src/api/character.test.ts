@@ -30,7 +30,7 @@ describe('Character API', () => {
 
     const res = await character.fetch(req)
     expect(res.status).toBe(200)
-    expect(mockCharacterService.listCharacters).toHaveBeenCalledWith({ page: 1, limit: 10 })
+    expect(mockCharacterService.listCharacters).toHaveBeenCalledWith({ page: 1, limit: 20 })
   })
 
   it('POST / should create character', async () => {

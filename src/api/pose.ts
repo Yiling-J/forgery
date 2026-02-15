@@ -6,14 +6,20 @@ import { poseService } from '../service/pose'
 const app = new Hono()
 
 // Zod schema for validation
+const listSchema = z.object({
+  page: z.coerce.number().optional().default(1),
+  limit: z.coerce.number().optional().default(20),
+})
+
 const createSchema = z.object({
   name: z.string().min(1),
   image: z.instanceof(File),
 })
 
 const route = app
-  .get('/', async (c) => {
-    const poses = await poseService.listPoses()
+  .get('/', zValidator('query', listSchema), async (c) => {
+    const { page, limit } = c.req.valid('query')
+    const poses = await poseService.listPoses({ page, limit })
     return c.json(poses)
   })
   .post('/', zValidator('form', createSchema), async (c) => {
