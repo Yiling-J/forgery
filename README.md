@@ -6,28 +6,28 @@
 
 [![build-badge](https://img.shields.io/badge/build-wip-yellow)](https://github.com/yourname/forgery) [![license-mit](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-Forge characters, not chaos. `forgery` helps you extract equipments (props, clothing, accessories) from character images, save them as reusable items in a DB, and then generate new character *looks* by applying selected equipments + pose/expression controls using AI image generation.
+Forge characters, not chaos. `forgery` helps you extract equipments (props, clothing, accessories) from character images, save them as reusable items in a DB, and then generate new character _looks_ by applying selected equipments + pose/expression controls using AI image generation.
 
 ---
 
 ## Why Forgery?
 
-* **Modular Assets**: Turn screenshots, cosplay photos, or movie stills into modular assets.
-* **Rapid Prototyping**: Quickly prototype many character looks by mixing and matching equipments.
-* **Fine-Grained Control**: Add expression & pose control to generated looks for richer results.
-* **Local-First & Private**: All data, including your image library and generated results, is stored locally on your machine.
-* **Flexible AI Integration**: Seamlessly switch between Google Gemini and OpenAI models for different stages of the pipeline.
+- **Modular Assets**: Turn screenshots, cosplay photos, or movie stills into modular assets.
+- **Rapid Prototyping**: Quickly prototype many character looks by mixing and matching equipments.
+- **Fine-Grained Control**: Add expression & pose control to generated looks for richer results.
+- **Local-First & Private**: All data, including your image library and generated results, is stored locally on your machine.
+- **Flexible AI Integration**: Seamlessly switch between Google Gemini and OpenAI models for different stages of the pipeline.
 
 ---
 
 ## Highlights
 
-* 🔍 **Equipment extraction** — detect & crop equipment regions, normalize and store metadata.
-* 🧩 **Equipment library** — structured DB with visual preview, masks, tags, anchors, and compatibility hints.
-* 🖼️ **Apply equipments** — generate a new image of a character wearing selected equipments.
-* 🎭 **Pose & expression controls** — specify expression and pose priors to steer generation.
-* 🔌 **Model-agnostic** — plug in your favorite segmentation or image-generation models (OpenAI, Gemini supported out-of-the-box).
-* ♻️ **Open-source** — clear data model & contribution guidelines.
+- 🔍 **Equipment extraction** — detect & crop equipment regions, normalize and store metadata.
+- 🧩 **Equipment library** — structured DB with visual preview, masks, tags, anchors, and compatibility hints.
+- 🖼️ **Apply equipments** — generate a new image of a character wearing selected equipments.
+- 🎭 **Pose & expression controls** — specify expression and pose priors to steer generation.
+- 🔌 **Model-agnostic** — plug in your favorite segmentation or image-generation models (OpenAI, Gemini supported out-of-the-box).
+- ♻️ **Open-source** — clear data model & contribution guidelines.
 
 ---
 
@@ -43,11 +43,11 @@ Forge characters, not chaos. `forgery` helps you extract equipments (props, clot
 
 ## Core Concepts
 
-* **Equipment** — any wearable or attachable asset extracted from images (hat, glasses, sword, jacket). Stored with mask, anchor points, metadata.
-* **Character** — a user-created profile representing a base person/portrait used as the generation canvas.
-* **Look** — a generated image (or variant) that applies a set of equipments to a character, optionally altered by pose/expression.
-* **Extraction** — computer vision process that detects equipment regions and outputs masks, crops, and suggested anchors.
-* **Application/Generation** — image generation pipeline that composes character + selected equipments + conditioning (pose/expression) into a final render.
+- **Equipment** — any wearable or attachable asset extracted from images (hat, glasses, sword, jacket). Stored with mask, anchor points, metadata.
+- **Character** — a user-created profile representing a base person/portrait used as the generation canvas.
+- **Look** — a generated image (or variant) that applies a set of equipments to a character, optionally altered by pose/expression.
+- **Extraction** — computer vision process that detects equipment regions and outputs masks, crops, and suggested anchors.
+- **Application/Generation** — image generation pipeline that composes character + selected equipments + conditioning (pose/expression) into a final render.
 
 ---
 
@@ -55,9 +55,9 @@ Forge characters, not chaos. `forgery` helps you extract equipments (props, clot
 
 ### Requirements
 
-* [Bun](https://bun.sh) (v1.0.0 or later)
-* **OR** [Docker](https://www.docker.com/)
-* API Keys for OpenAI or Google Gemini (for AI generation)
+- [Bun](https://bun.sh) (v1.0.0 or later)
+- **OR** [Docker](https://www.docker.com/)
+- API Keys for OpenAI or Google Gemini (for AI generation)
 
 ### Local Quickstart
 
@@ -95,17 +95,17 @@ Forgery requires API keys for AI generation services (Google Gemini and/or OpenA
 A modular pipeline built on a modern stack:
 
 1. **Frontend** (React + Shadcn UI + Tailwind)
-   * Upload UI, equipment library browser, look composer (Fitting Room).
+   - Upload UI, equipment library browser, look composer (Fitting Room).
 2. **API Server** (Hono on Bun)
-   * REST API for extraction, equipment CRUD, character CRUD, generation.
+   - REST API for extraction, equipment CRUD, character CRUD, generation.
 3. **Extraction Service**
-   * Orchestrates AI models (OpenAI/Gemini) to analyze images and generate masks.
+   - Orchestrates AI models (OpenAI/Gemini) to analyze images and generate masks.
 4. **Asset Store**
-   * Local file system (`data/files`) for storing optimized WebP images.
+   - Local file system (`data/files`) for storing optimized WebP images.
 5. **Generation Service**
-   * Composes prompts and conditioning for image generation models.
+   - Composes prompts and conditioning for image generation models.
 6. **DB** (SQLite + Prisma)
-   * Stores metadata, relationships, settings, and generation history.
+   - Stores metadata, relationships, settings, and generation history.
 
 ---
 
@@ -113,9 +113,9 @@ A modular pipeline built on a modern stack:
 
 Love forks, fixes, and wild experiments.
 
-* Run tests: `bun test`
-* Lint code: `bun run lint`
-* Create clear PRs with reproducible steps and small commits.
+- Run tests: `bun test`
+- Lint code: `bun run lint`
+- Create clear PRs with reproducible steps and small commits.
 
 ---
 
