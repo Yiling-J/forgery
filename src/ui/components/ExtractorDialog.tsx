@@ -1,3 +1,4 @@
+import { Loader2, Play, RefreshCw, Sparkles } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
@@ -6,7 +7,8 @@ import { AnalyzeStage } from './extractor/AnalyzeStage'
 import { RefineStage } from './extractor/RefineStage'
 import { SelectionStage } from './extractor/SelectionStage'
 import { UploadStage } from './extractor/UploadStage'
-import { Dialog, DialogContent, DialogTitle } from './ui/dialog'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from './ui/dialog'
 
 interface ExtractorDialogProps {
   open: boolean
@@ -54,8 +56,6 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   useEffect(() => {
     if (!open) {
       // Small delay to allow animation to finish if needed, or just reset immediately
-      // resetting immediately might flash content if closing animation plays
-      // But for now, we reset on close to ensure fresh state next open
       const t = setTimeout(resetState, 300)
       return () => clearTimeout(t)
     }
@@ -105,7 +105,9 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               if (event === 'status') {
                 setStatusMessage(data.message)
               } else if (event === 'complete') {
-                setCandidates(data.assets as CandidateAsset[])
+                const newCandidates = data.assets as CandidateAsset[]
+                setCandidates(newCandidates)
+                setSelectedIndices(newCandidates.map((_, i) => i))
                 setStage('selection')
               } else if (event === 'error') {
                 throw new Error(data.message)
@@ -122,10 +124,16 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     }
   }
 
-  const handleRefineConfirm = (indices: number[]) => {
-    setSelectedIndices(indices)
+  const toggleSelection = (index: number) => {
+    setSelectedIndices((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
+    )
+  }
+
+  const handleRefineConfirm = () => {
+    if (selectedIndices.length === 0) return
     setStage('refine')
-    handleRefine(indices)
+    handleRefine(selectedIndices)
   }
 
   const handleRefine = async (indices: number[]) => {
@@ -170,7 +178,6 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                 setResults((prev) => [...prev, data.asset])
               } else if (event === 'complete') {
                 setIsRefineComplete(true)
-                onSuccess(data.assets)
               } else if (event === 'error') {
                 throw new Error(data.message)
               }
@@ -182,18 +189,24 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
       console.error(e)
       const err = e instanceof Error ? e : new Error(String(e))
       toast.error(err.message || 'Refinement failed')
-      // Don't change stage automatically on error here, let user see what happened or retry?
-      // For now, staying on refine stage allows them to see partial results.
-      // But we might want a 'retry' button or back.
     }
   }
+
+  const handleClose = () => onOpenChange(false)
+
+  const handleDone = () => {
+    onSuccess(results)
+    handleClose()
+  }
+
+  const isAnalyzing = stage === 'analyze' && !!statusMessage
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[98vw] w-full max-h-fit p-0 overflow-hidden bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col">
         <DialogTitle className="sr-only">Extractor</DialogTitle>
 
-        {/* Top Navigation / Branding Bar (Optional, matches App feel) */}
+        {/* Top Navigation / Branding Bar */}
         <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-2">
             <h1 className="font-bold text-lg tracking-tight text-slate-800">Extractor</h1>
@@ -201,23 +214,18 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-hidden relative">
+        <div className="flex-1 overflow-hidden relative min-h-[50vh]">
           {stage === 'upload' && <UploadStage onImageUpload={handleImageUpload} />}
 
           {stage === 'analyze' && preview && (
-            <AnalyzeStage
-              imageSrc={preview}
-              statusMessage={statusMessage}
-              isAnalyzing={!!statusMessage}
-              onStart={startAnalysis}
-            />
+            <AnalyzeStage imageSrc={preview} isAnalyzing={isAnalyzing} />
           )}
 
           {stage === 'selection' && (
             <SelectionStage
               candidates={candidates}
-              onConfirm={handleRefineConfirm}
-              onCancel={() => setStage('upload')}
+              selectedIndices={selectedIndices}
+              onToggleSelection={toggleSelection}
             />
           )}
 
@@ -226,10 +234,74 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               selectedCandidates={candidates.filter((_, i) => selectedIndices.includes(i))}
               results={results}
               isComplete={isRefineComplete}
-              onDone={resetState}
             />
           )}
         </div>
+
+        {/* Footer */}
+        <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-white shrink-0">
+          {stage === 'upload' && (
+            <Button variant="outline" onClick={handleClose}>
+              Cancel
+            </Button>
+          )}
+
+          {stage === 'analyze' && (
+            <>
+              <Button variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button disabled={isAnalyzing} onClick={startAnalysis} className="min-w-[160px]">
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {statusMessage || 'Analyzing...'}
+                  </>
+                ) : (
+                  <>
+                    <Play className="mr-2 h-4 w-4" /> Start Extraction
+                  </>
+                )}
+              </Button>
+            </>
+          )}
+
+          {stage === 'selection' && (
+            <>
+              <Button variant="outline" onClick={() => setStage('upload')}>
+                Back to Upload
+              </Button>
+              <Button
+                onClick={handleRefineConfirm}
+                disabled={selectedIndices.length === 0}
+                className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg border-none hover:opacity-90 min-w-[160px]"
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                Start Refining ({selectedIndices.length})
+              </Button>
+            </>
+          )}
+
+          {stage === 'refine' && (
+            <>
+              {isRefineComplete ? (
+                <>
+                  <Button variant="outline" onClick={resetState}>
+                    <RefreshCw className="mr-2 h-4 w-4" /> Start Over
+                  </Button>
+                  <Button onClick={handleDone} className="bg-green-600 hover:bg-green-700">
+                    Done
+                  </Button>
+                </>
+              ) : (
+                <Button disabled className="min-w-[160px]">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Refining...
+                </Button>
+              )}
+            </>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

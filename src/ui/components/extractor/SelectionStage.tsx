@@ -1,46 +1,31 @@
 import { Check } from 'lucide-react'
-import React, { useState } from 'react'
+import React from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset } from '../../types'
-import { Button } from '../ui/button'
 import { ScrollArea } from '../ui/scroll-area'
 
 interface SelectionStageProps {
   candidates: CandidateAsset[]
-  onConfirm: (selectedIndices: number[]) => void
-  onCancel: () => void
+  selectedIndices: number[]
+  onToggleSelection: (index: number) => void
 }
 
 export const SelectionStage: React.FC<SelectionStageProps> = ({
   candidates,
-  onConfirm,
-  onCancel,
+  selectedIndices,
+  onToggleSelection,
 }) => {
-  // Initialize with all selected by default
-  const [selectedIndices, setSelectedIndices] = useState<number[]>(candidates.map((_, i) => i))
-
-  const toggleSelection = (index: number) => {
-    setSelectedIndices((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
-    )
-  }
-
-  const handleConfirm = () => {
-    if (selectedIndices.length === 0) return
-    onConfirm(selectedIndices)
-  }
-
   return (
-    <div className="flex flex-col max-h-[80vh] w-full max-w-6xl mx-auto px-4 py-2">
+    <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-2">
       {/* Grid */}
       <ScrollArea className="h-full">
-        <div className="grid grid-cols-3 gap-2 p-1 h-full">
+        <div className="grid grid-cols-3 gap-2 p-1 h-full pb-6">
           {candidates.map((item, index) => {
             const isSelected = selectedIndices.includes(index)
             return (
               <div
                 key={index}
-                onClick={() => toggleSelection(index)}
+                onClick={() => onToggleSelection(index)}
                 className={cn(
                   'group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up flex-shrink-0',
                   isSelected
@@ -85,25 +70,6 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
           })}
         </div>
       </ScrollArea>
-
-      {/* Footer Actions */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50">
-        <div className="max-w-6xl mx-auto flex justify-end items-center gap-4">
-          <Button onClick={onCancel}>Cancel</Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={selectedIndices.length === 0}
-            className={cn(
-              'flex items-center gap-2 px-8 py-3 font-bold uppercase tracking-wide transition-all shadow-lg',
-              selectedIndices.length > 0
-                ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white'
-                : 'bg-slate-200 text-slate-400 cursor-not-allowed',
-            )}
-          >
-            Start Refining ({selectedIndices.length})
-          </Button>
-        </div>
-      </div>
     </div>
   )
 }

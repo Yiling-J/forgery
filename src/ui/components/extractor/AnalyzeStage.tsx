@@ -1,20 +1,11 @@
-import { BrainCircuit, Play } from 'lucide-react'
 import React from 'react'
-import { Button } from '../ui/button'
 
 interface AnalyzeStageProps {
   imageSrc: string
-  statusMessage: string
   isAnalyzing: boolean
-  onStart: () => void
 }
 
-export const AnalyzeStage: React.FC<AnalyzeStageProps> = ({
-  imageSrc,
-  statusMessage,
-  isAnalyzing,
-  onStart,
-}) => {
+export const AnalyzeStage: React.FC<AnalyzeStageProps> = ({ imageSrc, isAnalyzing }) => {
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-full overflow-hidden bg-slate-50">
       {/* Background Frosted Glass Layer */}
@@ -48,30 +39,6 @@ export const AnalyzeStage: React.FC<AnalyzeStageProps> = ({
           <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-cyan-500 rounded-tr-lg z-20"></div>
           <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-cyan-500 rounded-bl-lg z-20"></div>
           <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-cyan-500 rounded-br-lg z-20"></div>
-        </div>
-
-        {/* Status Text or Action Button */}
-        <div className="mt-8 flex items-center justify-center">
-          {isAnalyzing ? (
-            <div className="flex items-center space-x-3 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md border border-slate-200 shadow-xl">
-              <BrainCircuit className="w-5 h-5 text-cyan-500 animate-pulse" />
-              <span className="text-slate-700 font-medium tracking-wide">{statusMessage}</span>
-              <div className="flex space-x-1 ml-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-bounce"></div>
-              </div>
-            </div>
-          ) : (
-            <Button
-              size="lg"
-              className="px-8 py-6 rounded-full text-lg font-bold shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-1 transition-all"
-              onClick={onStart}
-            >
-              <Play className="w-5 h-5 mr-2 fill-current" />
-              Start Extraction
-            </Button>
-          )}
         </div>
       </div>
       <style>{`
