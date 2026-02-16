@@ -21,7 +21,7 @@ mock.module('./ai', () => ({
 }))
 
 // Create a spy for the extract method to verify dimensions
-const extractMock = mock((options: any) => ({
+const extractMock = mock(() => ({
   toBuffer: () => Promise.resolve(Buffer.from('mockCrop')),
 }))
 
