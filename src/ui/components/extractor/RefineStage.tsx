@@ -44,7 +44,7 @@ export const RefineStage: React.FC<RefineStageProps> = ({
 
       {/* Grid */}
       <div className="flex-1 overflow-y-auto pr-2 pb-10 custom-scrollbar">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="flex flex-wrap gap-6 justify-center">
           {selectedCandidates.map((candidate, index) => {
             const isFinished = index < results.length
             const isProcessing = index === results.length && !isComplete
@@ -57,7 +57,7 @@ export const RefineStage: React.FC<RefineStageProps> = ({
               <div
                 key={index}
                 className={cn(
-                  'relative aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-500 bg-white',
+                  'relative w-[160px] h-[160px] rounded-2xl overflow-hidden border-2 transition-all duration-500 bg-white flex-shrink-0',
                   isProcessing
                     ? 'border-amber-400 shadow-xl shadow-amber-100 scale-105 z-10'
                     : isFinished
