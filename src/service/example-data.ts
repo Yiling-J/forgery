@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs'
+import fs from 'node:fs'
 import { join } from 'node:path'
 import { prisma } from '../db'
 import { assetService } from './asset'
@@ -56,11 +56,11 @@ export class ExampleDataService {
   }
 
   private ensureDirs() {
-    if (!existsSync(this.baseDir)) {
-      mkdirSync(this.baseDir)
+    if (!fs.existsSync(this.baseDir)) {
+      fs.mkdirSync(this.baseDir)
     }
-    if (!existsSync(this.assetsDir)) {
-      mkdirSync(this.assetsDir)
+    if (!fs.existsSync(this.assetsDir)) {
+      fs.mkdirSync(this.assetsDir)
     }
   }
 
@@ -82,7 +82,7 @@ export class ExampleDataService {
         },
       }
     })
-    writeFileSync(join(this.baseDir, 'characters.json'), JSON.stringify(characterData, null, 2))
+    fs.writeFileSync(join(this.baseDir, 'characters.json'), JSON.stringify(characterData, null, 2))
 
     // 2. Equipments
     const equipments = await prisma.equipment.findMany({ include: { image: true } })
@@ -101,7 +101,7 @@ export class ExampleDataService {
         },
       }
     })
-    writeFileSync(join(this.baseDir, 'equipments.json'), JSON.stringify(equipmentData, null, 2))
+    fs.writeFileSync(join(this.baseDir, 'equipments.json'), JSON.stringify(equipmentData, null, 2))
 
     // 3. Poses
     const poses = await prisma.pose.findMany({ include: { image: true } })
@@ -117,7 +117,7 @@ export class ExampleDataService {
         },
       }
     })
-    writeFileSync(join(this.baseDir, 'poses.json'), JSON.stringify(poseData, null, 2))
+    fs.writeFileSync(join(this.baseDir, 'poses.json'), JSON.stringify(poseData, null, 2))
 
     // 4. Expressions
     const expressions = await prisma.expression.findMany({ include: { image: true } })
@@ -133,7 +133,7 @@ export class ExampleDataService {
         },
       }
     })
-    writeFileSync(join(this.baseDir, 'expressions.json'), JSON.stringify(expressionData, null, 2))
+    fs.writeFileSync(join(this.baseDir, 'expressions.json'), JSON.stringify(expressionData, null, 2))
 
     // 5. Generations (Looks)
     const generations = await prisma.generation.findMany({
@@ -158,7 +158,7 @@ export class ExampleDataService {
         equipmentIds: g.equipments.map((e) => e.equipmentId),
       }
     })
-    writeFileSync(join(this.baseDir, 'looks.json'), JSON.stringify(generationData, null, 2))
+    fs.writeFileSync(join(this.baseDir, 'looks.json'), JSON.stringify(generationData, null, 2))
 
     console.log(`Exported ${characters.length} characters`)
     console.log(`Exported ${equipments.length} equipments`)
@@ -168,15 +168,15 @@ export class ExampleDataService {
   }
 
   async import() {
-    if (!existsSync(this.baseDir)) {
+    if (!fs.existsSync(this.baseDir)) {
       console.log('No example data found, skipping import.')
       return
     }
 
     // 1. Characters
-    if (existsSync(join(this.baseDir, 'characters.json'))) {
+    if (fs.existsSync(join(this.baseDir, 'characters.json'))) {
       const data: CharacterData[] = JSON.parse(
-        readFileSync(join(this.baseDir, 'characters.json'), 'utf-8'),
+        fs.readFileSync(join(this.baseDir, 'characters.json'), 'utf-8'),
       )
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
@@ -193,9 +193,9 @@ export class ExampleDataService {
     }
 
     // 2. Equipments
-    if (existsSync(join(this.baseDir, 'equipments.json'))) {
+    if (fs.existsSync(join(this.baseDir, 'equipments.json'))) {
       const data: EquipmentData[] = JSON.parse(
-        readFileSync(join(this.baseDir, 'equipments.json'), 'utf-8'),
+        fs.readFileSync(join(this.baseDir, 'equipments.json'), 'utf-8'),
       )
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
@@ -214,9 +214,9 @@ export class ExampleDataService {
     }
 
     // 3. Poses
-    if (existsSync(join(this.baseDir, 'poses.json'))) {
+    if (fs.existsSync(join(this.baseDir, 'poses.json'))) {
       const data: PoseData[] = JSON.parse(
-        readFileSync(join(this.baseDir, 'poses.json'), 'utf-8'),
+        fs.readFileSync(join(this.baseDir, 'poses.json'), 'utf-8'),
       )
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
@@ -232,9 +232,9 @@ export class ExampleDataService {
     }
 
     // 4. Expressions
-    if (existsSync(join(this.baseDir, 'expressions.json'))) {
+    if (fs.existsSync(join(this.baseDir, 'expressions.json'))) {
       const data: ExpressionData[] = JSON.parse(
-        readFileSync(join(this.baseDir, 'expressions.json'), 'utf-8'),
+        fs.readFileSync(join(this.baseDir, 'expressions.json'), 'utf-8'),
       )
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
@@ -250,9 +250,9 @@ export class ExampleDataService {
     }
 
     // 5. Generations (Looks)
-    if (existsSync(join(this.baseDir, 'looks.json'))) {
+    if (fs.existsSync(join(this.baseDir, 'looks.json'))) {
       const data: GenerationData[] = JSON.parse(
-        readFileSync(join(this.baseDir, 'looks.json'), 'utf-8'),
+        fs.readFileSync(join(this.baseDir, 'looks.json'), 'utf-8'),
       )
       for (const item of data) {
         // Ensure character exists
@@ -288,8 +288,8 @@ export class ExampleDataService {
   private copyAsset(filename: string) {
     const src = join('data/files', filename)
     const dest = join(this.assetsDir, filename)
-    if (existsSync(src)) {
-      copyFileSync(src, dest)
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, dest)
     } else {
       console.warn(`Asset file not found: ${src}`)
     }
@@ -297,10 +297,10 @@ export class ExampleDataService {
 
   private async createAssetFromExample(assetData: AssetData) {
     const filePath = join(this.assetsDir, assetData.path)
-    if (!existsSync(filePath)) {
+    if (!fs.existsSync(filePath)) {
       throw new Error(`Example asset file not found: ${filePath}`)
     }
-    const buffer = readFileSync(filePath)
+    const buffer = fs.readFileSync(filePath)
     // We use createAssetFromBuffer which handles saving to data/files and DB creation
     return assetService.createAssetFromBuffer(buffer, {
       name: assetData.name,
