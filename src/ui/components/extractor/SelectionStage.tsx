@@ -49,7 +49,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
 
       {/* Grid */}
       <div className="flex-1 overflow-y-auto min-h-0 pr-2 custom-scrollbar">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-24">
+        <div className="flex flex-wrap gap-4 pb-24 justify-center">
           {candidates.map((item, index) => {
             const isSelected = selectedIndices.includes(index)
             return (
@@ -57,7 +57,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 key={index}
                 onClick={() => toggleSelection(index)}
                 className={cn(
-                  'group relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up',
+                  'group relative w-[140px] h-[140px] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up flex-shrink-0',
                   isSelected
                     ? 'border-cyan-500 shadow-lg shadow-cyan-100 scale-[1.02]'
                     : 'border-slate-200 opacity-80 hover:opacity-100 hover:border-slate-300',

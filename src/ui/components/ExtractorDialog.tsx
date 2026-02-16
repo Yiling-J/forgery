@@ -67,77 +67,60 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setStage('analyze')
   }
 
-  // Auto-start analysis when entering analyze stage
-  useEffect(() => {
-    let active = true
-    const analyze = async () => {
-      if (!file) return
+  const startAnalysis = async () => {
+    if (!file) return
 
-      setStatusMessage('Initializing analysis...')
-      analyzeController.current = new AbortController()
+    setStatusMessage('Initializing analysis...')
+    analyzeController.current = new AbortController()
 
-      try {
-        const response = await client.extract.analyze.$post({
-          form: { image: file },
-        })
+    try {
+      const response = await client.extract.analyze.$post({
+        form: { image: file },
+      })
 
-        if (!response.ok) throw new Error('Server error')
-        if (!response.body) throw new Error('No response body')
+      if (!response.ok) throw new Error('Server error')
+      if (!response.body) throw new Error('No response body')
 
-        const reader = response.body.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ''
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
 
-        while (active) {
-          const { done, value } = await reader.read()
-          if (done) break
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
 
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split('\n\n')
-          buffer = lines.pop() || ''
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n\n')
+        buffer = lines.pop() || ''
 
-          for (const line of lines) {
-            if (line.startsWith('event: ')) {
-              const eventMatch = line.match(/^event: (.+)$/m)
-              const dataMatch = line.match(/^data: (.+)$/m)
+        for (const line of lines) {
+          if (line.startsWith('event: ')) {
+            const eventMatch = line.match(/^event: (.+)$/m)
+            const dataMatch = line.match(/^data: (.+)$/m)
 
-              if (eventMatch && dataMatch) {
-                const event = eventMatch[1].trim()
-                const data = JSON.parse(dataMatch[1])
+            if (eventMatch && dataMatch) {
+              const event = eventMatch[1].trim()
+              const data = JSON.parse(dataMatch[1])
 
-                if (event === 'status') {
-                  if (active) setStatusMessage(data.message)
-                } else if (event === 'complete') {
-                  if (active) {
-                    setCandidates(data.assets as CandidateAsset[])
-                    setStage('selection')
-                  }
-                } else if (event === 'error') {
-                  throw new Error(data.message)
-                }
+              if (event === 'status') {
+                setStatusMessage(data.message)
+              } else if (event === 'complete') {
+                setCandidates(data.assets as CandidateAsset[])
+                setStage('selection')
+              } else if (event === 'error') {
+                throw new Error(data.message)
               }
             }
           }
         }
-      } catch (e: unknown) {
-        if (active) {
-          console.error(e)
-          const err = e instanceof Error ? e : new Error(String(e))
-          toast.error(err.message || 'Analysis failed')
-          setStage('upload')
-        }
       }
+    } catch (e: unknown) {
+      console.error(e)
+      const err = e instanceof Error ? e : new Error(String(e))
+      toast.error(err.message || 'Analysis failed')
+      setStage('upload')
     }
-
-    if (stage === 'analyze' && file) {
-      analyze()
-    }
-
-    return () => {
-      active = false
-      analyzeController.current?.abort()
-    }
-  }, [stage, file])
+  }
 
   const handleRefineConfirm = (indices: number[]) => {
     setSelectedIndices(indices)
@@ -207,42 +190,14 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] w-full h-[90vh] p-0 overflow-hidden bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col">
-        <DialogTitle className="sr-only">Equipment Extractor</DialogTitle>
+      <DialogContent className="max-w-[98vw] w-full h-[95vh] p-0 overflow-hidden bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col">
+        <DialogTitle className="sr-only">Extractor</DialogTitle>
 
         {/* Top Navigation / Branding Bar (Optional, matches App feel) */}
         <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <span className="font-bold text-white text-lg">AI</span>
-            </div>
-            <h1 className="font-bold text-lg tracking-tight text-slate-800">
-              Refine<span className="text-cyan-500">Lab</span>
-            </h1>
+            <h1 className="font-bold text-lg tracking-tight text-slate-800">Extractor</h1>
           </div>
-
-          {/* Progress Steps */}
-          {stage !== 'upload' && (
-            <div className="hidden sm:flex items-center gap-2 text-xs font-bold bg-slate-100 p-1 rounded-full border border-slate-200">
-              <div
-                className={`px-3 py-1 rounded-full transition-colors ${stage === 'analyze' ? 'bg-white text-cyan-600 shadow-sm' : 'text-slate-400'}`}
-              >
-                Analyze
-              </div>
-              <div className="w-4 h-[1px] bg-slate-300"></div>
-              <div
-                className={`px-3 py-1 rounded-full transition-colors ${stage === 'selection' ? 'bg-white text-cyan-600 shadow-sm' : 'text-slate-400'}`}
-              >
-                Select
-              </div>
-              <div className="w-4 h-[1px] bg-slate-300"></div>
-              <div
-                className={`px-3 py-1 rounded-full transition-colors ${stage === 'refine' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-400'}`}
-              >
-                Refine
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Content Area */}
@@ -250,7 +205,12 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
           {stage === 'upload' && <UploadStage onImageUpload={handleImageUpload} />}
 
           {stage === 'analyze' && preview && (
-            <AnalyzeStage imageSrc={preview} statusMessage={statusMessage} />
+            <AnalyzeStage
+              imageSrc={preview}
+              statusMessage={statusMessage}
+              isAnalyzing={!!statusMessage}
+              onStart={startAnalysis}
+            />
           )}
 
           {stage === 'selection' && (
