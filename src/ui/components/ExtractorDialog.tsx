@@ -1,8 +1,9 @@
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Check, Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { client } from '../client'
-import { ExtractedAsset, ExtractionStatus } from '../types'
+import { CandidateAsset, ExtractedAsset, ExtractionStatus } from '../types'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
+import { cn } from '../lib/utils'
 
 interface ExtractorDialogProps {
   open: boolean
@@ -25,7 +26,14 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const [status, setStatus] = useState<ExtractionStatus>('idle')
   const [statusMessage, setStatusMessage] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
+
+  // Intermediate candidates
+  const [candidates, setCandidates] = useState<CandidateAsset[]>([])
+  const [selectedIndices, setSelectedIndices] = useState<number[]>([])
+
+  // Final results
   const [results, setResults] = useState<ExtractedAsset[]>([])
+
   const [textureSheet, setTextureSheet] = useState<string | null>(null)
   const [gridDimensions, setGridDimensions] = useState<GridDimensions | null>(null)
 
@@ -33,6 +41,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setFile(f)
     setPreview(URL.createObjectURL(f))
     setResults([])
+    setCandidates([])
+    setSelectedIndices([])
     setError(null)
     setStatus('idle')
     setTextureSheet(null)
@@ -60,18 +70,19 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     return () => window.removeEventListener('paste', handlePaste)
   }, [open])
 
-  const handleExtract = async () => {
+  const handleAnalyze = async () => {
     if (!file) return
 
+    setCandidates([])
     setResults([])
     setError(null)
     setStatus('analyzing')
-    setStatusMessage('Starting extraction...')
+    setStatusMessage('Starting analysis...')
     setTextureSheet(null)
     setGridDimensions(null)
 
     try {
-      const response = await client.extract.$post({
+      const response = await client.extract.analyze.$post({
         form: {
           image: file,
         },
@@ -107,11 +118,80 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               } else if (event === 'texture_generated') {
                 setTextureSheet(data.image)
                 setGridDimensions(data.grid)
+              } else if (event === 'complete') {
+                setStatus('selection')
+                setStatusMessage('Select items to refine')
+                const assets = data.assets as CandidateAsset[]
+                setCandidates(assets)
+                // Select all by default
+                setSelectedIndices(assets.map((_, i) => i))
+              } else if (event === 'error') {
+                throw new Error(data.message)
+              }
+            }
+          }
+        }
+      }
+    } catch (e: unknown) {
+      console.error(e)
+      const err = e instanceof Error ? e : new Error(String(e))
+      setError(err.message || 'Analysis failed')
+      setStatus('error')
+    }
+  }
+
+  const handleRefine = async () => {
+    if (selectedIndices.length === 0) {
+      setError('Please select at least one item to refine.')
+      return
+    }
+
+    const selectedCandidates = candidates.filter((_, i) => selectedIndices.includes(i))
+
+    setStatus('refining')
+    setStatusMessage('Refining selected assets...')
+    setResults([])
+    setError(null)
+
+    try {
+      const response = await client.extract.refine.$post({
+        json: {
+          assets: selectedCandidates,
+        },
+      })
+
+      if (!response.ok) throw new Error('Server error')
+      if (!response.body) throw new Error('No response body')
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (line.startsWith('event: ')) {
+            const eventMatch = line.match(/^event: (.+)$/m)
+            const dataMatch = line.match(/^data: (.+)$/m)
+
+            if (eventMatch && dataMatch) {
+              const event = eventMatch[1].trim()
+              const data = JSON.parse(dataMatch[1])
+
+              if (event === 'status') {
+                setStatus(data.status)
+                setStatusMessage(data.message)
               } else if (event === 'asset_refined') {
                 setResults((prev) => [...prev, data.asset])
               } else if (event === 'complete') {
                 setStatus('complete')
-                setStatusMessage('Extraction complete!')
+                setStatusMessage('Refinement complete!')
                 setResults(data.assets)
                 onSuccess(data.assets)
               } else if (event === 'error') {
@@ -124,16 +204,24 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     } catch (e: unknown) {
       console.error(e)
       const err = e instanceof Error ? e : new Error(String(e))
-      setError(err.message || 'Extraction failed')
+      setError(err.message || 'Refinement failed')
       setStatus('error')
     }
+  }
+
+  const toggleSelection = (index: number) => {
+    setSelectedIndices((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
+    )
   }
 
   const handleReset = () => {
     setFile(null)
     if (preview) URL.revokeObjectURL(preview)
     setPreview(null)
+    setCandidates([])
     setResults([])
+    setSelectedIndices([])
     setStatus('idle')
     setError(null)
     setTextureSheet(null)
@@ -275,7 +363,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                           </div>
                         )}
                         <button
-                          onClick={handleExtract}
+                          onClick={handleAnalyze}
                           className="w-full py-4 text-white font-black uppercase tracking-widest text-lg rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-r from-amber-500 to-orange-600 flex items-center justify-center gap-3"
                         >
                           <svg
@@ -296,12 +384,40 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                         </button>
                       </div>
                     ) : (
-                      <div className="w-full py-8 px-6 bg-stone-50 rounded-xl border border-stone-100 text-center">
-                        <Loader2 className="w-10 h-10 text-amber-500 animate-spin mx-auto mb-4" />
-                        <h4 className="text-lg font-bold text-stone-800 mb-1">{statusMessage}</h4>
-                        <p className="text-xs text-stone-400 font-mono uppercase tracking-widest">
-                          Processing...
-                        </p>
+                      <div className="w-full flex flex-col items-center">
+                        {/* Progress Status */}
+                        {status !== 'selection' && (
+                          <div className="w-full py-8 px-6 bg-stone-50 rounded-xl border border-stone-100 text-center mb-6">
+                            <Loader2 className="w-10 h-10 text-amber-500 animate-spin mx-auto mb-4" />
+                            <h4 className="text-lg font-bold text-stone-800 mb-1">
+                              {statusMessage}
+                            </h4>
+                            <p className="text-xs text-stone-400 font-mono uppercase tracking-widest">
+                              Processing...
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Selection Step Actions */}
+                        {status === 'selection' && (
+                          <div className="w-full text-center md:text-left">
+                            <h4 className="text-lg font-bold text-stone-800 mb-2">
+                              Review & Select
+                            </h4>
+                            <p className="text-stone-500 text-sm mb-6">
+                              Select the items you want to keep. They will be refined and added to
+                              your collection.
+                            </p>
+                            <button
+                              onClick={handleRefine}
+                              disabled={selectedIndices.length === 0}
+                              className="w-full py-4 text-white font-black uppercase tracking-widest text-lg rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Check className="w-6 h-6" />
+                              Refine ({selectedIndices.length}) Items
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -314,16 +430,107 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                 </div>
               </div>
 
-              {/* Results Grid (Appears progressively) */}
+              {/* Selection Grid */}
+              {status === 'selection' && candidates.length > 0 && (
+                <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xl animate-fade-in-up delay-100">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <h2 className="text-xl font-black text-stone-800 flex items-center gap-2 uppercase tracking-tighter">
+                        <span className="text-amber-500">✦</span> Candidates Found
+                      </h2>
+                      <p className="text-stone-500 text-xs font-bold tracking-[0.2em] uppercase mt-1">
+                        Select items to refine
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedIndices(candidates.map((_, i) => i))}
+                        className="text-xs font-bold text-cyan-600 hover:text-cyan-800 uppercase tracking-wider"
+                      >
+                        Select All
+                      </button>
+                      <span className="text-stone-300">|</span>
+                      <button
+                        onClick={() => setSelectedIndices([])}
+                        className="text-xs font-bold text-stone-400 hover:text-stone-600 uppercase tracking-wider"
+                      >
+                        Select None
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                    {candidates.map((item, i) => {
+                      const isSelected = selectedIndices.includes(i)
+                      return (
+                        <div
+                          key={i}
+                          onClick={() => toggleSelection(i)}
+                          className={cn(
+                            'group relative rounded-lg border-2 cursor-pointer transition-all duration-300',
+                            isSelected
+                              ? 'bg-stone-50 border-amber-500 shadow-md scale-[1.02]'
+                              : 'bg-white border-stone-100 opacity-60 hover:opacity-100 hover:border-stone-300',
+                          )}
+                        >
+                          {/* Selection Checkbox Overlay */}
+                          <div
+                            className={cn(
+                              'absolute top-2 right-2 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors',
+                              isSelected
+                                ? 'bg-amber-500 border-amber-500 text-white'
+                                : 'bg-white/80 border-stone-300 text-transparent',
+                            )}
+                          >
+                            <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                          </div>
+
+                          <div className="aspect-square p-4 flex items-center justify-center relative overflow-hidden rounded-t-lg">
+                            {/* Checkerboard bg */}
+                            <div
+                              className="absolute inset-0 opacity-5"
+                              style={{
+                                backgroundImage: 'radial-gradient(#000 1px, transparent 1px)',
+                                backgroundSize: '8px 8px',
+                              }}
+                            ></div>
+                            <img
+                              src={item.base64}
+                              className="max-w-full max-h-full object-contain drop-shadow-md"
+                            />
+                          </div>
+                          <div
+                            className={cn(
+                              'p-2 border-t rounded-b-lg transition-colors',
+                              isSelected
+                                ? 'bg-white border-amber-100'
+                                : 'bg-stone-50 border-stone-100',
+                            )}
+                          >
+                            <div className="text-xs font-bold text-stone-700 truncate">
+                              {item.name}
+                            </div>
+                            <div className="text-[10px] text-stone-400 truncate uppercase">
+                              {item.category}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Final Results Grid */}
               {(results.length > 0 || status === 'complete') && (
                 <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xl animate-fade-in-up delay-100">
                   <div className="flex justify-between items-center mb-6">
                     <div>
                       <h2 className="text-xl font-black text-stone-800 flex items-center gap-2 uppercase tracking-tighter">
-                        <span className="text-amber-500">✦</span> Loot Acquired
+                        <span className="text-green-500">✦</span> Loot Acquired
                       </h2>
                       <p className="text-stone-500 text-xs font-bold tracking-[0.2em] uppercase mt-1">
-                        {results.length} items found & stashed
+                        {results.length} items refined & stashed
                       </p>
                     </div>
                   </div>
@@ -332,7 +539,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                     {results.map((item, i) => (
                       <div
                         key={i}
-                        className="group relative bg-stone-50 rounded-lg border-2 border-stone-200 hover:border-amber-400 hover:shadow-lg transition-all duration-300"
+                        className="group relative bg-stone-50 rounded-lg border-2 border-stone-200 hover:border-green-400 hover:shadow-lg transition-all duration-300"
                       >
                         <div className="aspect-square p-4 flex items-center justify-center relative overflow-hidden rounded-t-lg">
                           {/* Checkerboard bg */}
@@ -378,7 +585,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                           <div className="text-[10px] text-stone-400 truncate uppercase">
                             {item.category}
                           </div>
-                          <div className="w-6 h-1 bg-amber-400 rounded-full mt-2"></div>
+                          <div className="w-6 h-1 bg-green-400 rounded-full mt-2"></div>
                         </div>
                       </div>
                     ))}

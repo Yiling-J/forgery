@@ -1,6 +1,7 @@
 import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
 import { ulid } from 'ulidx'
+import { assetService } from './asset'
 
 export class EquipmentService {
   /**
@@ -86,6 +87,39 @@ export class EquipmentService {
         image: true,
       },
     })
+  }
+
+  /**
+   * Deletes an equipment item and its associated asset.
+   */
+  async deleteEquipment(id: string) {
+    const equipment = await prisma.equipment.findUnique({
+      where: { id },
+    })
+
+    if (!equipment) return
+
+    // Delete related GenerationEquipment records manually since there is no cascade
+    await prisma.generationEquipment.deleteMany({
+      where: { equipmentId: id },
+    })
+
+    // Delete equipment
+    await prisma.equipment.delete({
+      where: { id },
+    })
+
+    // Delete associated asset
+    // Note: We assume the asset is exclusive to this equipment, which is true for extracted assets.
+    if (equipment.imageId) {
+      try {
+        await assetService.deleteAsset(equipment.imageId)
+      } catch (e) {
+        console.warn(`Failed to delete asset ${equipment.imageId} for equipment ${id}`, e)
+      }
+    }
+
+    return equipment
   }
 }
 

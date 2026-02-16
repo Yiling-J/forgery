@@ -91,6 +91,22 @@ export default function Equipments() {
     resetEquipment()
   }, [selectedCategory, resetEquipment])
 
+  const handleDeleteEquipment = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this equipment? This cannot be undone.')) return
+    try {
+      const res = await client.equipments[':id'].$delete({ param: { id } })
+      if (res.ok) {
+        toast.success('Equipment deleted')
+        resetEquipment()
+      } else {
+        toast.error('Failed to delete equipment')
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error('Failed to delete equipment')
+    }
+  }
+
   const handleDeleteOutfit = async (id: string) => {
     if (!confirm('Are you sure you want to delete this outfit?')) return
     try {
@@ -198,6 +214,14 @@ export default function Equipments() {
                     setSelectedEquipment(item)
                     setEquipmentDetailsOpen(true)
                   }}
+                  actions={[
+                    {
+                      name: 'Delete',
+                      onClick: () => handleDeleteEquipment(item.id),
+                      variant: 'destructive',
+                      icon: <Trash2 className="w-4 h-4" />,
+                    },
+                  ]}
                 />
               ))}
             </div>
