@@ -1,13 +1,13 @@
-import React from 'react'
 import { MoreHorizontal } from 'lucide-react'
+import React from 'react'
+import { cn } from '../lib/utils'
 import { Button } from './ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { cn } from '../lib/utils'
 
 export interface VibeCardAction {
   name: string
@@ -62,7 +62,7 @@ export const VibeCard: React.FC<VibeCardProps> = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
+                    className="h-6 w-6 text-white bg-black/10 hover:bg-black/20 hover:text-white"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
