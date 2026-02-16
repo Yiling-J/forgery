@@ -3,10 +3,10 @@ import React from 'react'
 import { cn } from '../lib/utils'
 import { Button } from './ui/button'
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 
 export interface VibeCardAction {
