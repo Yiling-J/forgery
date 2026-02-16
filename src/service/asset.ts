@@ -56,6 +56,22 @@ export class AssetService {
       where: { id },
     })
   }
+
+  async deleteAsset(id: string) {
+    const asset = await prisma.asset.findUnique({
+      where: { id },
+    })
+
+    if (!asset) return
+
+    // Delete file
+    await fileService.deleteFile(asset.path)
+
+    // Delete record
+    await prisma.asset.delete({
+      where: { id },
+    })
+  }
 }
 
 export const assetService = new AssetService()

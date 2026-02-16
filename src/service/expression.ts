@@ -98,6 +98,9 @@ export class ExpressionService {
     await prisma.expression.delete({
       where: { id },
     })
+
+    // Delete image asset
+    await assetService.deleteAsset(expression.imageId)
   }
 
   getBuiltinExpression(id: string) {

@@ -1,13 +1,21 @@
 import { InferResponseType } from 'hono/client'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { ArrowLeft, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import { client } from '../client'
 import { CreateLookDialog } from '../components/CreateLookDialog'
+import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog'
 import { LookDetailsDialog } from '../components/LookDetailsDialog'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu'
 
 // Types - Define locally to avoid complex type extraction if client inference is tricky
 // But we should try to use inference
@@ -25,6 +33,7 @@ export default function FittingRoom() {
   const [createLookOpen, setCreateLookOpen] = useState(false)
   const [selectedLook, setSelectedLook] = useState<GenerationItem | null>(null)
   const [lookDetailsOpen, setLookDetailsOpen] = useState(false)
+  const [deleteLookId, setDeleteLookId] = useState<string | null>(null)
 
   useEffect(() => {
     if (id) {
@@ -158,6 +167,33 @@ export default function FittingRoom() {
                       setLookDetailsOpen(true)
                     }}
                   >
+                    <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setDeleteLookId(gen.id)
+                            }}
+                            className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
                     <img
                       src={gen.image?.path ? `/files/${gen.image.path}` : ''}
                       alt="Generation"
@@ -204,6 +240,28 @@ export default function FittingRoom() {
         open={lookDetailsOpen}
         onOpenChange={setLookDetailsOpen}
         generation={selectedLook}
+      />
+
+      <DeleteConfirmDialog
+        open={!!deleteLookId}
+        onOpenChange={(open) => !open && setDeleteLookId(null)}
+        title="Delete Look"
+        description="Are you sure you want to delete this look? This action cannot be undone and will delete the generated image."
+        onConfirm={async () => {
+          if (!deleteLookId) return
+          try {
+            const res = await client.generations[':id'].$delete({ param: { id: deleteLookId } })
+            if (res.ok) {
+              toast.success('Look deleted')
+              setGenerations((prev) => prev.filter((g) => g.id !== deleteLookId))
+            } else {
+              toast.error('Failed to delete look')
+            }
+          } catch (e) {
+            console.error(e)
+            toast.error('Failed to delete look')
+          }
+        }}
       />
     </div>
   )

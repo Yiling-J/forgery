@@ -1,4 +1,20 @@
+import { MoreHorizontal } from 'lucide-react'
 import React from 'react'
+import { cn } from '../lib/utils'
+import { Button } from './ui/button'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from './ui/dropdown-menu'
+
+export interface VibeCardAction {
+  name: string
+  onClick: () => void
+  variant?: 'default' | 'destructive'
+  icon?: React.ReactNode
+}
 
 interface VibeCardProps {
   image?: string
@@ -7,6 +23,7 @@ interface VibeCardProps {
   color: string
   onClick?: () => void
   index: number
+  actions?: VibeCardAction[]
 }
 
 export const VibeCard: React.FC<VibeCardProps> = ({
@@ -16,6 +33,7 @@ export const VibeCard: React.FC<VibeCardProps> = ({
   color,
   onClick,
   index,
+  actions = [],
 }) => {
   return (
     <div
@@ -34,6 +52,42 @@ export const VibeCard: React.FC<VibeCardProps> = ({
 
         {/* 3. Content Layer - Stays fixed size relative to parent, creating the cutout effect */}
         <div className="absolute inset-[1px] bg-slate-100 clip-path-slant overflow-hidden">
+          {actions.length > 0 && (
+            <div
+              className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-white bg-black/10 hover:bg-black/20 hover:text-white"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {actions.map((action, i) => (
+                    <DropdownMenuItem
+                      key={i}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        action.onClick()
+                      }}
+                      className={cn(
+                        action.variant === 'destructive' &&
+                          'text-red-600 focus:text-red-600 focus:bg-red-50',
+                      )}
+                    >
+                      {action.icon && <span className="mr-2 h-4 w-4">{action.icon}</span>}
+                      {action.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
           <div className="absolute inset-0 bg-slate-100">
             <img
               src={image}

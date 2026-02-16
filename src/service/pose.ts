@@ -94,6 +94,9 @@ export class PoseService {
     await prisma.pose.delete({
       where: { id },
     })
+
+    // Delete image asset
+    await assetService.deleteAsset(pose.imageId)
   }
 
   getBuiltinPose(id: string) {

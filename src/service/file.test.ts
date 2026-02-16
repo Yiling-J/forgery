@@ -56,10 +56,10 @@ describe('FileService', () => {
     // Check if sharp resize was called
     expect(sharpChain.resize).toHaveBeenCalled()
     expect(sharpChain.resize).toHaveBeenCalledWith({
-        width: 2048,
-        height: 2048,
-        fit: 'outside',
-        withoutEnlargement: true,
+      width: 2048,
+      height: 2048,
+      fit: 'outside',
+      withoutEnlargement: true,
     })
   })
 
@@ -73,19 +73,23 @@ describe('FileService', () => {
   })
 
   test('saveBuffer saves a buffer and converts to webp if mimeType is image', async () => {
-      const result = await fileService.saveBuffer(VALID_PNG_BUFFER, 'test.png', 'image/png')
+    const result = await fileService.saveBuffer(VALID_PNG_BUFFER, 'test.png', 'image/png')
 
-      expect(result.filename).toBe('test-ulid.webp')
-      expect(result.mimeType).toBe('image/webp')
-      expect(mockWrite).toHaveBeenCalled()
-      expect(sharpChain.resize).toHaveBeenCalled()
+    expect(result.filename).toBe('test-ulid.webp')
+    expect(result.mimeType).toBe('image/webp')
+    expect(mockWrite).toHaveBeenCalled()
+    expect(sharpChain.resize).toHaveBeenCalled()
   })
 
   test('saveBuffer saves original if not image', async () => {
-      const result = await fileService.saveBuffer(VALID_PNG_BUFFER, 'test.bin', 'application/octet-stream')
+    const result = await fileService.saveBuffer(
+      VALID_PNG_BUFFER,
+      'test.bin',
+      'application/octet-stream',
+    )
 
-      expect(result.filename).toBe('test-ulid.bin')
-      expect(result.mimeType).toBe('application/octet-stream')
-      expect(mockWrite).toHaveBeenCalled()
+    expect(result.filename).toBe('test-ulid.bin')
+    expect(result.mimeType).toBe('application/octet-stream')
+    expect(mockWrite).toHaveBeenCalled()
   })
 })

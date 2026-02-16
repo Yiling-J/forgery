@@ -18,6 +18,7 @@ mock.module('../db', () => ({
 mock.module('./asset', () => ({
   assetService: {
     createAsset: mock(),
+    deleteAsset: mock(),
   },
 }))
 
@@ -75,11 +76,12 @@ describe('PoseService', () => {
     const { poseService } = await import(`./pose?v=${Date.now()}`)
 
     const customId = 'custom1'
-    ;(prisma.pose.findUnique as any).mockResolvedValue({ id: customId })
+    ;(prisma.pose.findUnique as any).mockResolvedValue({ id: customId, imageId: 'asset1' })
     ;(prisma.pose.delete as any).mockResolvedValue({ id: customId })
 
     await poseService.deletePose(customId)
 
     expect(prisma.pose.delete).toHaveBeenCalledWith({ where: { id: customId } })
+    expect(assetService.deleteAsset).toHaveBeenCalledWith('asset1')
   })
 })

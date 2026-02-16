@@ -2,13 +2,7 @@ import { Archive, Download, RefreshCw, Upload } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 import { Separator } from './ui/separator'
 
 interface BackupRestoreDialogProps {
@@ -27,7 +21,9 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
     const file = event.target.files?.[0]
     if (!file) return
 
-    if (!confirm('Warning: This will overwrite all existing data. Are you sure you want to proceed?')) {
+    if (
+      !confirm('Warning: This will overwrite all existing data. Are you sure you want to proceed?')
+    ) {
       event.target.value = '' // Reset input
       return
     }
@@ -39,7 +35,7 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
       const response = await fetch('/api/restore', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-tar',
+          'Content-Type': 'application/x-tar',
         },
         body: file,
       })
@@ -66,9 +62,7 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Backup & Restore</DialogTitle>
-          <DialogDescription>
-            Manage your data backup and restoration.
-          </DialogDescription>
+          <DialogDescription>Manage your data backup and restoration.</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-6 py-4">
@@ -96,7 +90,10 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
               <span>Restore</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Restore data from a backup file. <span className="font-bold text-destructive">Warning: This will overwrite all current data.</span>
+              Restore data from a backup file.{' '}
+              <span className="font-bold text-destructive">
+                Warning: This will overwrite all current data.
+              </span>
             </p>
             <div className="relative">
               <input
@@ -106,11 +103,7 @@ export function BackupRestoreDialog({ open, onOpenChange }: BackupRestoreDialogP
                 disabled={isRestoring}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
               />
-              <Button
-                variant="destructive"
-                className="w-full"
-                disabled={isRestoring}
-              >
+              <Button variant="destructive" className="w-full" disabled={isRestoring}>
                 {isRestoring ? (
                   <>Restoring...</>
                 ) : (

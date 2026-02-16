@@ -15,7 +15,7 @@ export class BackupService {
         gzip: false,
         cwd: 'data',
       },
-      ['.']
+      ['.'],
     ).pipe(stream)
 
     return stream

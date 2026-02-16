@@ -1,6 +1,7 @@
+import { unlink } from 'node:fs/promises'
 import { join } from 'path'
-import { ulid } from 'ulidx'
 import sharp from 'sharp'
+import { ulid } from 'ulidx'
 // import { writeFile as bunWriteFile } from 'bun'
 
 export class FileService {
@@ -128,6 +129,24 @@ export class FileService {
     await Bun.write(path, optimized)
 
     return { path, filename }
+  }
+
+  /**
+   * Deletes a file from the data/files directory.
+   */
+  async deleteFile(filename: string): Promise<void> {
+    const path = join('data/files', filename)
+    try {
+      // Check if file exists
+      const file = Bun.file(path)
+      if (await file.exists()) {
+        await unlink(path)
+      }
+    } catch (error) {
+      console.warn(`Failed to delete file: ${path}`, error)
+      // We don't throw here to allow the database deletion to proceed
+      // even if file deletion fails (e.g. file already gone)
+    }
   }
 }
 
