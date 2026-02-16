@@ -12,13 +12,24 @@ const mockReadFileSync = mock((path: string) => Buffer.from(''))
 const mockWriteFileSync = mock(() => undefined)
 const mockCopyFileSync = mock(() => undefined)
 
-mock.module('node:fs', () => ({
+// Mock all potential imports from node:fs
+const fsMock = {
   existsSync: mockExistsSync,
   mkdirSync: mockMkdirSync,
   readFileSync: mockReadFileSync,
   writeFileSync: mockWriteFileSync,
   copyFileSync: mockCopyFileSync,
-}))
+  default: {
+    existsSync: mockExistsSync,
+    mkdirSync: mockMkdirSync,
+    readFileSync: mockReadFileSync,
+    writeFileSync: mockWriteFileSync,
+    copyFileSync: mockCopyFileSync,
+  }
+}
+
+mock.module('node:fs', () => fsMock)
+mock.module('fs', () => fsMock)
 
 // Mock prisma client
 const mockPrisma = {
