@@ -7,7 +7,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate-example": "bun run src/scripts/generate-example-data.ts"
   },
   "dependencies": {
     "@google/genai": "^1.40.0",
