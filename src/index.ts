@@ -14,6 +14,9 @@ import outfit from './api/outfit'
 import pose from './api/pose'
 import restore from './api/restore'
 import setting from './api/setting'
+import { prisma } from './db'
+import { exampleDataService } from './service/example-data'
+import { settingService } from './service/setting'
 import index from './ui/index.html'
 
 // Ensure data directories exist
@@ -61,6 +64,22 @@ if (process.env.NODE_ENV === 'production') {
 
 // Export type for RPC
 export type AppType = typeof route
+
+// Check and seed example data
+const initialized = await settingService.get('system_initialized')
+if (!initialized) {
+  try {
+    const hasData = (await prisma.character.count()) > 0
+    if (!hasData) {
+      console.log('🌱 Seeding example data...')
+      await exampleDataService.import()
+      console.log('✅ Example data seeded')
+    }
+    await settingService.set('system_initialized', 'true')
+  } catch (error) {
+    console.error('Failed to seed example data:', error)
+  }
+}
 
 // Serve the frontend
 const server = Bun.serve({
