@@ -1,5 +1,5 @@
 import { InferResponseType } from 'hono/client'
-import { MoreHorizontal, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
@@ -8,12 +8,6 @@ import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu'
 import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 
 type ExpressionResponse = InferResponseType<typeof client.expressions.$get>
@@ -73,32 +67,17 @@ export default function Expressions() {
                 image={expression.imageUrl}
                 color={expression.type === 'builtin' ? '#10b981' : '#f59e0b'}
                 onClick={() => {}}
-                action={
-                  expression.type === 'custom' ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setDeleteId(expression.id)
-                          }}
-                          className="text-red-600 focus:text-red-600 focus:bg-red-50"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : null
+                actions={
+                  expression.type === 'custom'
+                    ? [
+                        {
+                          name: 'Delete',
+                          onClick: () => setDeleteId(expression.id),
+                          variant: 'destructive',
+                          icon: <Trash2 className="w-4 h-4" />,
+                        },
+                      ]
+                    : []
                 }
               />
             </div>

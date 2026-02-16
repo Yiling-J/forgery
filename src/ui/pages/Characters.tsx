@@ -1,5 +1,5 @@
 import { InferResponseType } from 'hono/client'
-import { MoreHorizontal, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -9,12 +9,6 @@ import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu'
 import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 
 type CharacterResponse = InferResponseType<typeof client.characters.$get>
@@ -90,31 +84,14 @@ export default function Characters() {
               image={char.image?.path ? `/files/${char.image.path}` : ''}
               color={getCharacterColor(char.name)}
               onClick={() => navigate(`/characters/${char.id}/looks`)}
-              action={
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setDeleteId(char.id)
-                      }}
-                      className="text-red-600 focus:text-red-600 focus:bg-red-50"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              }
+              actions={[
+                {
+                  name: 'Delete',
+                  onClick: () => setDeleteId(char.id),
+                  variant: 'destructive',
+                  icon: <Trash2 className="w-4 h-4" />,
+                },
+              ]}
             />
           ))}
         </div>
