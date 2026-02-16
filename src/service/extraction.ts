@@ -160,10 +160,11 @@ Task: Asset Refinement
 Instructions:
 1. Process the provided asset image.
 2. Remove any remaining background artifacts and ensure a pure white or transparent background.
-3. Upscale the image and enhance details for high-quality game asset presentation.
-4. Ensure the object is centered and fully visible.
-5. EXTREME DETAIL: Preserve every existing detail, texture, and pattern from the input image. Do not change the design. Only sharpen and clarify.
-6. Return only the image.
+3. CRITICAL: Detect and remove any straight lines, black borders, or frame-like artifacts at the edges of the image. These are cropping artifacts and MUST be removed.
+4. Upscale the image and enhance details for high-quality game asset presentation.
+5. Ensure the object is centered and fully visible.
+6. EXTREME DETAIL: Preserve every existing detail, texture, and pattern from the input image. Do not change the design. Only sharpen and clarify.
+7. Return only the image.
 `
     // Using generateImage with image input
     return aiService.generateImage(prompt, [file], 'step_refine_model')

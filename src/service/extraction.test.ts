@@ -1,19 +1,22 @@
 import { describe, expect, test, mock, beforeAll } from 'bun:test'
 
 // Mock dependencies
+const generateTextMock = mock(async () => ({
+  assets: [
+    {
+      item_name: 'Helmet',
+      description: 'A rusty helmet',
+      category: 'Headwear',
+      sub_category: 'Helmet',
+    },
+  ],
+}))
+const generateImageMock = mock(async () => 'data:image/png;base64,mockImage')
+
 mock.module('./ai', () => ({
   aiService: {
-    generateText: mock(async () => ({
-      assets: [
-        {
-          item_name: 'Helmet',
-          description: 'A rusty helmet',
-          category: 'Headwear',
-          sub_category: 'Helmet',
-        },
-      ],
-    })),
-    generateImage: mock(async () => 'data:image/png;base64,mockImage'),
+    generateText: generateTextMock,
+    generateImage: generateImageMock,
   },
 }))
 
@@ -73,5 +76,22 @@ describe('ExtractionService', () => {
     expect(result.length).toBe(1)
     expect(result[0].name).toBe('Helmet')
     expect(result[0].base64).toContain('data:image/png;base64,')
+  })
+
+  test('refineAsset calls AI service with correct prompt', async () => {
+    // Clear previous calls
+    generateImageMock.mockClear()
+
+    const base64 = 'data:image/png;base64,mockImageContent'
+    const result = await extractionService.refineAsset(base64)
+
+    expect(result).toBe('data:image/png;base64,mockImage')
+    expect(generateImageMock).toHaveBeenCalled()
+
+    const callArgs = generateImageMock.mock.calls[0]
+    const prompt = callArgs[0]
+
+    expect(prompt).toContain('CRITICAL: Detect and remove any straight lines, black borders, or frame-like artifacts')
+    expect(prompt).toContain('These are cropping artifacts and MUST be removed')
   })
 })
