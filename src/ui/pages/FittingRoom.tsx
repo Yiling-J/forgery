@@ -173,7 +173,7 @@ export default function FittingRoom() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
+                            className="h-8 w-8 text-white bg-black/40 hover:bg-black/60 hover:text-white backdrop-blur-md"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <MoreHorizontal className="h-4 w-4" />
@@ -200,26 +200,9 @@ export default function FittingRoom() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                      <p className="text-white text-xs font-bold mb-2">
+                      <p className="text-white text-xs font-bold">
                         {new Date(gen.createdAt).toLocaleDateString()}
                       </p>
-                      <div className="flex gap-1 flex-wrap content-start h-12 overflow-hidden">
-                        {/* @ts-ignore - equipment structure might vary based on include */}
-                        {gen.equipments?.slice(0, 3).map((eq) => (
-                          <span
-                            key={eq.equipmentId}
-                            className="text-[10px] bg-white/20 text-white px-2 py-1 rounded-md backdrop-blur-md border border-white/10"
-                          >
-                            {eq.equipment.name}
-                          </span>
-                        ))}
-                        {/* @ts-ignore */}
-                        {gen.equipments && gen.equipments.length > 3 && (
-                          <span className="text-[10px] bg-white/20 text-white px-2 py-1 rounded-md backdrop-blur-md border border-white/10">
-                            +{gen.equipments.length - 3}
-                          </span>
-                        )}
-                      </div>
                     </div>
                   </div>
                 ))}
