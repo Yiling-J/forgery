@@ -1,29 +1,35 @@
 import { describe, expect, test, mock, beforeAll } from 'bun:test'
 
 // Mock dependencies
+const generateTextMock = mock(async () => ({
+  assets: [
+    {
+      item_name: 'Helmet',
+      description: 'A rusty helmet',
+      category: 'Headwear',
+      sub_category: 'Helmet',
+    },
+  ],
+}))
+const generateImageMock = mock(async () => 'data:image/png;base64,mockImage')
+
 mock.module('./ai', () => ({
   aiService: {
-    generateText: mock(async () => ({
-      assets: [
-        {
-          item_name: 'Helmet',
-          description: 'A rusty helmet',
-          category: 'Headwear',
-          sub_category: 'Helmet',
-        },
-      ],
-    })),
-    generateImage: mock(async () => 'data:image/png;base64,mockImage'),
+    generateText: generateTextMock,
+    generateImage: generateImageMock,
   },
+}))
+
+// Create a spy for the extract method to verify dimensions
+const extractMock = mock(() => ({
+  toBuffer: () => Promise.resolve(Buffer.from('mockCrop')),
 }))
 
 mock.module('sharp', () => {
   const sharpInstance = {
     metadata: () => Promise.resolve({ width: 300, height: 100 }),
     clone: () => ({
-      extract: () => ({
-        toBuffer: () => Promise.resolve(Buffer.from('mockCrop')),
-      }),
+      extract: extractMock,
     }),
   }
   return {
@@ -60,7 +66,7 @@ describe('ExtractionService', () => {
     expect(result).toBe('data:image/png;base64,mockImage')
   })
 
-  test('cropAssets splits image based on grid', async () => {
+  test('cropAssets splits image based on grid with padding', async () => {
     const assets = [
       {
         item_name: 'Helmet',
@@ -69,9 +75,41 @@ describe('ExtractionService', () => {
       },
     ]
     // 1 asset -> 1x3 grid. width 300 / 3 = 100. height 100 / 1 = 100.
+    // Padding is 3px.
+    // Expected crop: left: 0+3=3, top: 0+3=3, width: 100-6=94, height: 100-6=94
+
+    extractMock.mockClear()
     const result = await extractionService.cropAssets('data:image/png;base64,mockSheet', assets)
+
     expect(result.length).toBe(1)
     expect(result[0].name).toBe('Helmet')
     expect(result[0].base64).toContain('data:image/png;base64,')
+
+    expect(extractMock).toHaveBeenCalled()
+    // Cast to unknown then any array to avoid tuple length errors
+    const callArgs = extractMock.mock.calls[0] as unknown as any[]
+    const options = callArgs[0]
+
+    expect(options?.left).toBe(3)
+    expect(options?.top).toBe(3)
+    expect(options?.width).toBe(94)
+    expect(options?.height).toBe(94)
+  })
+
+  test('refineAsset calls AI service with correct prompt', async () => {
+    // Clear previous calls
+    generateImageMock.mockClear()
+
+    const base64 = 'data:image/png;base64,mockImageContent'
+    const result = await extractionService.refineAsset(base64)
+
+    expect(result).toBe('data:image/png;base64,mockImage')
+    expect(generateImageMock).toHaveBeenCalled()
+
+    const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
+    const prompt = callArgs[0] as string
+
+    expect(prompt).toContain('CRITICAL: Detect and remove any straight lines, black borders, or frame-like artifacts')
+    expect(prompt).toContain('These are cropping artifacts and MUST be removed')
   })
 })

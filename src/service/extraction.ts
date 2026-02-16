@@ -119,11 +119,12 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
       const row = Math.floor(i / cols)
       const col = i % cols
 
-      // Calculate coordinates
-      const left = col * cellWidth
-      const top = row * cellHeight
-      const width = cellWidth
-      const height = cellHeight
+      // Calculate coordinates with 3px inner padding to avoid grid lines
+      const padding = 3
+      const left = col * cellWidth + padding
+      const top = row * cellHeight + padding
+      const width = cellWidth - padding * 2
+      const height = cellHeight - padding * 2
 
       // Ensure we don't go out of bounds (though math implies we fit)
       const safeLeft = Math.max(0, left)
@@ -160,10 +161,11 @@ Task: Asset Refinement
 Instructions:
 1. Process the provided asset image.
 2. Remove any remaining background artifacts and ensure a pure white or transparent background.
-3. Upscale the image and enhance details for high-quality game asset presentation.
-4. Ensure the object is centered and fully visible.
-5. EXTREME DETAIL: Preserve every existing detail, texture, and pattern from the input image. Do not change the design. Only sharpen and clarify.
-6. Return only the image.
+3. CRITICAL: Detect and remove any straight lines, black borders, or frame-like artifacts at the edges of the image. These are cropping artifacts and MUST be removed.
+4. Upscale the image and enhance details for high-quality game asset presentation.
+5. Ensure the object is centered and fully visible.
+6. EXTREME DETAIL: Preserve every existing detail, texture, and pattern from the input image. Do not change the design. Only sharpen and clarify.
+7. Return only the image.
 `
     // Using generateImage with image input
     return aiService.generateImage(prompt, [file], 'step_refine_model')
