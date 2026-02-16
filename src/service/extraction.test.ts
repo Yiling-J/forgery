@@ -20,13 +20,16 @@ mock.module('./ai', () => ({
   },
 }))
 
+// Create a spy for the extract method to verify dimensions
+const extractMock = mock((options: any) => ({
+  toBuffer: () => Promise.resolve(Buffer.from('mockCrop')),
+}))
+
 mock.module('sharp', () => {
   const sharpInstance = {
     metadata: () => Promise.resolve({ width: 300, height: 100 }),
     clone: () => ({
-      extract: () => ({
-        toBuffer: () => Promise.resolve(Buffer.from('mockCrop')),
-      }),
+      extract: extractMock,
     }),
   }
   return {
@@ -63,7 +66,7 @@ describe('ExtractionService', () => {
     expect(result).toBe('data:image/png;base64,mockImage')
   })
 
-  test('cropAssets splits image based on grid', async () => {
+  test('cropAssets splits image based on grid with padding', async () => {
     const assets = [
       {
         item_name: 'Helmet',
@@ -72,10 +75,24 @@ describe('ExtractionService', () => {
       },
     ]
     // 1 asset -> 1x3 grid. width 300 / 3 = 100. height 100 / 1 = 100.
+    // Padding is 3px.
+    // Expected crop: left: 0+3=3, top: 0+3=3, width: 100-6=94, height: 100-6=94
+
+    extractMock.mockClear()
     const result = await extractionService.cropAssets('data:image/png;base64,mockSheet', assets)
+
     expect(result.length).toBe(1)
     expect(result[0].name).toBe('Helmet')
     expect(result[0].base64).toContain('data:image/png;base64,')
+
+    expect(extractMock).toHaveBeenCalled()
+    const callArgs = extractMock.mock.calls[0]
+    const options = callArgs[0]
+
+    expect(options.left).toBe(3)
+    expect(options.top).toBe(3)
+    expect(options.width).toBe(94)
+    expect(options.height).toBe(94)
   })
 
   test('refineAsset calls AI service with correct prompt', async () => {

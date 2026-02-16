@@ -119,11 +119,12 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
       const row = Math.floor(i / cols)
       const col = i % cols
 
-      // Calculate coordinates
-      const left = col * cellWidth
-      const top = row * cellHeight
-      const width = cellWidth
-      const height = cellHeight
+      // Calculate coordinates with 3px inner padding to avoid grid lines
+      const padding = 3
+      const left = col * cellWidth + padding
+      const top = row * cellHeight + padding
+      const width = cellWidth - padding * 2
+      const height = cellHeight - padding * 2
 
       // Ensure we don't go out of bounds (though math implies we fit)
       const safeLeft = Math.max(0, left)
