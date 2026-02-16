@@ -190,7 +190,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[98vw] w-full h-[95vh] p-0 overflow-hidden bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col">
+      <DialogContent className="max-w-[98vw] w-full max-h-fit p-0 overflow-hidden bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col">
         <DialogTitle className="sr-only">Extractor</DialogTitle>
 
         {/* Top Navigation / Branding Bar (Optional, matches App feel) */}

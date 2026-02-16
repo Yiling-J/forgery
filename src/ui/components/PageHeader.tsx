@@ -44,7 +44,7 @@ export function PageHeader({
               </div>
             )}
             <h1 className="text-3xl md:text-5xl font-display font-black uppercase text-slate-900 tracking-tighter">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 pr-1">
                 {title}
               </span>
             </h1>

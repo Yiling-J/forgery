@@ -1,7 +1,9 @@
-import { ArrowRight, Check, Grid2X2 } from 'lucide-react'
+import { Check } from 'lucide-react'
 import React, { useState } from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset } from '../../types'
+import { Button } from '../ui/button'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface SelectionStageProps {
   candidates: CandidateAsset[]
@@ -29,27 +31,10 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 animate-fade-in-up">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <Grid2X2 className="text-cyan-500" />
-            Select Candidates
-          </h2>
-          <p className="text-slate-500 text-sm mt-1">
-            Unselect any items you wish to exclude from refinement.
-          </p>
-        </div>
-        <div className="px-4 py-2 bg-white rounded-lg border border-slate-200 shadow-sm flex items-center gap-2">
-          <span className="text-cyan-600 font-bold text-lg">{selectedIndices.length}</span>
-          <span className="text-slate-500 text-sm">Selected</span>
-        </div>
-      </div>
-
+    <div className="flex flex-col max-h-[80vh] w-full max-w-6xl mx-auto px-4 py-2">
       {/* Grid */}
-      <div className="flex-1 overflow-y-auto min-h-0 pr-2 custom-scrollbar">
-        <div className="flex flex-wrap gap-4 pb-24 justify-center">
+      <ScrollArea className="h-full">
+        <div className="grid grid-cols-3 gap-2 p-1 h-full">
           {candidates.map((item, index) => {
             const isSelected = selectedIndices.includes(index)
             return (
@@ -57,22 +42,13 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 key={index}
                 onClick={() => toggleSelection(index)}
                 className={cn(
-                  'group relative w-[140px] h-[140px] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up flex-shrink-0',
+                  'group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up flex-shrink-0',
                   isSelected
                     ? 'border-cyan-500 shadow-lg shadow-cyan-100 scale-[1.02]'
                     : 'border-slate-200 opacity-80 hover:opacity-100 hover:border-slate-300',
                 )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                {/* Checkerboard bg */}
-                <div
-                  className="absolute inset-0 opacity-10 pointer-events-none"
-                  style={{
-                    backgroundImage: 'radial-gradient(#000 1px, transparent 1px)',
-                    backgroundSize: '8px 8px',
-                  }}
-                ></div>
-
                 <img
                   src={item.base64}
                   alt={item.name}
@@ -100,7 +76,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 </div>
 
                 {/* Label */}
-                <div className="absolute bottom-0 left-0 right-0 p-2 bg-white/90 backdrop-blur-sm border-t border-slate-100">
+                <div className="absolute bottom-0 left-0 right-0 p-2 bg-white/50 backdrop-blur-sm border-t border-slate-100">
                   <p className="text-xs font-bold text-slate-700 truncate">{item.name}</p>
                   <p className="text-[10px] text-slate-400 truncate uppercase">{item.category}</p>
                 </div>
@@ -108,30 +84,24 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
             )
           })}
         </div>
-      </div>
+      </ScrollArea>
 
       {/* Footer Actions */}
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50">
         <div className="max-w-6xl mx-auto flex justify-end items-center gap-4">
-          <button
-            onClick={onCancel}
-            className="px-6 py-3 rounded-xl text-slate-500 font-medium hover:text-slate-800 hover:bg-slate-100 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button
             onClick={handleConfirm}
             disabled={selectedIndices.length === 0}
             className={cn(
-              'flex items-center gap-2 px-8 py-3 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg',
+              'flex items-center gap-2 px-8 py-3 font-bold uppercase tracking-wide transition-all shadow-lg',
               selectedIndices.length > 0
-                ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-cyan-200 hover:shadow-cyan-300 hover:-translate-y-0.5'
+                ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed',
             )}
           >
-            Start Refining
-            <ArrowRight className="w-5 h-5" />
-          </button>
+            Start Refining ({selectedIndices.length})
+          </Button>
         </div>
       </div>
     </div>
