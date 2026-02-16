@@ -92,7 +92,9 @@ describe('EquipmentService', () => {
     await equipmentService.deleteEquipment('1')
 
     expect(mockPrisma.equipment.findUnique).toHaveBeenCalledWith({ where: { id: '1' } })
-    expect(mockPrisma.generationEquipment.deleteMany).toHaveBeenCalledWith({ where: { equipmentId: '1' } })
+    expect(mockPrisma.generationEquipment.deleteMany).toHaveBeenCalledWith({
+      where: { equipmentId: '1' },
+    })
     expect(mockPrisma.equipment.delete).toHaveBeenCalledWith({ where: { id: '1' } })
     expect(mockAssetService.deleteAsset).toHaveBeenCalledWith('asset-1')
   })
