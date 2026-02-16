@@ -127,9 +127,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   }, [selectedCategories, resetEquipment])
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
-    )
+    setSelectedCategories((prev) => (prev.includes(category) ? [] : [category]))
   }
 
   const toggleEquipment = (item: EquipmentItem) => {

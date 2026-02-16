@@ -16,8 +16,20 @@ mock.module('../db', () => ({
 }))
 
 const mockFileService = {
-  saveFile: mock(() => Promise.resolve({ path: 'data/files/mock.webp', filename: 'mock.webp', mimeType: 'image/webp' })),
-  saveBuffer: mock(() => Promise.resolve({ path: 'data/files/mock.webp', filename: 'mock.webp', mimeType: 'image/webp' })),
+  saveFile: mock(() =>
+    Promise.resolve({
+      path: 'data/files/mock.webp',
+      filename: 'mock.webp',
+      mimeType: 'image/webp',
+    }),
+  ),
+  saveBuffer: mock(() =>
+    Promise.resolve({
+      path: 'data/files/mock.webp',
+      filename: 'mock.webp',
+      mimeType: 'image/webp',
+    }),
+  ),
 }
 
 mock.module('./file', () => ({
@@ -55,11 +67,13 @@ describe('AssetService', () => {
     // Check call arguments
     // Use expect.objectContaining for partial match
     const createCall = mockPrisma.asset.create.mock.calls[0][0]
-    expect(createCall.data).toEqual(expect.objectContaining({
+    expect(createCall.data).toEqual(
+      expect.objectContaining({
         type: 'image/webp',
         path: 'mock.webp',
-        id: 'mocked-ulid'
-    }))
+        id: 'mocked-ulid',
+      }),
+    )
 
     expect(result.name).toBe(meta.name)
   })

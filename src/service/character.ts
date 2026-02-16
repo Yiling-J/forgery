@@ -1,5 +1,7 @@
-import { prisma } from '../db'
 import { ulid } from 'ulidx'
+import { prisma } from '../db'
+import { assetService } from './asset'
+import { generationService } from './generation'
 
 export class CharacterService {
   async createCharacter(data: { name: string; description?: string; imageId: string }) {
@@ -60,9 +62,27 @@ export class CharacterService {
   }
 
   async deleteCharacter(id: string) {
-    return prisma.character.delete({
+    const character = await prisma.character.findUnique({
+      where: { id },
+      include: {
+        generations: true,
+      },
+    })
+
+    if (!character) return
+
+    // 1. Delete all generations (looks)
+    for (const gen of character.generations) {
+      await generationService.deleteGeneration(gen.id)
+    }
+
+    // 2. Delete character record
+    await prisma.character.delete({
       where: { id },
     })
+
+    // 3. Delete character image asset
+    await assetService.deleteAsset(character.imageId)
   }
 }
 

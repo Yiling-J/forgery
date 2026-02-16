@@ -292,6 +292,27 @@ category: ${eq.category}
 
     return { total, items, page, limit, totalPages: Math.ceil(total / limit) }
   }
+
+  async deleteGeneration(id: string) {
+    const generation = await prisma.generation.findUnique({
+      where: { id },
+    })
+
+    if (!generation) return
+
+    // Delete relation records first (not strictly needed with cascading deletes, but safe)
+    await prisma.generationEquipment.deleteMany({
+      where: { generationId: id },
+    })
+
+    // Delete generation record
+    await prisma.generation.delete({
+      where: { id },
+    })
+
+    // Delete image asset (this also deletes the file)
+    await assetService.deleteAsset(generation.imageId)
+  }
 }
 
 export const generationService = new GenerationService()

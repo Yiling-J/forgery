@@ -1,12 +1,19 @@
 import { InferResponseType } from 'hono/client'
-import { Plus, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { CreateExpressionDialog } from '../components/CreateExpressionDialog'
+import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu'
 import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 
 type ExpressionResponse = InferResponseType<typeof client.expressions.$get>
@@ -14,6 +21,7 @@ type ExpressionItem = ExpressionResponse[number]
 
 export default function Expressions() {
   const [createOpen, setCreateOpen] = useState(false)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
 
   const {
     items: expressions,
@@ -36,24 +44,6 @@ export default function Expressions() {
     },
     limit: 20,
   })
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this expression?')) return
-
-    try {
-      const res = await client.expressions[':id'].$delete({ param: { id } })
-      if (res.ok) {
-        toast.success('Expression deleted')
-        setExpressions((prev) => prev.filter((e) => e.id !== id))
-      } else {
-        const err = await res.json()
-        // @ts-ignore
-        toast.error('Failed to delete: ' + (err.error || 'Unknown error'))
-      }
-    } catch {
-      toast.error('Failed to delete expression')
-    }
-  }
 
   return (
     <div className="w-full h-full p-4 pt-2 flex flex-col text-slate-900 relative">
@@ -83,18 +73,34 @@ export default function Expressions() {
                 image={expression.imageUrl}
                 color={expression.type === 'builtin' ? '#10b981' : '#f59e0b'}
                 onClick={() => {}}
+                action={
+                  expression.type === 'custom' ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setDeleteId(expression.id)
+                          }}
+                          className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : null
+                }
               />
-              {expression.type === 'custom' && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleDelete(expression.id)
-                  }}
-                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover/container:opacity-100 transition-opacity z-10 hover:bg-red-600 shadow-md"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
             </div>
           ))}
         </div>
@@ -108,6 +114,28 @@ export default function Expressions() {
       </div>
 
       <CreateExpressionDialog open={createOpen} onOpenChange={setCreateOpen} onSuccess={reset} />
+      <DeleteConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        title="Delete Expression"
+        description="Are you sure you want to delete this expression? This action cannot be undone."
+        onConfirm={async () => {
+          if (!deleteId) return
+          try {
+            const res = await client.expressions[':id'].$delete({ param: { id: deleteId } })
+            if (res.ok) {
+              toast.success('Expression deleted')
+              setExpressions((prev) => prev.filter((e) => e.id !== deleteId))
+            } else {
+              const err = await res.json()
+              // @ts-ignore
+              toast.error('Failed to delete: ' + (err.error || 'Unknown error'))
+            }
+          } catch {
+            toast.error('Failed to delete expression')
+          }
+        }}
+      />
     </div>
   )
 }

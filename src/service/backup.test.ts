@@ -38,7 +38,7 @@ mock.module('tar', () => ({
     // Simulate async completion
     setTimeout(() => stream.emit('finish'), 10)
     return stream
-  }
+  },
 }))
 
 // Import service after mocking
@@ -86,7 +86,7 @@ describe('BackupService', () => {
         const stream = new PassThrough()
         setTimeout(() => stream.emit('error', new Error('Extraction failed')), 10)
         return stream
-      }
+      },
     }))
 
     // Re-import service to pick up new mock

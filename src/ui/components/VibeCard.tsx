@@ -7,6 +7,7 @@ interface VibeCardProps {
   color: string
   onClick?: () => void
   index: number
+  action?: React.ReactNode
 }
 
 export const VibeCard: React.FC<VibeCardProps> = ({
@@ -16,6 +17,7 @@ export const VibeCard: React.FC<VibeCardProps> = ({
   color,
   onClick,
   index,
+  action,
 }) => {
   return (
     <div
@@ -34,6 +36,14 @@ export const VibeCard: React.FC<VibeCardProps> = ({
 
         {/* 3. Content Layer - Stays fixed size relative to parent, creating the cutout effect */}
         <div className="absolute inset-[1px] bg-slate-100 clip-path-slant overflow-hidden">
+          {action && (
+            <div
+              className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {action}
+            </div>
+          )}
           <div className="absolute inset-0 bg-slate-100">
             <img
               src={image}

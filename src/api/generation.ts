@@ -46,5 +46,10 @@ const route = app
       return c.json({ error: e instanceof Error ? e.message : 'Unknown error' }, 500)
     }
   })
+  .delete('/:id', async (c) => {
+    const id = c.req.param('id')
+    await generationService.deleteGeneration(id)
+    return c.json({ success: true }, 200)
+  })
 
 export default route
