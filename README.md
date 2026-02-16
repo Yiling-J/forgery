@@ -1,6 +1,8 @@
-# Forgery
-
-> Build, remix, and re-style characters with AI — extract equipment from images, store them in a library, and apply equipment + pose/expression to generate fresh looks.
+<div align="center">
+  <img src="public/logo-large.webp" alt="Forgery Logo" width="200" height="200" />
+  <h1>Forgery</h1>
+  <p><strong>Build, remix, and re-style characters with AI — extract equipment from images, store them in a library, and apply equipment + pose/expression to generate fresh looks.</strong></p>
+</div>
 
 [![build-badge](https://img.shields.io/badge/build-wip-yellow)](https://github.com/yourname/forgery) [![license-mit](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
