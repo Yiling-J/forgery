@@ -4,6 +4,7 @@ import equipment from './equipment'
 const mockEquipmentService = {
   listEquipments: mock(),
   updateEquipment: mock(),
+  deleteEquipment: mock(),
 }
 
 mock.module('../service/equipment', () => ({
@@ -14,6 +15,7 @@ describe('Equipment API', () => {
   afterEach(() => {
     mockEquipmentService.listEquipments.mockClear()
     mockEquipmentService.updateEquipment.mockClear()
+    mockEquipmentService.deleteEquipment.mockClear()
   })
 
   it('GET / should list equipments with filters', async () => {
@@ -45,5 +47,17 @@ describe('Equipment API', () => {
     expect(mockEquipmentService.updateEquipment).toHaveBeenCalledWith('1', {
       name: 'Updated',
     })
+  })
+
+  it('DELETE /:id should delete equipment', async () => {
+    mockEquipmentService.deleteEquipment.mockResolvedValue({ id: '1' })
+
+    const req = new Request('http://localhost/1', {
+      method: 'DELETE',
+    })
+
+    const res = await equipment.fetch(req)
+    expect(res.status).toBe(200)
+    expect(mockEquipmentService.deleteEquipment).toHaveBeenCalledWith('1')
   })
 })

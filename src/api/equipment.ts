@@ -42,4 +42,15 @@ const routeWithPatch = route.patch('/:id', zValidator('json', patchSchema), asyn
   }
 })
 
-export default routeWithPatch
+const routeWithDelete = routeWithPatch.delete('/:id', async (c) => {
+  const { id } = c.req.param()
+  try {
+    await equipmentService.deleteEquipment(id)
+    return c.json({ success: true })
+  } catch (e) {
+    console.error('Failed to delete equipment', e)
+    return c.json({ error: 'Failed to delete equipment' }, 500)
+  }
+})
+
+export default routeWithDelete

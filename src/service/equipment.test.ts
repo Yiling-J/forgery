@@ -5,11 +5,24 @@ const mockPrisma = {
     findMany: mock(),
     count: mock(),
     update: mock(),
+    delete: mock(),
+    findUnique: mock(),
   },
+  generationEquipment: {
+    deleteMany: mock(),
+  },
+}
+
+const mockAssetService = {
+  deleteAsset: mock(),
 }
 
 mock.module('../db', () => ({
   prisma: mockPrisma,
+}))
+
+mock.module('./asset', () => ({
+  assetService: mockAssetService,
 }))
 
 describe('EquipmentService', () => {
@@ -17,6 +30,10 @@ describe('EquipmentService', () => {
     mockPrisma.equipment.findMany.mockClear()
     mockPrisma.equipment.count.mockClear()
     mockPrisma.equipment.update.mockClear()
+    mockPrisma.equipment.delete.mockClear()
+    mockPrisma.equipment.findUnique.mockClear()
+    mockPrisma.generationEquipment.deleteMany.mockClear()
+    mockAssetService.deleteAsset.mockClear()
   })
 
   it('listEquipments should filter by category', async () => {
@@ -59,5 +76,24 @@ describe('EquipmentService', () => {
         }),
       }),
     )
+  })
+
+  it('deleteEquipment should delete equipment and associated asset', async () => {
+    // @ts-ignore
+    const { equipmentService } = await import(`./equipment?v=${Date.now()}`)
+    mockPrisma.equipment.findUnique.mockResolvedValue({
+      id: '1',
+      imageId: 'asset-1',
+    })
+    mockPrisma.generationEquipment.deleteMany.mockResolvedValue({ count: 1 })
+    mockPrisma.equipment.delete.mockResolvedValue({ id: '1' })
+    mockAssetService.deleteAsset.mockResolvedValue(undefined)
+
+    await equipmentService.deleteEquipment('1')
+
+    expect(mockPrisma.equipment.findUnique).toHaveBeenCalledWith({ where: { id: '1' } })
+    expect(mockPrisma.generationEquipment.deleteMany).toHaveBeenCalledWith({ where: { equipmentId: '1' } })
+    expect(mockPrisma.equipment.delete).toHaveBeenCalledWith({ where: { id: '1' } })
+    expect(mockAssetService.deleteAsset).toHaveBeenCalledWith('asset-1')
   })
 })
