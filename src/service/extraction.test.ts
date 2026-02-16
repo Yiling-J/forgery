@@ -86,13 +86,14 @@ describe('ExtractionService', () => {
     expect(result[0].base64).toContain('data:image/png;base64,')
 
     expect(extractMock).toHaveBeenCalled()
-    const callArgs = extractMock.mock.calls[0]
+    // Cast to unknown then any array to avoid tuple length errors
+    const callArgs = extractMock.mock.calls[0] as unknown as any[]
     const options = callArgs[0]
 
-    expect(options.left).toBe(3)
-    expect(options.top).toBe(3)
-    expect(options.width).toBe(94)
-    expect(options.height).toBe(94)
+    expect(options?.left).toBe(3)
+    expect(options?.top).toBe(3)
+    expect(options?.width).toBe(94)
+    expect(options?.height).toBe(94)
   })
 
   test('refineAsset calls AI service with correct prompt', async () => {
@@ -105,8 +106,8 @@ describe('ExtractionService', () => {
     expect(result).toBe('data:image/png;base64,mockImage')
     expect(generateImageMock).toHaveBeenCalled()
 
-    const callArgs = generateImageMock.mock.calls[0]
-    const prompt = callArgs[0]
+    const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
+    const prompt = callArgs[0] as string
 
     expect(prompt).toContain('CRITICAL: Detect and remove any straight lines, black borders, or frame-like artifacts')
     expect(prompt).toContain('These are cropping artifacts and MUST be removed')
