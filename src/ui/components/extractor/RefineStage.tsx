@@ -1,4 +1,4 @@
-import { CheckCircle2, Loader2, RefreshCw, Sparkles } from 'lucide-react'
+import { CheckCircle2, Loader2, Sparkles } from 'lucide-react'
 import React from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset, ExtractedAsset } from '../../types'
@@ -7,14 +7,12 @@ interface RefineStageProps {
   selectedCandidates: CandidateAsset[]
   results: ExtractedAsset[]
   isComplete: boolean
-  onDone: () => void
 }
 
 export const RefineStage: React.FC<RefineStageProps> = ({
   selectedCandidates,
   results,
   isComplete,
-  onDone,
 }) => {
   return (
     <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-6">
@@ -31,15 +29,6 @@ export const RefineStage: React.FC<RefineStageProps> = ({
               : `Processing item ${Math.min(results.length + 1, selectedCandidates.length)} of ${selectedCandidates.length}...`}
           </p>
         </div>
-        {isComplete && (
-          <button
-            onClick={onDone}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-green-500 hover:bg-green-600 text-white font-medium shadow-lg shadow-green-200 transition-all animate-bounce"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Start Over
-          </button>
-        )}
       </div>
 
       {/* Grid */}
