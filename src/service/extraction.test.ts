@@ -109,7 +109,7 @@ describe('ExtractionService', () => {
     const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
     const prompt = callArgs[0] as string
 
-    expect(prompt).toContain('CRITICAL: Detect and remove any straight lines, black borders, or frame-like artifacts')
-    expect(prompt).toContain('These are cropping artifacts and MUST be removed')
+    expect(prompt).toContain('Task: Asset Refinement')
+    expect(prompt).toContain('Return only the image.')
   })
 })
