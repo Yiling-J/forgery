@@ -1,4 +1,4 @@
-import fs from 'node:fs'
+import { existsSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { prisma } from '../db'
 import { assetService } from './asset'
@@ -56,11 +56,11 @@ export class ExampleDataService {
   }
 
   private ensureDirs() {
-    if (!fs.existsSync(this.baseDir)) {
-      fs.mkdirSync(this.baseDir)
+    if (!existsSync(this.baseDir)) {
+      mkdirSync(this.baseDir)
     }
-    if (!fs.existsSync(this.assetsDir)) {
-      fs.mkdirSync(this.assetsDir)
+    if (!existsSync(this.assetsDir)) {
+      mkdirSync(this.assetsDir)
     }
   }
 
@@ -69,9 +69,10 @@ export class ExampleDataService {
 
     // 1. Characters
     const characters = await prisma.character.findMany({ include: { image: true } })
-    const characterData: CharacterData[] = characters.map((c) => {
-      this.copyAsset(c.image.path)
-      return {
+    const characterData: CharacterData[] = []
+    for (const c of characters) {
+      await this.copyAsset(c.image.path)
+      characterData.push({
         id: c.id,
         name: c.name,
         description: c.description,
@@ -80,15 +81,16 @@ export class ExampleDataService {
           type: c.image.type,
           path: c.image.path,
         },
-      }
-    })
-    fs.writeFileSync(join(this.baseDir, 'characters.json'), JSON.stringify(characterData, null, 2))
+      })
+    }
+    await Bun.write(join(this.baseDir, 'characters.json'), JSON.stringify(characterData, null, 2))
 
     // 2. Equipments
     const equipments = await prisma.equipment.findMany({ include: { image: true } })
-    const equipmentData: EquipmentData[] = equipments.map((e) => {
-      this.copyAsset(e.image.path)
-      return {
+    const equipmentData: EquipmentData[] = []
+    for (const e of equipments) {
+      await this.copyAsset(e.image.path)
+      equipmentData.push({
         id: e.id,
         name: e.name,
         description: e.description,
@@ -99,15 +101,16 @@ export class ExampleDataService {
           type: e.image.type,
           path: e.image.path,
         },
-      }
-    })
-    fs.writeFileSync(join(this.baseDir, 'equipments.json'), JSON.stringify(equipmentData, null, 2))
+      })
+    }
+    await Bun.write(join(this.baseDir, 'equipments.json'), JSON.stringify(equipmentData, null, 2))
 
     // 3. Poses
     const poses = await prisma.pose.findMany({ include: { image: true } })
-    const poseData: PoseData[] = poses.map((p) => {
-      this.copyAsset(p.image.path)
-      return {
+    const poseData: PoseData[] = []
+    for (const p of poses) {
+      await this.copyAsset(p.image.path)
+      poseData.push({
         id: p.id,
         name: p.name,
         asset: {
@@ -115,15 +118,16 @@ export class ExampleDataService {
           type: p.image.type,
           path: p.image.path,
         },
-      }
-    })
-    fs.writeFileSync(join(this.baseDir, 'poses.json'), JSON.stringify(poseData, null, 2))
+      })
+    }
+    await Bun.write(join(this.baseDir, 'poses.json'), JSON.stringify(poseData, null, 2))
 
     // 4. Expressions
     const expressions = await prisma.expression.findMany({ include: { image: true } })
-    const expressionData: ExpressionData[] = expressions.map((e) => {
-      this.copyAsset(e.image.path)
-      return {
+    const expressionData: ExpressionData[] = []
+    for (const e of expressions) {
+      await this.copyAsset(e.image.path)
+      expressionData.push({
         id: e.id,
         name: e.name,
         asset: {
@@ -131,9 +135,9 @@ export class ExampleDataService {
           type: e.image.type,
           path: e.image.path,
         },
-      }
-    })
-    fs.writeFileSync(join(this.baseDir, 'expressions.json'), JSON.stringify(expressionData, null, 2))
+      })
+    }
+    await Bun.write(join(this.baseDir, 'expressions.json'), JSON.stringify(expressionData, null, 2))
 
     // 5. Generations (Looks)
     const generations = await prisma.generation.findMany({
@@ -142,9 +146,10 @@ export class ExampleDataService {
         equipments: true,
       },
     })
-    const generationData: GenerationData[] = generations.map((g) => {
-      this.copyAsset(g.image.path)
-      return {
+    const generationData: GenerationData[] = []
+    for (const g of generations) {
+      await this.copyAsset(g.image.path)
+      generationData.push({
         id: g.id,
         characterId: g.characterId,
         userPrompt: g.userPrompt,
@@ -156,9 +161,9 @@ export class ExampleDataService {
           path: g.image.path,
         },
         equipmentIds: g.equipments.map((e) => e.equipmentId),
-      }
-    })
-    fs.writeFileSync(join(this.baseDir, 'looks.json'), JSON.stringify(generationData, null, 2))
+      })
+    }
+    await Bun.write(join(this.baseDir, 'looks.json'), JSON.stringify(generationData, null, 2))
 
     console.log(`Exported ${characters.length} characters`)
     console.log(`Exported ${equipments.length} equipments`)
@@ -168,16 +173,15 @@ export class ExampleDataService {
   }
 
   async import() {
-    if (!fs.existsSync(this.baseDir)) {
+    if (!existsSync(this.baseDir)) {
       console.log('No example data found, skipping import.')
       return
     }
 
     // 1. Characters
-    if (fs.existsSync(join(this.baseDir, 'characters.json'))) {
-      const data: CharacterData[] = JSON.parse(
-        fs.readFileSync(join(this.baseDir, 'characters.json'), 'utf-8'),
-      )
+    const charFile = Bun.file(join(this.baseDir, 'characters.json'))
+    if (await charFile.exists()) {
+      const data: CharacterData[] = await charFile.json()
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
         await prisma.character.create({
@@ -193,10 +197,9 @@ export class ExampleDataService {
     }
 
     // 2. Equipments
-    if (fs.existsSync(join(this.baseDir, 'equipments.json'))) {
-      const data: EquipmentData[] = JSON.parse(
-        fs.readFileSync(join(this.baseDir, 'equipments.json'), 'utf-8'),
-      )
+    const equipFile = Bun.file(join(this.baseDir, 'equipments.json'))
+    if (await equipFile.exists()) {
+      const data: EquipmentData[] = await equipFile.json()
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
         await prisma.equipment.create({
@@ -214,10 +217,9 @@ export class ExampleDataService {
     }
 
     // 3. Poses
-    if (fs.existsSync(join(this.baseDir, 'poses.json'))) {
-      const data: PoseData[] = JSON.parse(
-        fs.readFileSync(join(this.baseDir, 'poses.json'), 'utf-8'),
-      )
+    const poseFile = Bun.file(join(this.baseDir, 'poses.json'))
+    if (await poseFile.exists()) {
+      const data: PoseData[] = await poseFile.json()
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
         await prisma.pose.create({
@@ -232,10 +234,9 @@ export class ExampleDataService {
     }
 
     // 4. Expressions
-    if (fs.existsSync(join(this.baseDir, 'expressions.json'))) {
-      const data: ExpressionData[] = JSON.parse(
-        fs.readFileSync(join(this.baseDir, 'expressions.json'), 'utf-8'),
-      )
+    const exprFile = Bun.file(join(this.baseDir, 'expressions.json'))
+    if (await exprFile.exists()) {
+      const data: ExpressionData[] = await exprFile.json()
       for (const item of data) {
         const asset = await this.createAssetFromExample(item.asset)
         await prisma.expression.create({
@@ -250,10 +251,9 @@ export class ExampleDataService {
     }
 
     // 5. Generations (Looks)
-    if (fs.existsSync(join(this.baseDir, 'looks.json'))) {
-      const data: GenerationData[] = JSON.parse(
-        fs.readFileSync(join(this.baseDir, 'looks.json'), 'utf-8'),
-      )
+    const lookFile = Bun.file(join(this.baseDir, 'looks.json'))
+    if (await lookFile.exists()) {
+      const data: GenerationData[] = await lookFile.json()
       for (const item of data) {
         // Ensure character exists
         const characterExists = await prisma.character.findUnique({
@@ -285,11 +285,12 @@ export class ExampleDataService {
     }
   }
 
-  private copyAsset(filename: string) {
+  private async copyAsset(filename: string) {
     const src = join('data/files', filename)
     const dest = join(this.assetsDir, filename)
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, dest)
+    const file = Bun.file(src)
+    if (await file.exists()) {
+      await Bun.write(dest, file)
     } else {
       console.warn(`Asset file not found: ${src}`)
     }
@@ -297,10 +298,11 @@ export class ExampleDataService {
 
   private async createAssetFromExample(assetData: AssetData) {
     const filePath = join(this.assetsDir, assetData.path)
-    if (!fs.existsSync(filePath)) {
+    const file = Bun.file(filePath)
+    if (!(await file.exists())) {
       throw new Error(`Example asset file not found: ${filePath}`)
     }
-    const buffer = fs.readFileSync(filePath)
+    const buffer = await file.arrayBuffer()
     // We use createAssetFromBuffer which handles saving to data/files and DB creation
     return assetService.createAssetFromBuffer(buffer, {
       name: assetData.name,
