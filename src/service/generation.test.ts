@@ -19,6 +19,9 @@ const mockPrisma = {
   pose: {
     findUnique: mock(),
   },
+  expression: {
+    findUnique: mock(),
+  },
 }
 
 mock.module('../db', () => ({
@@ -28,14 +31,6 @@ mock.module('../db', () => ({
 const mockAiService = {
   generateImage: mock().mockResolvedValue('data:image/png;base64,mockedbase64data'),
 }
-
-const mockPoseService = {
-  getBuiltinPose: mock(),
-}
-
-mock.module('./pose', () => ({
-  poseService: mockPoseService,
-}))
 
 const mockAssetService = {
   createAssetFromBuffer: mock().mockResolvedValue({ id: 'asset1' }),
@@ -49,6 +44,8 @@ mock.module('./asset', () => ({
   assetService: mockAssetService,
 }))
 
+// NOTE: removed mock.module('./pose') to avoid polluting pose.test.ts
+
 describe('GenerationService', () => {
   const originalFile = Bun.file
 
@@ -56,6 +53,7 @@ describe('GenerationService', () => {
     mockPrisma.generation.findMany.mockClear()
     mockPrisma.generation.count.mockClear()
     mockPrisma.generation.create.mockClear()
+    mockPrisma.pose.findUnique.mockClear()
     mockAiService.generateImage.mockClear()
     Bun.file = originalFile
   })
@@ -114,8 +112,12 @@ describe('GenerationService', () => {
     })
     mockPrisma.equipment.findMany.mockResolvedValue([])
 
-    // Mock pose
-    mockPoseService.getBuiltinPose.mockReturnValue({ id: 'pose1', type: 'builtin' })
+    // Mock pose lookup via Prisma
+    mockPrisma.pose.findUnique.mockResolvedValue({
+      id: 'pose1',
+      name: 'Test Pose',
+      image: { path: 'pose.webp', type: 'image/webp' },
+    })
 
     // Mock Bun.file
     // @ts-ignore
