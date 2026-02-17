@@ -253,7 +253,7 @@ export type AssetScalarWhereWithAggregatesInput = {
 }
 
 export type AssetCreateInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -267,7 +267,7 @@ export type AssetCreateInput = {
 }
 
 export type AssetUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -309,7 +309,7 @@ export type AssetUncheckedUpdateInput = {
 }
 
 export type AssetCreateManyInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -446,7 +446,7 @@ export type AssetUpdateOneRequiredWithoutExpressionsNestedInput = {
 }
 
 export type AssetCreateWithoutCharactersInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -459,7 +459,7 @@ export type AssetCreateWithoutCharactersInput = {
 }
 
 export type AssetUncheckedCreateWithoutCharactersInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -514,7 +514,7 @@ export type AssetUncheckedUpdateWithoutCharactersInput = {
 }
 
 export type AssetCreateWithoutEquipmentsInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -527,7 +527,7 @@ export type AssetCreateWithoutEquipmentsInput = {
 }
 
 export type AssetUncheckedCreateWithoutEquipmentsInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -582,7 +582,7 @@ export type AssetUncheckedUpdateWithoutEquipmentsInput = {
 }
 
 export type AssetCreateWithoutGenerationsInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -595,7 +595,7 @@ export type AssetCreateWithoutGenerationsInput = {
 }
 
 export type AssetUncheckedCreateWithoutGenerationsInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -650,7 +650,7 @@ export type AssetUncheckedUpdateWithoutGenerationsInput = {
 }
 
 export type AssetCreateWithoutPosesInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -663,7 +663,7 @@ export type AssetCreateWithoutPosesInput = {
 }
 
 export type AssetUncheckedCreateWithoutPosesInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -718,7 +718,7 @@ export type AssetUncheckedUpdateWithoutPosesInput = {
 }
 
 export type AssetCreateWithoutExpressionsInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string
@@ -731,7 +731,7 @@ export type AssetCreateWithoutExpressionsInput = {
 }
 
 export type AssetUncheckedCreateWithoutExpressionsInput = {
-  id: string
+  id?: string
   name: string
   type: string
   path: string

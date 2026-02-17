@@ -229,7 +229,7 @@ export type PoseScalarWhereWithAggregatesInput = {
 }
 
 export type PoseCreateInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -237,7 +237,7 @@ export type PoseCreateInput = {
 }
 
 export type PoseUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   imageId: string
   createdAt?: Date | string
@@ -261,7 +261,7 @@ export type PoseUncheckedUpdateInput = {
 }
 
 export type PoseCreateManyInput = {
-  id: string
+  id?: string
   name: string
   imageId: string
   createdAt?: Date | string
@@ -360,14 +360,14 @@ export type PoseUncheckedUpdateManyWithoutImageNestedInput = {
 }
 
 export type PoseCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type PoseUncheckedCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -410,7 +410,7 @@ export type PoseScalarWhereInput = {
 }
 
 export type PoseCreateManyImageInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string

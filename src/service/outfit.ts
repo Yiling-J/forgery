@@ -1,5 +1,4 @@
 import { prisma } from '../db'
-import { ulid } from 'ulidx'
 import { Prisma } from '../generated/prisma/client'
 
 export class OutfitService {
@@ -30,7 +29,7 @@ export class OutfitService {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        id: 'desc',
       },
       skip,
       take: limit,
@@ -38,11 +37,8 @@ export class OutfitService {
   }
 
   async createOutfit(data: { name: string; prompt?: string; equipmentIds: string[] }) {
-    const id = ulid()
-
     return prisma.outfit.create({
       data: {
-        id,
         name: data.name,
         prompt: data.prompt,
         equipments: {

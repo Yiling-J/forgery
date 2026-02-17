@@ -7,10 +7,6 @@ const mockPrisma = {
   },
 }
 
-mock.module('ulidx', () => ({
-  ulid: () => 'mocked-ulid',
-}))
-
 mock.module('../db', () => ({
   prisma: mockPrisma,
 }))
@@ -71,7 +67,6 @@ describe('AssetService', () => {
       expect.objectContaining({
         type: 'image/webp',
         path: 'mock.webp',
-        id: 'mocked-ulid',
       }),
     )
 

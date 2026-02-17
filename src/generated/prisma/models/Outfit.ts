@@ -229,7 +229,7 @@ export type OutfitScalarWhereWithAggregatesInput = {
 }
 
 export type OutfitCreateInput = {
-  id: string
+  id?: string
   name: string
   prompt?: string | null
   createdAt?: Date | string
@@ -238,7 +238,7 @@ export type OutfitCreateInput = {
 }
 
 export type OutfitUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   prompt?: string | null
   createdAt?: Date | string
@@ -265,7 +265,7 @@ export type OutfitUncheckedUpdateInput = {
 }
 
 export type OutfitCreateManyInput = {
-  id: string
+  id?: string
   name: string
   prompt?: string | null
   createdAt?: Date | string
@@ -332,7 +332,7 @@ export type OutfitUpdateOneRequiredWithoutEquipmentsNestedInput = {
 }
 
 export type OutfitCreateWithoutEquipmentsInput = {
-  id: string
+  id?: string
   name: string
   prompt?: string | null
   createdAt?: Date | string
@@ -340,7 +340,7 @@ export type OutfitCreateWithoutEquipmentsInput = {
 }
 
 export type OutfitUncheckedCreateWithoutEquipmentsInput = {
-  id: string
+  id?: string
   name: string
   prompt?: string | null
   createdAt?: Date | string

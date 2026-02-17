@@ -1,4 +1,3 @@
-import { ulid } from 'ulidx'
 import { prisma } from '../db'
 import { assetService } from './asset'
 
@@ -39,7 +38,7 @@ export class PoseService {
     if (remainingLimit > 0) {
       const customPoses = await prisma.pose.findMany({
         include: { image: true },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { id: 'desc' },
         skip: dbSkip,
         take: remainingLimit,
       })
@@ -63,7 +62,6 @@ export class PoseService {
 
     const pose = await prisma.pose.create({
       data: {
-        id: ulid(),
         name,
         imageId: asset.id,
       },

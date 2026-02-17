@@ -1,5 +1,4 @@
 import { join } from 'path'
-import { ulid } from 'ulidx'
 import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
 import { aiService, type AIPart } from './ai'
@@ -204,31 +203,19 @@ category: ${eq.category}
     })
 
     // 6. Create Generation record
-    const generationId = ulid()
-    await prisma.generation.create({
+    const generation = await prisma.generation.create({
       data: {
-        id: generationId,
         characterId: character.id,
         imageId: asset.id,
         userPrompt: userPrompt,
         pose: poseId,
         expression: expressionId,
+        equipments: {
+          create: equipmentIds.map((eqId) => ({
+            equipmentId: eqId,
+          })),
+        },
       },
-    })
-
-    // Create relation records
-    if (equipmentIds.length > 0) {
-      await prisma.generationEquipment.createMany({
-        data: equipmentIds.map((eqId) => ({
-          generationId: generationId,
-          equipmentId: eqId,
-        })),
-      })
-    }
-
-    // Return generation with included relations
-    return prisma.generation.findUnique({
-      where: { id: generationId },
       include: {
         image: true,
         character: true,
@@ -243,6 +230,8 @@ category: ${eq.category}
         },
       },
     })
+
+    return generation
   }
 
   async listGenerations(
@@ -285,7 +274,7 @@ category: ${eq.category}
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          id: 'desc',
         },
       }),
     ])

@@ -1,4 +1,3 @@
-import { ulid } from 'ulidx'
 import { prisma } from '../db'
 import { assetService } from './asset'
 
@@ -43,7 +42,7 @@ export class ExpressionService {
     if (remainingLimit > 0) {
       const customExpressions = await prisma.expression.findMany({
         include: { image: true },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { id: 'desc' },
         skip: dbSkip,
         take: remainingLimit,
       })
@@ -67,7 +66,6 @@ export class ExpressionService {
 
     const expression = await prisma.expression.create({
       data: {
-        id: ulid(),
         name,
         imageId: asset.id,
       },

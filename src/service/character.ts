@@ -1,4 +1,3 @@
-import { ulid } from 'ulidx'
 import { prisma } from '../db'
 import { assetService } from './asset'
 import { generationService } from './generation'
@@ -7,7 +6,6 @@ export class CharacterService {
   async createCharacter(data: { name: string; description?: string; imageId: string }) {
     return prisma.character.create({
       data: {
-        id: ulid(),
         ...data,
       },
       include: {
@@ -31,7 +29,7 @@ export class CharacterService {
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          id: 'desc',
         },
       }),
     ])
