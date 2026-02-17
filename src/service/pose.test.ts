@@ -1,6 +1,7 @@
-import { expect, test, describe, mock } from 'bun:test'
+import { expect, test, describe, mock, beforeEach } from 'bun:test'
 import { prisma } from '../db'
 import { assetService } from './asset'
+import { PoseService } from './pose'
 
 // Mock prisma
 mock.module('../db', () => ({
@@ -23,26 +24,27 @@ mock.module('./asset', () => ({
 }))
 
 describe('PoseService', () => {
-  test('listPoses returns builtin + custom poses', async () => {
-    // @ts-ignore
-    const { poseService, BUILTIN_POSES } = await import(`./pose?v=${Date.now()}`)
+  let poseService: PoseService
 
-    // Setup custom poses mock
-    const customPoses = [{ id: 'custom1', name: 'Custom 1', image: { path: 'path1' } }]
+  beforeEach(() => {
+    poseService = new PoseService()
+  })
+
+  test('listPoses returns custom poses', async () => {
+    const customPoses = [
+      { id: 'custom1', name: 'Custom 1', image: { path: 'path1' } },
+      { id: 'custom2', name: 'Custom 2', image: { path: 'path2' } },
+    ]
     ;(prisma.pose.findMany as any).mockResolvedValue(customPoses)
 
     const poses = await poseService.listPoses()
 
-    expect(poses.length).toBe(BUILTIN_POSES.length + 1)
-    expect(poses.find((p: any) => p.id === 'custom1')).toBeDefined()
-    expect(poses.find((p: any) => p.type === 'custom')).toBeDefined()
-    expect(poses.find((p: any) => p.type === 'builtin')).toBeDefined()
+    expect(poses.length).toBe(2)
+    expect(poses.find((p) => p.id === 'custom1')).toBeDefined()
+    expect(poses.find((p) => p.id === 'custom2')).toBeDefined()
   })
 
   test('createPose creates asset and pose', async () => {
-    // @ts-ignore
-    const { poseService } = await import(`./pose?v=${Date.now()}`)
-
     const file = new File([''], 'test.png', { type: 'image/png' })
     const assetId = 'asset1'
 
@@ -55,33 +57,26 @@ describe('PoseService', () => {
 
     const result = await poseService.createPose('Test Pose', file)
 
+    // @ts-ignore
     expect(assetService.createAsset).toHaveBeenCalledWith(file, {
       name: 'Test Pose',
       type: 'image/png',
     })
+    // @ts-ignore
     expect(prisma.pose.create).toHaveBeenCalled()
     expect(result.id).toBe('pose1')
   })
 
-  test('deletePose throws for builtin pose', async () => {
-    // @ts-ignore
-    const { poseService, BUILTIN_POSES } = await import(`./pose?v=${Date.now()}`)
-
-    const builtinId = BUILTIN_POSES[0].id
-    expect(poseService.deletePose(builtinId)).rejects.toThrow('Cannot delete builtin pose')
-  })
-
-  test('deletePose deletes custom pose', async () => {
-    // @ts-ignore
-    const { poseService } = await import(`./pose?v=${Date.now()}`)
-
+  test('deletePose deletes pose', async () => {
     const customId = 'custom1'
     ;(prisma.pose.findUnique as any).mockResolvedValue({ id: customId, imageId: 'asset1' })
     ;(prisma.pose.delete as any).mockResolvedValue({ id: customId })
 
     await poseService.deletePose(customId)
 
+    // @ts-ignore
     expect(prisma.pose.delete).toHaveBeenCalledWith({ where: { id: customId } })
+    // @ts-ignore
     expect(assetService.deleteAsset).toHaveBeenCalledWith('asset1')
   })
 })

@@ -63,22 +63,18 @@ export default function Poses() {
               <VibeCard
                 index={index}
                 name={pose.name}
-                subtitle={pose.type === 'builtin' ? 'SYSTEM' : 'CUSTOM'}
+                subtitle="CUSTOM"
                 image={pose.imageUrl}
-                color={pose.type === 'builtin' ? '#3b82f6' : '#f59e0b'}
+                color="#f59e0b"
                 onClick={() => {}}
-                actions={
-                  pose.type === 'custom'
-                    ? [
-                        {
-                          name: 'Delete',
-                          onClick: () => setDeleteId(pose.id),
-                          variant: 'destructive',
-                          icon: <Trash2 className="w-4 h-4" />,
-                        },
-                      ]
-                    : []
-                }
+                actions={[
+                  {
+                    name: 'Delete',
+                    onClick: () => setDeleteId(pose.id),
+                    variant: 'destructive',
+                    icon: <Trash2 className="w-4 h-4" />,
+                  },
+                ]}
               />
             </div>
           ))}

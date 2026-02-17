@@ -4,54 +4,26 @@ import { assetService } from './asset'
 export interface PoseItem {
   id: string
   name: string
-  type: 'builtin' | 'custom'
   imageUrl: string
 }
-
-export const BUILTIN_POSES: PoseItem[] = Array.from({ length: 9 }, (_, i) => i + 1).map((i) => ({
-  id: `character_pose_${i}.webp`,
-  name: `Pose ${i}`,
-  type: 'builtin',
-  imageUrl: `/poses/character_pose_${i}.webp`,
-}))
 
 export class PoseService {
   async listPoses(options: { page?: number; limit?: number } = {}): Promise<PoseItem[]> {
     const { page = 1, limit = 20 } = options
     const skip = (page - 1) * limit
 
-    // Logic for mixed pagination
-    const builtinCount = BUILTIN_POSES.length
+    const customPoses = await prisma.pose.findMany({
+      include: { image: true },
+      orderBy: { id: 'desc' },
+      skip: skip,
+      take: limit,
+    })
 
-    // Calculate how many builtin items to include
-    const builtinStart = skip
-    const builtinEnd = Math.min(builtinCount, skip + limit)
-    const builtinSlice =
-      builtinStart < builtinCount ? BUILTIN_POSES.slice(builtinStart, builtinEnd) : []
-
-    // Calculate how many db items to fetch
-    const remainingLimit = limit - builtinSlice.length
-    const dbSkip = Math.max(0, skip - builtinCount)
-
-    let formattedCustomPoses: PoseItem[] = []
-
-    if (remainingLimit > 0) {
-      const customPoses = await prisma.pose.findMany({
-        include: { image: true },
-        orderBy: { id: 'desc' },
-        skip: dbSkip,
-        take: remainingLimit,
-      })
-
-      formattedCustomPoses = customPoses.map((p) => ({
-        id: p.id,
-        name: p.name,
-        type: 'custom',
-        imageUrl: `/files/${p.image.path}`,
-      }))
-    }
-
-    return [...builtinSlice, ...formattedCustomPoses]
+    return customPoses.map((p) => ({
+      id: p.id,
+      name: p.name,
+      imageUrl: `/files/${p.image.path}`,
+    }))
   }
 
   async createPose(name: string, file: File) {
@@ -71,16 +43,11 @@ export class PoseService {
     return {
       id: pose.id,
       name: pose.name,
-      type: 'custom',
       imageUrl: `/files/${pose.image.path}`,
     } as PoseItem
   }
 
   async deletePose(id: string) {
-    if (BUILTIN_POSES.some((p) => p.id === id)) {
-      throw new Error('Cannot delete builtin pose')
-    }
-
     const pose = await prisma.pose.findUnique({
       where: { id },
     })
@@ -95,10 +62,6 @@ export class PoseService {
 
     // Delete image asset
     await assetService.deleteAsset(pose.imageId)
-  }
-
-  getBuiltinPose(id: string) {
-    return BUILTIN_POSES.find((p) => p.id === id)
   }
 }
 
