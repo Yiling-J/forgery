@@ -63,22 +63,18 @@ export default function Expressions() {
               <VibeCard
                 index={index}
                 name={expression.name}
-                subtitle={expression.type === 'builtin' ? 'SYSTEM' : 'CUSTOM'}
+                subtitle="CUSTOM"
                 image={expression.imageUrl}
-                color={expression.type === 'builtin' ? '#10b981' : '#f59e0b'}
+                color="#f59e0b"
                 onClick={() => {}}
-                actions={
-                  expression.type === 'custom'
-                    ? [
-                        {
-                          name: 'Delete',
-                          onClick: () => setDeleteId(expression.id),
-                          variant: 'destructive',
-                          icon: <Trash2 className="w-4 h-4" />,
-                        },
-                      ]
-                    : []
-                }
+                actions={[
+                  {
+                    name: 'Delete',
+                    onClick: () => setDeleteId(expression.id),
+                    variant: 'destructive',
+                    icon: <Trash2 className="w-4 h-4" />,
+                  },
+                ]}
               />
             </div>
           ))}

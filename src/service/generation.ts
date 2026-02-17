@@ -3,8 +3,6 @@ import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
 import { aiService, type AIPart } from './ai'
 import { assetService } from './asset'
-import { expressionService } from './expression'
-import { poseService } from './pose'
 
 export class GenerationService {
   async createGeneration(
@@ -75,84 +73,64 @@ category: ${eq.category}
     let poseInstruction = '6. Maintain the exact pose and angle of the Base Character.'
 
     if (poseId) {
-      let poseBuffer: ArrayBuffer
-      let poseMimeType: string
-
-      const builtinPose = poseService.getBuiltinPose(poseId)
-      if (builtinPose) {
-        const posePath = join('public/poses', poseId)
-        const file = Bun.file(posePath)
-        poseBuffer = await file.arrayBuffer()
-        poseMimeType = file.type || 'image/webp'
-      } else {
-        const customPose = await prisma.pose.findUnique({
-          where: { id: poseId },
-          include: { image: true },
-        })
-
-        if (!customPose) {
-          throw new Error(`Pose not found: ${poseId}`)
-        }
-
-        const posePath = join('data/files', customPose.image.path)
-        const file = Bun.file(posePath)
-        poseBuffer = await file.arrayBuffer()
-        poseMimeType = customPose.image.type
-      }
-
-      const poseBase64 = Buffer.from(poseBuffer).toString('base64')
-      parts.push({
-        inlineData: {
-          mimeType: poseMimeType,
-          data: poseBase64,
-        },
+      const pose = await prisma.pose.findUnique({
+        where: { id: poseId },
+        include: { image: true },
       })
-      parts.push({ text: 'Target Pose Reference' })
 
-      poseInstruction =
-        "6. Use the 'Target Pose Reference' image for the character's pose and angle."
+      if (pose) {
+        const posePath = join('data/files', pose.image.path)
+        const file = Bun.file(posePath)
+        const poseBuffer = await file.arrayBuffer()
+        const poseBase64 = Buffer.from(poseBuffer).toString('base64')
+
+        parts.push({
+          inlineData: {
+            mimeType: pose.image.type,
+            data: poseBase64,
+          },
+        })
+        parts.push({ text: 'Target Pose Reference' })
+
+        poseInstruction =
+          "6. Use the 'Target Pose Reference' image for the character's pose and angle."
+      } else {
+        // Fallback for transition: if user hasn't migrated example data yet, poseId might be missing.
+        // We log a warning but proceed without the pose, or we could throw.
+        // Given strict requirement, throwing might be better, but let's be safe and just ignore if not found?
+        // Actually, if the user explicitly selected a pose, they expect it to work. Throwing is better.
+        throw new Error(`Pose not found: ${poseId}`)
+      }
     }
 
     // Handle Expression
     let expressionInstruction = '7. Maintain the facial expression of the Base Character.'
 
     if (expressionId) {
-      let expressionBuffer: ArrayBuffer
-      let expressionMimeType: string
-
-      const builtinExpression = expressionService.getBuiltinExpression(expressionId)
-      if (builtinExpression) {
-        const expressionPath = join('public/expressions', expressionId)
-        const file = Bun.file(expressionPath)
-        expressionBuffer = await file.arrayBuffer()
-        expressionMimeType = file.type || 'image/webp'
-      } else {
-        const customExpression = await prisma.expression.findUnique({
-          where: { id: expressionId },
-          include: { image: true },
-        })
-
-        if (!customExpression) {
-          throw new Error(`Expression not found: ${expressionId}`)
-        }
-
-        const expressionPath = join('data/files', customExpression.image.path)
-        const file = Bun.file(expressionPath)
-        expressionBuffer = await file.arrayBuffer()
-        expressionMimeType = customExpression.image.type
-      }
-
-      const expressionBase64 = Buffer.from(expressionBuffer).toString('base64')
-      parts.push({
-        inlineData: {
-          mimeType: expressionMimeType,
-          data: expressionBase64,
-        },
+      const expression = await prisma.expression.findUnique({
+        where: { id: expressionId },
+        include: { image: true },
       })
-      parts.push({ text: 'Target Expression Reference' })
 
-      expressionInstruction =
-        "7. Use the 'Target Expression Reference' image for the character's facial expression."
+      if (expression) {
+        const expressionPath = join('data/files', expression.image.path)
+        const file = Bun.file(expressionPath)
+        const expressionBuffer = await file.arrayBuffer()
+        const expressionBase64 = Buffer.from(expressionBuffer).toString('base64')
+
+        parts.push({
+          inlineData: {
+            mimeType: expression.image.type,
+            data: expressionBase64,
+          },
+        })
+        parts.push({ text: 'Target Expression Reference' })
+
+        expressionInstruction =
+          "7. Use the 'Target Expression Reference' image for the character's facial expression."
+      } else {
+        throw new Error(`Expression not found: ${expressionId}`)
+      }
     }
 
     let prompt = `
