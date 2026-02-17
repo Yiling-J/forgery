@@ -16,9 +16,9 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
   onToggleSelection,
 }) => {
   return (
-    <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-2">
+    <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-2 py-2">
       {/* Grid */}
-      <ScrollArea className="h-full">
+      <ScrollArea className="h-full px-2">
         <div className="grid grid-cols-3 gap-2 p-1 h-full pb-6">
           {candidates.map((item, index) => {
             const isSelected = selectedIndices.includes(index)
@@ -27,7 +27,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 key={index}
                 onClick={() => onToggleSelection(index)}
                 className={cn(
-                  'group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up flex-shrink-0',
+                  'group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up flex-shrink-0 flex flex-col',
                   isSelected
                     ? 'border-cyan-500 shadow-lg shadow-cyan-100 scale-[1.02]'
                     : 'border-slate-200 opacity-80 hover:opacity-100 hover:border-slate-300',
@@ -61,7 +61,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 </div>
 
                 {/* Label */}
-                <div className="absolute bottom-0 left-0 right-0 p-2 bg-white/50 backdrop-blur-sm border-t border-slate-100">
+                <div className="p-2 bg-green-400/10 border-t border-slate-100">
                   <p className="text-xs font-bold text-slate-700 truncate">{item.name}</p>
                   <p className="text-[10px] text-slate-400 truncate uppercase">{item.category}</p>
                 </div>

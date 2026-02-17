@@ -7,19 +7,9 @@ interface AnalyzeStageProps {
 
 export const AnalyzeStage: React.FC<AnalyzeStageProps> = ({ imageSrc, isAnalyzing }) => {
   return (
-    <div className="relative flex flex-col items-center justify-center w-full h-full overflow-hidden bg-slate-50">
-      {/* Background Frosted Glass Layer */}
-      <div
-        className="absolute inset-0 w-full h-full z-0 opacity-20 blur-3xl scale-110 pointer-events-none transition-opacity duration-1000"
-        style={{
-          backgroundImage: `url(${imageSrc})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-        }}
-      />
-
+    <div className="relative flex flex-col items-center justify-center w-full h-full bg-slate-50">
       {/* Main Container */}
-      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl h-[70vh] p-8">
+      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-4xl h-full p-8">
         {/* Image Container with Scanning Effect */}
         <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl ring-1 ring-slate-200 bg-white/50 backdrop-blur-sm group">
           <img src={imageSrc} alt="Analyzing" className="w-full h-full object-contain p-8" />

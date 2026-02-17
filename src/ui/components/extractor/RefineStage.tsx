@@ -2,6 +2,7 @@ import { CheckCircle2, Loader2, Sparkles } from 'lucide-react'
 import React from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset, ExtractedAsset } from '../../types'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface RefineStageProps {
   selectedCandidates: CandidateAsset[]
@@ -16,24 +17,9 @@ export const RefineStage: React.FC<RefineStageProps> = ({
 }) => {
   return (
     <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8 animate-fade-in-up">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <Sparkles className="text-amber-500" />
-            Refining Assets
-          </h2>
-          <p className="text-slate-500 text-sm mt-1">
-            {isComplete
-              ? 'All selected assets have been refined and saved.'
-              : `Processing item ${Math.min(results.length + 1, selectedCandidates.length)} of ${selectedCandidates.length}...`}
-          </p>
-        </div>
-      </div>
-
       {/* Grid */}
-      <div className="flex-1 overflow-y-auto pr-2 pb-10 custom-scrollbar">
-        <div className="flex flex-wrap gap-6 justify-center">
+      <ScrollArea className="h-full px-2">
+        <div className="grid grid-cols-3 gap-2 p-1 h-full pb-6">
           {selectedCandidates.map((candidate, index) => {
             const isFinished = index < results.length
             const isProcessing = index === results.length && !isComplete
@@ -46,7 +32,7 @@ export const RefineStage: React.FC<RefineStageProps> = ({
               <div
                 key={index}
                 className={cn(
-                  'relative w-[160px] h-[160px] rounded-2xl overflow-hidden border-2 transition-all duration-500 bg-white flex-shrink-0',
+                  'relative rounded-2xl overflow-hidden border-2 transition-all duration-500 bg-white flex-shrink-0 flex flex-col',
                   isProcessing
                     ? 'border-amber-400 shadow-xl shadow-amber-100 scale-105 z-10'
                     : isFinished
@@ -107,17 +93,10 @@ export const RefineStage: React.FC<RefineStageProps> = ({
                   )}
                 </div>
 
-                {/* Scanning effect for processing item only */}
-                {isProcessing && (
-                  <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_15px_rgba(251,191,36,1)] animate-[scanline_1.5s_linear_infinite]"></div>
-                  </div>
-                )}
-
                 {/* Info Bar */}
                 <div
                   className={cn(
-                    'absolute bottom-0 left-0 right-0 p-3 border-t transition-colors',
+                    'p-3 border-t transition-colors',
                     isFinished
                       ? 'bg-green-50/90 border-green-100'
                       : 'bg-slate-50/90 border-slate-100',
@@ -134,7 +113,7 @@ export const RefineStage: React.FC<RefineStageProps> = ({
             )
           })}
         </div>
-      </div>
+      </ScrollArea>
       <style>{`
         @keyframes scanline {
           0% {

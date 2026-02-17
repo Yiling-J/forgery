@@ -203,18 +203,18 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[98vw] w-full max-h-fit p-0 overflow-hidden bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col">
+      <DialogContent className="w-full p-0 bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col gap-0">
         <DialogTitle className="sr-only">Extractor</DialogTitle>
 
         {/* Top Navigation / Branding Bar */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200 shrink-0">
+        <div className="flex-none items-center justify-between px-6 py-4 bg-white border-b border-slate-200 shrink-0">
           <div className="flex items-center gap-2">
             <h1 className="font-bold text-lg tracking-tight text-slate-800">Extractor</h1>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-hidden relative min-h-[50vh]">
+        <div className="relative grow h-[70dvh]">
           {stage === 'upload' && <UploadStage onImageUpload={handleImageUpload} />}
 
           {stage === 'analyze' && preview && (
@@ -239,7 +239,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         </div>
 
         {/* Footer */}
-        <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-white shrink-0">
+        <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-white shrink-0 flex-none">
           {stage === 'upload' && (
             <Button variant="outline" onClick={handleClose}>
               Cancel
