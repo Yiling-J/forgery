@@ -1,4 +1,4 @@
-import { Loader2, Upload, X } from 'lucide-react'
+import { Loader2, Upload } from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES, getSubCategories } from '../../lib/categories'
@@ -14,13 +14,7 @@ import {
 } from './ui/dialog'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Textarea } from './ui/textarea'
 
 interface UploadEquipmentDialogProps {
@@ -112,10 +106,6 @@ export function UploadEquipmentDialog({
     setLoading(true)
     try {
       // 1. Upload Asset
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('name', name)
-
       const uploadRes = await client.assets.upload.$post({
         form: {
           file: file,
@@ -163,46 +153,46 @@ export function UploadEquipmentDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Upload Equipment</DialogTitle>
-          <DialogDescription>
-            Upload a new equipment image directly.
-          </DialogDescription>
+          <DialogDescription>Upload a new equipment image directly.</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           {/* Image Upload Area */}
           <div
-             className={`
+            className={`
                relative w-full h-48 border-2 border-dashed rounded-xl flex flex-col items-center justify-center
                transition-all duration-200 cursor-pointer overflow-hidden group
                ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100'}
              `}
-             onDragEnter={handleDrag}
-             onDragLeave={handleDrag}
-             onDragOver={handleDrag}
-             onDrop={handleDrop}
-             onClick={() => fileInputRef.current?.click()}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
           >
-             {previewUrl ? (
-               <>
-                 <img src={previewUrl} alt="Preview" className="w-full h-full object-contain p-2" />
-                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <p className="text-white font-medium">Click to change</p>
-                 </div>
-               </>
-             ) : (
-               <div className="text-center p-6 pointer-events-none">
-                 <Upload className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                 <p className="text-sm font-medium text-slate-700">Click or Drag & Drop Image Here</p>
-                 <p className="text-xs text-slate-500 mt-1">or paste from clipboard</p>
-               </div>
-             )}
-             <Input
-               ref={fileInputRef}
-               type="file"
-               accept="image/*"
-               className="hidden"
-               onChange={handleFileChange}
-             />
+            {previewUrl ? (
+              <>
+                <img src={previewUrl} alt="Preview" className="w-full h-full object-contain p-2" />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <p className="text-white font-medium">Click to change</p>
+                </div>
+              </>
+            ) : (
+              <div className="text-center p-6 pointer-events-none">
+                <Upload className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+                <p className="text-sm font-medium text-slate-700">
+                  Click or Drag & Drop Image Here
+                </p>
+                <p className="text-xs text-slate-500 mt-1">or paste from clipboard</p>
+              </div>
+            )}
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -216,41 +206,44 @@ export function UploadEquipmentDialog({
               />
             </div>
             <div className="flex flex-col gap-2">
-               <Label htmlFor="category">Category</Label>
-               <Select value={category} onValueChange={(val) => {
-                 setCategory(val)
-                 setSubCategory('')
-               }}>
-                 <SelectTrigger>
-                   <SelectValue placeholder="Select..." />
-                 </SelectTrigger>
-                 <SelectContent>
-                   {EQUIPMENT_CATEGORIES.map((cat) => (
-                     <SelectItem key={cat.main_category} value={cat.main_category}>
-                       {cat.main_category}
-                     </SelectItem>
-                   ))}
-                 </SelectContent>
-               </Select>
+              <Label htmlFor="category">Category</Label>
+              <Select
+                value={category}
+                onValueChange={(val) => {
+                  setCategory(val)
+                  setSubCategory('')
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {EQUIPMENT_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat.main_category} value={cat.main_category}>
+                      {cat.main_category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           {category && (
-             <div className="flex flex-col gap-2">
-               <Label htmlFor="subCategory">Sub Category</Label>
-               <Select value={subCategory} onValueChange={setSubCategory}>
-                 <SelectTrigger>
-                   <SelectValue placeholder="Select..." />
-                 </SelectTrigger>
-                 <SelectContent>
-                   {getSubCategories(category).map((sub) => (
-                     <SelectItem key={sub} value={sub}>
-                       {sub}
-                     </SelectItem>
-                   ))}
-                 </SelectContent>
-               </Select>
-             </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="subCategory">Sub Category</Label>
+              <Select value={subCategory} onValueChange={setSubCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {getSubCategories(category).map((sub) => (
+                    <SelectItem key={sub} value={sub}>
+                      {sub}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
 
           <div className="flex flex-col gap-2">
