@@ -1,11 +1,12 @@
 import { InferResponseType } from 'hono/client'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { client } from '../client'
 import { CreateOutfitDialog } from '../components/CreateOutfitDialog'
 import { EquipmentDetailsDialog } from '../components/EquipmentDetailsDialog'
+import { UploadEquipmentDialog } from '../components/UploadEquipmentDialog'
 import { ExtractorDialog } from '../components/ExtractorDialog'
 import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
@@ -36,6 +37,7 @@ const getEquipmentColor = (name: string) => {
 export default function Equipments() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [extractorOpen, setExtractorOpen] = useState(false)
+  const [uploadEquipmentOpen, setUploadEquipmentOpen] = useState(false)
   const [createOutfitOpen, setCreateOutfitOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'equipments' | 'outfits'>('equipments')
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentItem | null>(null)
@@ -155,9 +157,14 @@ export default function Equipments() {
         }
         actions={
           viewMode === 'equipments' ? (
-            <Button onClick={() => setExtractorOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Extract Equipment
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={() => setUploadEquipmentOpen(true)} variant="secondary">
+                <Upload className="mr-2 h-4 w-4" /> Upload
+              </Button>
+              <Button onClick={() => setExtractorOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" /> Extract Equipment
+              </Button>
+            </div>
           ) : (
             <Button onClick={() => setCreateOutfitOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Create Outfit
@@ -299,6 +306,11 @@ export default function Equipments() {
         </>
       )}
 
+      <UploadEquipmentDialog
+        open={uploadEquipmentOpen}
+        onOpenChange={setUploadEquipmentOpen}
+        onSuccess={resetEquipment}
+      />
       <ExtractorDialog
         open={extractorOpen}
         onOpenChange={setExtractorOpen}

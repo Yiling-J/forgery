@@ -24,12 +24,38 @@ const route = app.get('/', zValidator('query', listSchema), async (c) => {
   return c.json(result)
 })
 
+const createSchema = z.object({
+  name: z.string().min(1),
+  imageId: z.string().min(1),
+  category: z.string().min(1),
+  subCategory: z.string().optional(),
+  description: z.string().optional().default(''),
+})
+
+const routeWithCreate = route.post('/', zValidator('json', createSchema), async (c) => {
+  const { name, imageId, category, subCategory, description } = c.req.valid('json')
+
+  try {
+    const result = await equipmentService.createEquipment({
+      name,
+      imageId,
+      category,
+      subCategory,
+      description,
+    })
+    return c.json(result, 201)
+  } catch (e) {
+    console.error('Failed to create equipment', e)
+    return c.json({ error: 'Failed to create equipment' }, 500)
+  }
+})
+
 const patchSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
 })
 
-const routeWithPatch = route.patch('/:id', zValidator('json', patchSchema), async (c) => {
+const routeWithPatch = routeWithCreate.patch('/:id', zValidator('json', patchSchema), async (c) => {
   const { id } = c.req.param()
   const { name, description } = c.req.valid('json')
 
