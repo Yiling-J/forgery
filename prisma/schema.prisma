@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Asset {
-  id        String   @id
+  id        String   @id @default(ulid())
   name      String
   type      String
   path      String
@@ -32,7 +32,7 @@ model Asset {
 }
 
 model Character {
-  id          String   @id
+  id          String   @id @default(ulid())
   name        String
   description String?
   imageId     String   @map("image_id")
@@ -47,7 +47,7 @@ model Character {
 }
 
 model Equipment {
-  id          String   @id
+  id          String   @id @default(ulid())
   name        String
   description String
   category    String
@@ -66,7 +66,7 @@ model Equipment {
 }
 
 model Generation {
-  id          String   @id
+  id          String   @id @default(ulid())
   characterId String   @map("character_id")
   imageId     String   @map("image_id")
   userPrompt  String?  @map("user_prompt")
@@ -95,7 +95,7 @@ model GenerationEquipment {
 }
 
 model Outfit {
-  id        String   @id
+  id        String   @id @default(ulid())
   name      String
   prompt    String?
   createdAt DateTime @default(now()) @map("created_at")
@@ -129,7 +129,7 @@ model Setting {
 }
 
 model Pose {
-  id        String   @id
+  id        String   @id @default(ulid())
   name      String
   imageId   String   @map("image_id")
   createdAt DateTime @default(now()) @map("created_at")
@@ -142,7 +142,7 @@ model Pose {
 }
 
 model Expression {
-  id        String   @id
+  id        String   @id @default(ulid())
   name      String
   imageId   String   @map("image_id")
   createdAt DateTime @default(now()) @map("created_at")

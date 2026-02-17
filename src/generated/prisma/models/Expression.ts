@@ -229,7 +229,7 @@ export type ExpressionScalarWhereWithAggregatesInput = {
 }
 
 export type ExpressionCreateInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -237,7 +237,7 @@ export type ExpressionCreateInput = {
 }
 
 export type ExpressionUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   imageId: string
   createdAt?: Date | string
@@ -261,7 +261,7 @@ export type ExpressionUncheckedUpdateInput = {
 }
 
 export type ExpressionCreateManyInput = {
-  id: string
+  id?: string
   name: string
   imageId: string
   createdAt?: Date | string
@@ -360,14 +360,14 @@ export type ExpressionUncheckedUpdateManyWithoutImageNestedInput = {
 }
 
 export type ExpressionCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ExpressionUncheckedCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -410,7 +410,7 @@ export type ExpressionScalarWhereInput = {
 }
 
 export type ExpressionCreateManyImageInput = {
-  id: string
+  id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string

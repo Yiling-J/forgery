@@ -244,7 +244,7 @@ export type CharacterScalarWhereWithAggregatesInput = {
 }
 
 export type CharacterCreateInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   createdAt?: Date | string
@@ -254,7 +254,7 @@ export type CharacterCreateInput = {
 }
 
 export type CharacterUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   imageId: string
@@ -284,7 +284,7 @@ export type CharacterUncheckedUpdateInput = {
 }
 
 export type CharacterCreateManyInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   imageId: string
@@ -412,7 +412,7 @@ export type CharacterUpdateOneRequiredWithoutGenerationsNestedInput = {
 }
 
 export type CharacterCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   createdAt?: Date | string
@@ -421,7 +421,7 @@ export type CharacterCreateWithoutImageInput = {
 }
 
 export type CharacterUncheckedCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   createdAt?: Date | string
@@ -467,7 +467,7 @@ export type CharacterScalarWhereInput = {
 }
 
 export type CharacterCreateWithoutGenerationsInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   createdAt?: Date | string
@@ -476,7 +476,7 @@ export type CharacterCreateWithoutGenerationsInput = {
 }
 
 export type CharacterUncheckedCreateWithoutGenerationsInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   imageId: string
@@ -519,7 +519,7 @@ export type CharacterUncheckedUpdateWithoutGenerationsInput = {
 }
 
 export type CharacterCreateManyImageInput = {
-  id: string
+  id?: string
   name: string
   description?: string | null
   createdAt?: Date | string

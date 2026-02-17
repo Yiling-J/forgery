@@ -1,15 +1,12 @@
-import { ulid } from 'ulidx'
 import { prisma } from '../db'
 import { fileService } from './file'
 
 export class AssetService {
   async createAsset(file: File, meta: { name: string; type: string }) {
     const saved = await fileService.saveFile(file, meta.name)
-    const id = ulid()
 
     const asset = await prisma.asset.create({
       data: {
-        id,
         name: meta.name,
         type: saved.mimeType,
         path: saved.filename,
@@ -24,11 +21,9 @@ export class AssetService {
     meta: { name: string; type: string; ext?: string },
   ) {
     const saved = await fileService.saveBuffer(buffer, meta.name, meta.type)
-    const id = ulid()
 
     const asset = await prisma.asset.create({
       data: {
-        id,
         name: meta.name,
         type: saved.mimeType,
         path: saved.filename,
@@ -40,10 +35,8 @@ export class AssetService {
 
   // New method to handle already saved files
   async createAssetRecord(params: { path: string; name: string; type: string }) {
-    const id = ulid()
     return prisma.asset.create({
       data: {
-        id,
         name: params.name,
         type: params.type,
         path: params.path,

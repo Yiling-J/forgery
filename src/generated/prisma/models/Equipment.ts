@@ -271,7 +271,7 @@ export type EquipmentScalarWhereWithAggregatesInput = {
 }
 
 export type EquipmentCreateInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -284,7 +284,7 @@ export type EquipmentCreateInput = {
 }
 
 export type EquipmentUncheckedCreateInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -323,7 +323,7 @@ export type EquipmentUncheckedUpdateInput = {
 }
 
 export type EquipmentCreateManyInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -473,7 +473,7 @@ export type EquipmentUpdateOneRequiredWithoutOutfitsNestedInput = {
 }
 
 export type EquipmentCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -485,7 +485,7 @@ export type EquipmentCreateWithoutImageInput = {
 }
 
 export type EquipmentUncheckedCreateWithoutImageInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -536,7 +536,7 @@ export type EquipmentScalarWhereInput = {
 }
 
 export type EquipmentCreateWithoutGenerationsInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -548,7 +548,7 @@ export type EquipmentCreateWithoutGenerationsInput = {
 }
 
 export type EquipmentUncheckedCreateWithoutGenerationsInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -600,7 +600,7 @@ export type EquipmentUncheckedUpdateWithoutGenerationsInput = {
 }
 
 export type EquipmentCreateWithoutOutfitsInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -612,7 +612,7 @@ export type EquipmentCreateWithoutOutfitsInput = {
 }
 
 export type EquipmentUncheckedCreateWithoutOutfitsInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string
@@ -664,7 +664,7 @@ export type EquipmentUncheckedUpdateWithoutOutfitsInput = {
 }
 
 export type EquipmentCreateManyImageInput = {
-  id: string
+  id?: string
   name: string
   description: string
   category: string

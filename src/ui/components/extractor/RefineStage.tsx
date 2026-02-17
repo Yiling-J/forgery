@@ -1,4 +1,4 @@
-import { CheckCircle2, Loader2, Sparkles } from 'lucide-react'
+import { CheckCircle2, Loader2 } from 'lucide-react'
 import React from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset, ExtractedAsset } from '../../types'

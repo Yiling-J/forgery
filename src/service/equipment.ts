@@ -1,6 +1,5 @@
 import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
-import { ulid } from 'ulidx'
 import { assetService } from './asset'
 
 export class EquipmentService {
@@ -32,7 +31,7 @@ export class EquipmentService {
           image: true,
         },
         orderBy: {
-          createdAt: 'desc',
+          id: 'desc',
         },
       }),
     ])
@@ -50,11 +49,8 @@ export class EquipmentService {
     category: string
     subCategory?: string
   }) {
-    const id = ulid()
-
     return prisma.equipment.create({
       data: {
-        id,
         name: data.name,
         description: data.description,
         imageId: data.imageId,

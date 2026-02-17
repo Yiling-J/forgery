@@ -271,7 +271,7 @@ export type GenerationScalarWhereWithAggregatesInput = {
 }
 
 export type GenerationCreateInput = {
-  id: string
+  id?: string
   userPrompt?: string | null
   pose?: string | null
   expression?: string | null
@@ -283,7 +283,7 @@ export type GenerationCreateInput = {
 }
 
 export type GenerationUncheckedCreateInput = {
-  id: string
+  id?: string
   characterId: string
   imageId: string
   userPrompt?: string | null
@@ -319,7 +319,7 @@ export type GenerationUncheckedUpdateInput = {
 }
 
 export type GenerationCreateManyInput = {
-  id: string
+  id?: string
   characterId: string
   imageId: string
   userPrompt?: string | null
@@ -496,7 +496,7 @@ export type GenerationUpdateOneRequiredWithoutEquipmentsNestedInput = {
 }
 
 export type GenerationCreateWithoutImageInput = {
-  id: string
+  id?: string
   userPrompt?: string | null
   pose?: string | null
   expression?: string | null
@@ -507,7 +507,7 @@ export type GenerationCreateWithoutImageInput = {
 }
 
 export type GenerationUncheckedCreateWithoutImageInput = {
-  id: string
+  id?: string
   characterId: string
   userPrompt?: string | null
   pose?: string | null
@@ -557,7 +557,7 @@ export type GenerationScalarWhereInput = {
 }
 
 export type GenerationCreateWithoutCharacterInput = {
-  id: string
+  id?: string
   userPrompt?: string | null
   pose?: string | null
   expression?: string | null
@@ -568,7 +568,7 @@ export type GenerationCreateWithoutCharacterInput = {
 }
 
 export type GenerationUncheckedCreateWithoutCharacterInput = {
-  id: string
+  id?: string
   imageId: string
   userPrompt?: string | null
   pose?: string | null
@@ -604,7 +604,7 @@ export type GenerationUpdateManyWithWhereWithoutCharacterInput = {
 }
 
 export type GenerationCreateWithoutEquipmentsInput = {
-  id: string
+  id?: string
   userPrompt?: string | null
   pose?: string | null
   expression?: string | null
@@ -615,7 +615,7 @@ export type GenerationCreateWithoutEquipmentsInput = {
 }
 
 export type GenerationUncheckedCreateWithoutEquipmentsInput = {
-  id: string
+  id?: string
   characterId: string
   imageId: string
   userPrompt?: string | null
@@ -664,7 +664,7 @@ export type GenerationUncheckedUpdateWithoutEquipmentsInput = {
 }
 
 export type GenerationCreateManyImageInput = {
-  id: string
+  id?: string
   characterId: string
   userPrompt?: string | null
   pose?: string | null
@@ -706,7 +706,7 @@ export type GenerationUncheckedUpdateManyWithoutImageInput = {
 }
 
 export type GenerationCreateManyCharacterInput = {
-  id: string
+  id?: string
   imageId: string
   userPrompt?: string | null
   pose?: string | null
