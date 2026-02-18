@@ -10,6 +10,7 @@ import { LookDetailsDialog } from '../components/LookDetailsDialog'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
+import { ScrollArea } from '../components/ui/scroll-area'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,7 +83,7 @@ export default function FittingRoom() {
   }
 
   return (
-    <div className="p-8 pt-2 h-full flex flex-col bg-stone-50/30 relative">
+    <div className="px-8 pb-8 pt-2 h-[calc(100vh-6rem)] flex flex-col bg-stone-50/30 relative">
       <PageHeader
         title="Fitting Room"
         subtitle="System // FITTING_ROOM"
@@ -142,7 +143,7 @@ export default function FittingRoom() {
             <span className="text-xs font-mono text-stone-400">{generations.length} LOOKS</span>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <ScrollArea className="flex-1 p-4">
             {generations.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-stone-400 gap-4">
                 <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center">
@@ -208,7 +209,7 @@ export default function FittingRoom() {
                 ))}
               </div>
             )}
-          </div>
+          </ScrollArea>
         </div>
       </div>
 
