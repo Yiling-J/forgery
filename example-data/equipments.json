@@ -1,0 +1,110 @@
+[
+  {
+    "id": "01KHQ5PAGY647R3FR2FMF5Z420",
+    "name": "Blue Patterned Haori",
+    "description": "Dark blue traditional Japanese top/jacket with white diamond crests on the chest and sleeves",
+    "category": "Top",
+    "subCategory": "Jacket",
+    "asset": {
+      "name": "Blue Patterned Haori",
+      "type": "image/webp",
+      "path": "01KHQ5PAGTB7QM3PBY36MAS38A.webp"
+    }
+  },
+  {
+    "id": "01KHQ5PJNAKZR1HQ4FXJAJ889F",
+    "name": "Red Sash",
+    "description": "Large, thick red sash tied securely around the waist",
+    "category": "Accessory",
+    "subCategory": "Sash",
+    "asset": {
+      "name": "Red Sash",
+      "type": "image/webp",
+      "path": "01KHQ5PJN66YRKPNCT1YS4KY2B.webp"
+    }
+  },
+  {
+    "id": "01KHQ5PTFWMZYGFJQ9SZE7VDBD",
+    "name": "Black Hakama",
+    "description": "Traditional dark pleated trousers worn on the lower body",
+    "category": "Bottom",
+    "subCategory": "Hakama",
+    "asset": {
+      "name": "Black Hakama",
+      "type": "image/webp",
+      "path": "01KHQ5PTFMYG3ABMYBFPDKQ6EN.webp"
+    }
+  },
+  {
+    "id": "01KHQ60ERR91R0G2ED2KEAKV19",
+    "name": "Red Haori",
+    "description": "Red short-sleeved kimono-style jacket featuring yellow floral cherry blossom patterns on the lower half.",
+    "category": "Top",
+    "subCategory": "Jacket",
+    "asset": {
+      "name": "Red Haori",
+      "type": "image/webp",
+      "path": "01KHQ60ERGS69YQ8GHSEMJ16NK.webp"
+    }
+  },
+  {
+    "id": "01KHQ60Q24P5QRD655QEVSKTMW",
+    "name": "Sleeveless Undershirt",
+    "description": "White sleeveless shirt worn underneath, featuring distinct ragged stitching down the center front.",
+    "category": "Top",
+    "subCategory": "Shirt",
+    "asset": {
+      "name": "Sleeveless Undershirt",
+      "type": "image/webp",
+      "path": "01KHQ60Q1RCET91MRKZ3M3ZBAF.webp"
+    }
+  },
+  {
+    "id": "01KHQ65DAM6KPZQRJCBN2JGCJ1",
+    "name": "Explorer's Helmet",
+    "description": "A beige hard hat featuring a mounted headlamp and goggles on the front.",
+    "category": "Headwear",
+    "subCategory": "Helmet",
+    "asset": {
+      "name": "Explorer's Helmet",
+      "type": "image/webp",
+      "path": "01KHQ65DAB964DV764GS8BYD90.webp"
+    }
+  },
+  {
+    "id": "01KHQ65V3QAEMJZ6TEM2G0VCYM",
+    "name": "Beige Jacket",
+    "description": "A short-sleeved utility jacket with a collar and chest pockets.",
+    "category": "Top",
+    "subCategory": "Jacket",
+    "asset": {
+      "name": "Beige Jacket",
+      "type": "image/webp",
+      "path": "01KHQ65V3J4CV21J54P2FCPV93.webp"
+    }
+  },
+  {
+    "id": "01KHQ668E3V7K7JZNWFVHYKBFD",
+    "name": "Brown Shorts",
+    "description": "Dark brown shorts fitted with straps and loops.",
+    "category": "Bottom",
+    "subCategory": "Shorts",
+    "asset": {
+      "name": "Brown Shorts",
+      "type": "image/webp",
+      "path": "01KHQ668DQC8GXJYEHD7W2MPPJ.webp"
+    }
+  },
+  {
+    "id": "01KHQ66H318BPBAE4ZFBY7JHBD",
+    "name": "Hiking Boots",
+    "description": "Sturdy, oversized brown boots with thick soles designed for climbing.",
+    "category": "Footwear",
+    "subCategory": "Boots",
+    "asset": {
+      "name": "Hiking Boots",
+      "type": "image/webp",
+      "path": "01KHQ66H2X62ZFQ8E1WHK0DSFE.webp"
+    }
+  }
+]
