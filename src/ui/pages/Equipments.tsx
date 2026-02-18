@@ -1,5 +1,5 @@
 import { InferResponseType } from 'hono/client'
-import { Plus, ScanLine, Trash2, Upload } from 'lucide-react'
+import { Edit, Plus, ScanLine, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
@@ -42,6 +42,7 @@ export default function Equipments() {
   const [viewMode, setViewMode] = useState<'equipments' | 'outfits'>('equipments')
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentItem | null>(null)
   const [equipmentDetailsOpen, setEquipmentDetailsOpen] = useState(false)
+  const [selectedOutfit, setSelectedOutfit] = useState<OutfitItem | null>(null)
 
   const {
     items: items,
@@ -116,6 +117,9 @@ export default function Equipments() {
       if (res.ok) {
         toast.success('Outfit deleted')
         setOutfits((prev) => prev.filter((o) => o.id !== id))
+        if (selectedOutfit?.id === id) {
+          setSelectedOutfit(null)
+        }
       }
     } catch (e) {
       console.error(e)
@@ -170,7 +174,12 @@ export default function Equipments() {
               </Button>
             </div>
           ) : (
-            <Button onClick={() => setCreateOutfitOpen(true)}>
+            <Button
+              onClick={() => {
+                setSelectedOutfit(null)
+                setCreateOutfitOpen(true)
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" /> Create Outfit
             </Button>
           )
@@ -253,49 +262,86 @@ export default function Equipments() {
               <p className="text-slate-500 font-mono">No outfits found.</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-4 max-w-[1200px] mx-auto w-full pb-10">
-              {outfits.map((outfit) => (
-                <div
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 max-w-[1920px] mx-auto w-full pb-10">
+              {outfits.map((outfit, index) => (
+                <VibeCard
                   key={outfit.id}
-                  className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow"
+                  index={index}
+                  name={outfit.name}
+                  subtitle={`${outfit.equipments.length} items`}
+                  color={getEquipmentColor(outfit.name)}
+                  onClick={() => {
+                    setSelectedOutfit(outfit)
+                    setCreateOutfitOpen(true)
+                  }}
+                  actions={[
+                    {
+                      name: 'Edit',
+                      onClick: () => {
+                        setSelectedOutfit(outfit)
+                        setCreateOutfitOpen(true)
+                      },
+                      icon: <Edit className="w-4 h-4" />,
+                    },
+                    {
+                      name: 'Delete',
+                      onClick: () => handleDeleteOutfit(outfit.id),
+                      variant: 'destructive',
+                      icon: <Trash2 className="w-4 h-4" />,
+                    },
+                  ]}
                 >
-                  <div className="flex-1">
-                    <h3 className="font-bold text-slate-800 text-lg mb-2">{outfit.name}</h3>
-                    <div className="flex gap-2 flex-wrap">
-                      {outfit.equipments.map((eq) => (
-                        <div
-                          key={eq.equipment.id}
-                          className="w-10 h-10 rounded-md border border-slate-200 bg-slate-50 overflow-hidden relative group"
-                          title={eq.equipment.name}
-                        >
-                          <img
-                            src={
-                              eq.equipment.image?.path ? `/files/${eq.equipment.image.path}` : ''
-                            }
-                            alt={eq.equipment.name}
-                            className="w-full h-full object-contain p-1"
-                          />
-                        </div>
-                      ))}
-                      {outfit.prompt && (
-                        <Badge variant="outline" className="ml-2 h-auto self-center">
-                          + Prompt
-                        </Badge>
-                      )}
+                  <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                    <div className="w-full h-[80%] grid grid-cols-3 grid-rows-3">
+                      {Array.from({ length: 9 }).map((_, i) => {
+                        const item = outfit.equipments[i]
+                      const totalCount = outfit.equipments.length
+
+                      if (i === 8 && totalCount > 9) {
+                        const extraCount = totalCount - 8
+                        return (
+                          <div
+                            key={i}
+                            className="relative w-full h-full border-[0.5px] border-slate-200 bg-slate-50 overflow-hidden"
+                          >
+                            {item && item.equipment.image?.path && (
+                              <img
+                                src={`/files/${item.equipment.image.path}`}
+                                alt="More"
+                                className="w-full h-full object-cover opacity-50 grayscale"
+                              />
+                            )}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white font-bold text-lg backdrop-blur-[1px]">
+                              +{extraCount}
+                            </div>
+                          </div>
+                        )
+                      }
+
+                        return (
+                          <div
+                            key={i}
+                            className="relative w-full h-full border-[0.5px] border-slate-200 bg-slate-50 overflow-hidden"
+                          >
+                            {item ? (
+                            <img
+                              src={
+                                item.equipment.image?.path
+                                  ? `/files/${item.equipment.image.path}`
+                                  : ''
+                              }
+                              alt={item.equipment.name}
+                              className="w-full h-full object-cover"
+                            />
+                            ) : (
+                              <div className="w-full h-full bg-slate-100/50" />
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-4 pl-4 border-l border-slate-100">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteOutfit(outfit.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </Button>
-                  </div>
-                </div>
+                </VibeCard>
               ))}
             </div>
           )}
@@ -325,10 +371,14 @@ export default function Equipments() {
       />
       <CreateOutfitDialog
         open={createOutfitOpen}
-        onOpenChange={setCreateOutfitOpen}
+        onOpenChange={(open) => {
+          setCreateOutfitOpen(open)
+          if (!open) setSelectedOutfit(null)
+        }}
         onSuccess={() => {
           resetOutfits()
         }}
+        outfit={selectedOutfit}
       />
 
       <EquipmentDetailsDialog

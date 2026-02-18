@@ -24,6 +24,7 @@ interface VibeCardProps {
   onClick?: () => void
   index: number
   actions?: VibeCardAction[]
+  children?: React.ReactNode
 }
 
 export const VibeCard: React.FC<VibeCardProps> = ({
@@ -34,6 +35,7 @@ export const VibeCard: React.FC<VibeCardProps> = ({
   onClick,
   index,
   actions = [],
+  children,
 }) => {
   return (
     <div
@@ -89,17 +91,21 @@ export const VibeCard: React.FC<VibeCardProps> = ({
             </div>
           )}
           <div className="absolute inset-0 bg-slate-100">
-            <img
-              src={image}
-              alt={name}
-              loading="lazy"
-              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 mix-blend-multiply"
-            />
+            {children ? (
+              children
+            ) : (
+              <img
+                src={image}
+                alt={name}
+                loading="lazy"
+                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 mix-blend-multiply"
+              />
+            )}
             {/* Gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-90 group-hover:opacity-80 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-90 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none" />
           </div>
 
-          <div className="absolute inset-0 p-3 flex flex-col justify-end">
+          <div className="absolute inset-0 p-3 flex flex-col justify-end pointer-events-none">
             <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
               <div
                 className="h-0.5 w-6 mb-2 transition-all duration-300 group-hover:w-12"

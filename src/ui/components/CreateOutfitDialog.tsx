@@ -1,33 +1,39 @@
-import React, { useState, useEffect } from 'react'
-import { client } from '../client'
 import { InferResponseType } from 'hono/client'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
-import { Button } from './ui/button'
+import { Check, Loader2, Save, X } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
+import { client } from '../client'
+import { cn } from '../lib/utils'
 import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
-import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
-import { cn } from '../lib/utils'
-import { Loader2, X, Check, Save } from 'lucide-react'
 
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
 type EquipmentItem = EquipmentResponse['items'][number]
+
+type OutfitResponse = InferResponseType<typeof client.outfits.$get>
+type OutfitItem = OutfitResponse[number]
 
 interface CreateOutfitDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
+  outfit?: OutfitItem | null
 }
 
 export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
   open,
   onOpenChange,
   onSuccess,
+  outfit,
 }) => {
   const [items, setItems] = useState<EquipmentItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  // Single select for category now
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedEquipments, setSelectedEquipments] = useState<EquipmentItem[]>([])
   const [outfitName, setOutfitName] = useState('')
   const [outfitPrompt, setOutfitPrompt] = useState('')
@@ -36,17 +42,26 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
 
   useEffect(() => {
     if (open) {
+      if (outfit) {
+        // Edit mode: Pre-fill data
+        setOutfitName(outfit.name)
+        setOutfitPrompt(outfit.prompt || '')
+        // Map outfit equipments to selectedEquipments
+        setSelectedEquipments(outfit.equipments.map((e) => e.equipment))
+      } else {
+        // Create mode: Reset data
+        setSelectedEquipments([])
+        setOutfitName('')
+        setOutfitPrompt('')
+      }
       fetchItems()
-      setSelectedEquipments([])
-      setOutfitName('')
-      setOutfitPrompt('')
       setError(null)
     }
-  }, [open])
+  }, [open, outfit])
 
   useEffect(() => {
     if (open) fetchItems()
-  }, [selectedCategories])
+  }, [selectedCategory])
 
   const fetchItems = async () => {
     setLoading(true)
@@ -54,8 +69,8 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
       const query: { limit: string; category?: string[] } = {
         limit: '100',
       }
-      if (selectedCategories.length > 0) {
-        query.category = selectedCategories
+      if (selectedCategory) {
+        query.category = [selectedCategory]
       }
 
       const res = await client.equipments.$get({ query })
@@ -71,9 +86,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
   }
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
-    )
+    setSelectedCategory((prev) => (prev === category ? null : category))
   }
 
   const toggleEquipment = (item: EquipmentItem) => {
@@ -100,16 +113,28 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
     setError(null)
 
     try {
-      const res = await client.outfits.$post({
-        json: {
-          name: outfitName.trim(),
-          prompt: outfitPrompt.trim() || undefined,
-          equipmentIds: selectedEquipments.map((e) => e.id),
-        },
-      })
+      let res
+      const payload = {
+        name: outfitName.trim(),
+        prompt: outfitPrompt.trim() || undefined,
+        equipmentIds: selectedEquipments.map((e) => e.id),
+      }
+
+      if (outfit) {
+        // Edit mode
+        res = await client.outfits[':id'].$put({
+          param: { id: outfit.id },
+          json: payload,
+        })
+      } else {
+        // Create mode
+        res = await client.outfits.$post({
+          json: payload,
+        })
+      }
 
       if (!res.ok) {
-        throw new Error('Failed to create outfit')
+        throw new Error(outfit ? 'Failed to update outfit' : 'Failed to create outfit')
       }
 
       onSuccess()
@@ -127,9 +152,11 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
       <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 bg-stone-50 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-stone-200 bg-white shrink-0">
           <DialogTitle className="text-xl font-black uppercase tracking-tighter text-stone-800">
-            Create Outfit
+            {outfit ? 'Edit Outfit' : 'Create Outfit'}
           </DialogTitle>
-          <DialogDescription>Select equipment and save as a reusable outfit.</DialogDescription>
+          <DialogDescription>
+            {outfit ? 'Update equipment and details.' : 'Select equipment and save as a reusable outfit.'}
+          </DialogDescription>
         </DialogHeader>
 
         {/* Categories */}
@@ -137,7 +164,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex w-max space-x-2 pb-2">
               {EQUIPMENT_CATEGORIES.map((cat) => {
-                const isSelected = selectedCategories.includes(cat.main_category)
+                const isSelected = selectedCategory === cat.main_category
                 return (
                   <Badge
                     key={cat.main_category}
@@ -170,7 +197,8 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
               <p>No equipment found.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            // Changed from grid-cols-2...lg:grid-cols-5 to fixed grid-cols-3 as requested
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {items.map((item) => {
                 const isSelected = selectedEquipments.some((e) => e.id === item.id)
                 return (
@@ -299,7 +327,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="flex items-center gap-2">
-                      <Save className="w-4 h-4" /> Save
+                      <Save className="w-4 h-4" /> {outfit ? 'Update' : 'Save'}
                     </span>
                   )}
                 </Button>
