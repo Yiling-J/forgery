@@ -34,6 +34,10 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const [results, setResults] = useState<ExtractedAsset[]>([])
   const [isRefineComplete, setIsRefineComplete] = useState(false)
 
+  // Save as Outfit state
+  const [saveAsOutfit, setSaveAsOutfit] = useState(false)
+  const [outfitName, setOutfitName] = useState('')
+
   // Refs for cleanup
   const analyzeController = useRef<AbortController | null>(null)
   const refineController = useRef<AbortController | null>(null)
@@ -48,6 +52,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setSelectedIndices([])
     setResults([])
     setIsRefineComplete(false)
+    setSaveAsOutfit(false)
+    setOutfitName('')
     analyzeController.current?.abort()
     refineController.current?.abort()
   }
@@ -194,7 +200,30 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
   const handleClose = () => onOpenChange(false)
 
-  const handleDone = () => {
+  const handleDone = async () => {
+    if (saveAsOutfit) {
+      if (!outfitName.trim()) {
+        toast.error('Please enter an outfit name')
+        return
+      }
+      try {
+        const equipmentIds = results.map((r) => r.id)
+        const res = await client.outfits.$post({
+          json: {
+            name: outfitName,
+            equipmentIds,
+          },
+        })
+        if (res.ok) {
+          toast.success('Outfit created')
+        } else {
+          toast.error('Failed to create outfit')
+        }
+      } catch (e) {
+        console.error(e)
+        toast.error('Failed to create outfit')
+      }
+    }
     onSuccess(results)
     handleClose()
   }
@@ -234,6 +263,10 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               selectedCandidates={candidates.filter((_, i) => selectedIndices.includes(i))}
               results={results}
               isComplete={isRefineComplete}
+              saveAsOutfit={saveAsOutfit}
+              setSaveAsOutfit={setSaveAsOutfit}
+              outfitName={outfitName}
+              setOutfitName={setOutfitName}
             />
           )}
         </div>

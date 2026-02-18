@@ -2,24 +2,35 @@ import { CheckCircle2, Loader2 } from 'lucide-react'
 import React from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset, ExtractedAsset } from '../../types'
+import { Checkbox } from '../ui/checkbox'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
 import { ScrollArea } from '../ui/scroll-area'
 
 interface RefineStageProps {
   selectedCandidates: CandidateAsset[]
   results: ExtractedAsset[]
   isComplete: boolean
+  saveAsOutfit: boolean
+  setSaveAsOutfit: (value: boolean) => void
+  outfitName: string
+  setOutfitName: (value: string) => void
 }
 
 export const RefineStage: React.FC<RefineStageProps> = ({
   selectedCandidates,
   results,
   isComplete,
+  saveAsOutfit,
+  setSaveAsOutfit,
+  outfitName,
+  setOutfitName,
 }) => {
   return (
     <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-6">
       {/* Grid */}
-      <ScrollArea className="h-full px-2">
-        <div className="grid grid-cols-3 gap-2 p-1 h-full pb-6">
+      <ScrollArea className="flex-1 px-2">
+        <div className="grid grid-cols-3 gap-2 p-1 pb-6">
           {selectedCandidates.map((candidate, index) => {
             const isFinished = index < results.length
             const isProcessing = index === results.length && !isComplete
@@ -114,6 +125,34 @@ export const RefineStage: React.FC<RefineStageProps> = ({
           })}
         </div>
       </ScrollArea>
+
+      {isComplete && (
+        <div className="flex flex-col gap-4 mt-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm shrink-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="saveOutfit"
+              checked={saveAsOutfit}
+              onCheckedChange={(c) => setSaveAsOutfit(c === true)}
+            />
+            <Label
+              htmlFor="saveOutfit"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Save as Outfit
+            </Label>
+          </div>
+          {saveAsOutfit && (
+            <Input
+              placeholder="Outfit Name"
+              value={outfitName}
+              onChange={(e) => setOutfitName(e.target.value)}
+              className="w-full animate-in fade-in zoom-in duration-300"
+              autoFocus
+            />
+          )}
+        </div>
+      )}
+
       <style>{`
         @keyframes scanline {
           0% {

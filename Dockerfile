@@ -38,6 +38,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/bunfig.toml ./bunfig.toml
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/example-data ./example-data
 
 # Create data directory
 RUN mkdir -p data

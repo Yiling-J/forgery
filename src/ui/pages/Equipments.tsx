@@ -1,14 +1,14 @@
 import { InferResponseType } from 'hono/client'
-import { Plus, Trash2, Upload } from 'lucide-react'
+import { Plus, ScanLine, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { client } from '../client'
 import { CreateOutfitDialog } from '../components/CreateOutfitDialog'
 import { EquipmentDetailsDialog } from '../components/EquipmentDetailsDialog'
-import { UploadEquipmentDialog } from '../components/UploadEquipmentDialog'
 import { ExtractorDialog } from '../components/ExtractorDialog'
 import { PageHeader } from '../components/PageHeader'
+import { UploadEquipmentDialog } from '../components/UploadEquipmentDialog'
 import { VibeCard } from '../components/VibeCard'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
@@ -158,11 +158,15 @@ export default function Equipments() {
         actions={
           viewMode === 'equipments' ? (
             <div className="flex gap-2">
-              <Button onClick={() => setUploadEquipmentOpen(true)} variant="secondary">
+              <Button
+                onClick={() => setUploadEquipmentOpen(true)}
+                variant="secondary"
+                className="border"
+              >
                 <Upload className="mr-2 h-4 w-4" /> Upload
               </Button>
               <Button onClick={() => setExtractorOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" /> Extract Equipment
+                <ScanLine className="mr-2 h-4 w-4" /> Extractor
               </Button>
             </div>
           ) : (
