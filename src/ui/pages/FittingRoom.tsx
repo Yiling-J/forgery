@@ -10,13 +10,13 @@ import { LookDetailsDialog } from '../components/LookDetailsDialog'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
-import { ScrollArea } from '../components/ui/scroll-area'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu'
+import { ScrollArea } from '../components/ui/scroll-area'
 
 // Types - Define locally to avoid complex type extraction if client inference is tricky
 // But we should try to use inference
@@ -122,7 +122,7 @@ export default function FittingRoom() {
             <img
               src={character.image?.path ? `/files/${character.image.path}` : ''}
               alt={character.name}
-              className="w-full h-full object-contain object-top drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-md p-4 rounded-xl border border-white/50 shadow-sm">
               <h3 className="font-bold text-stone-800 text-lg">{character.name}</h3>
