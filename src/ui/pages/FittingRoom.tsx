@@ -1,5 +1,5 @@
 import { InferResponseType } from 'hono/client'
-import { ArrowLeft, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Download, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -181,6 +181,22 @@ export default function FittingRoom() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              if (gen.image?.path) {
+                                const link = document.createElement('a')
+                                link.href = `/files/${gen.image.path}`
+                                link.download = gen.image.path.split('/').pop() || 'download'
+                                document.body.appendChild(link)
+                                link.click()
+                                document.body.removeChild(link)
+                              }
+                            }}
+                          >
+                            <Download className="mr-2 h-4 w-4" />
+                            Download
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation()
