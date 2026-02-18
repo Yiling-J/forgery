@@ -1,33 +1,40 @@
-import React, { useState, useEffect } from 'react'
-import { client } from '../client'
 import { InferResponseType } from 'hono/client'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
-import { Button } from './ui/button'
+import { Check, Loader2, Save, X } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
+import { client } from '../client'
+import { cn } from '../lib/utils'
 import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
-import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
-import { cn } from '../lib/utils'
-import { Loader2, X, Check, Save } from 'lucide-react'
+import { Textarea } from './ui/textarea'
 
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
 type EquipmentItem = EquipmentResponse['items'][number]
+
+type OutfitResponse = InferResponseType<typeof client.outfits.$get>
+type OutfitItem = OutfitResponse[number]
 
 interface CreateOutfitDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
+  outfit?: OutfitItem | null
 }
 
 export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
   open,
   onOpenChange,
   onSuccess,
+  outfit,
 }) => {
   const [items, setItems] = useState<EquipmentItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  // Single select for category now
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedEquipments, setSelectedEquipments] = useState<EquipmentItem[]>([])
   const [outfitName, setOutfitName] = useState('')
   const [outfitPrompt, setOutfitPrompt] = useState('')
@@ -36,17 +43,26 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
 
   useEffect(() => {
     if (open) {
+      if (outfit) {
+        // Edit mode: Pre-fill data
+        setOutfitName(outfit.name)
+        setOutfitPrompt(outfit.prompt || '')
+        // Map outfit equipments to selectedEquipments
+        setSelectedEquipments(outfit.equipments.map((e) => e.equipment))
+      } else {
+        // Create mode: Reset data
+        setSelectedEquipments([])
+        setOutfitName('')
+        setOutfitPrompt('')
+      }
       fetchItems()
-      setSelectedEquipments([])
-      setOutfitName('')
-      setOutfitPrompt('')
       setError(null)
     }
-  }, [open])
+  }, [open, outfit])
 
   useEffect(() => {
     if (open) fetchItems()
-  }, [selectedCategories])
+  }, [selectedCategory])
 
   const fetchItems = async () => {
     setLoading(true)
@@ -54,8 +70,8 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
       const query: { limit: string; category?: string[] } = {
         limit: '100',
       }
-      if (selectedCategories.length > 0) {
-        query.category = selectedCategories
+      if (selectedCategory) {
+        query.category = [selectedCategory]
       }
 
       const res = await client.equipments.$get({ query })
@@ -71,9 +87,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
   }
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
-    )
+    setSelectedCategory((prev) => (prev === category ? null : category))
   }
 
   const toggleEquipment = (item: EquipmentItem) => {
@@ -100,16 +114,28 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
     setError(null)
 
     try {
-      const res = await client.outfits.$post({
-        json: {
-          name: outfitName.trim(),
-          prompt: outfitPrompt.trim() || undefined,
-          equipmentIds: selectedEquipments.map((e) => e.id),
-        },
-      })
+      let res
+      const payload = {
+        name: outfitName.trim(),
+        prompt: outfitPrompt.trim() || undefined,
+        equipmentIds: selectedEquipments.map((e) => e.id),
+      }
+
+      if (outfit) {
+        // Edit mode
+        res = await client.outfits[':id'].$put({
+          param: { id: outfit.id },
+          json: payload,
+        })
+      } else {
+        // Create mode
+        res = await client.outfits.$post({
+          json: payload,
+        })
+      }
 
       if (!res.ok) {
-        throw new Error('Failed to create outfit')
+        throw new Error(outfit ? 'Failed to update outfit' : 'Failed to create outfit')
       }
 
       onSuccess()
@@ -127,9 +153,8 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
       <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 bg-stone-50 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-stone-200 bg-white shrink-0">
           <DialogTitle className="text-xl font-black uppercase tracking-tighter text-stone-800">
-            Create Outfit
+            {outfit ? 'Edit Outfit' : 'Create Outfit'}
           </DialogTitle>
-          <DialogDescription>Select equipment and save as a reusable outfit.</DialogDescription>
         </DialogHeader>
 
         {/* Categories */}
@@ -137,7 +162,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex w-max space-x-2 pb-2">
               {EQUIPMENT_CATEGORIES.map((cat) => {
-                const isSelected = selectedCategories.includes(cat.main_category)
+                const isSelected = selectedCategory === cat.main_category
                 return (
                   <Badge
                     key={cat.main_category}
@@ -170,7 +195,8 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
               <p>No equipment found.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            // Changed from grid-cols-2...lg:grid-cols-5 to fixed grid-cols-3 as requested
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {items.map((item) => {
                 const isSelected = selectedEquipments.some((e) => e.id === item.id)
                 return (
@@ -210,7 +236,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
         </div>
 
         {/* Outfit Details Form */}
-        <div className="px-6 py-4 border-t border-stone-200 bg-white shrink-0 grid grid-cols-2 gap-4">
+        <div className="px-6 py-4 border-t border-stone-200 bg-white shrink-0 flex flex-col gap-4">
           <div>
             <Label
               htmlFor="outfit-name"
@@ -232,19 +258,20 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
             >
               Prompt (Optional)
             </Label>
-            <Input
+            <Textarea
               id="outfit-prompt"
               value={outfitPrompt}
               onChange={(e) => setOutfitPrompt(e.target.value)}
               placeholder="Extra prompt details..."
+              className="min-h-[80px]"
             />
           </div>
         </div>
 
         {/* Bottom Dock */}
         <div className="border-t border-stone-200 bg-white shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between mb-3">
+          <div className="px-6 py-3">
+            <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-bold text-stone-800 uppercase tracking-wide flex items-center gap-2">
                 Selected Items{' '}
                 <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs">
@@ -254,22 +281,22 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
               {error && <span className="text-red-500 text-xs font-medium">{error}</span>}
             </div>
 
-            <div className="flex gap-4">
-              <ScrollArea className="flex-1 whitespace-nowrap">
-                <div className="flex gap-3 pb-2 min-h-[100px] items-center">
+            <div className="flex gap-4 items-end">
+              <ScrollArea className="flex-1 whitespace-nowrap min-w-0">
+                <div className="flex gap-2 pb-2 min-h-[60px] items-center">
                   {selectedEquipments.length === 0 ? (
-                    <div className="text-stone-400 text-sm italic w-full text-center py-4 border-2 border-dashed border-stone-100 rounded-xl">
+                    <div className="text-stone-400 text-sm italic w-full text-center py-2 border-2 border-dashed border-stone-100 rounded-xl h-[60px] flex items-center justify-center">
                       Select items above.
                     </div>
                   ) : (
                     selectedEquipments.map((item) => (
                       <div
                         key={item.id}
-                        className="relative w-[100px] h-[100px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group"
+                        className="relative w-[60px] h-[60px] shrink-0 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-center group"
                       >
                         <img
                           src={item.image?.path ? `/files/${item.image.path}` : ''}
-                          className="max-w-full max-h-full object-contain p-2"
+                          className="max-w-full max-h-full object-contain p-1"
                           alt={item.name}
                         />
                         <button
@@ -277,7 +304,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
                             e.stopPropagation()
                             toggleEquipment(item)
                           }}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -288,10 +315,10 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
 
-              <div className="flex items-center pl-4 border-l border-stone-100">
+              <div className="flex items-center pl-4 border-l border-stone-100 h-[70px]">
                 <Button
                   size="lg"
-                  className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg border-0 h-full max-h-[100px] min-w-[120px]"
+                  className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg border-0 h-[60px] min-w-[120px]"
                   disabled={submitting || selectedEquipments.length === 0 || !outfitName.trim()}
                   onClick={handleSave}
                 >
@@ -299,7 +326,7 @@ export const CreateOutfitDialog: React.FC<CreateOutfitDialogProps> = ({
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="flex items-center gap-2">
-                      <Save className="w-4 h-4" /> Save
+                      <Save className="w-4 h-4" /> {outfit ? 'Update' : 'Save'}
                     </span>
                   )}
                 </Button>
