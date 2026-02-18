@@ -1,6 +1,6 @@
 services:
   app:
-    build: .
+    image: yilingj/forgery:latest
     ports:
       - '3000:3000'
     volumes:

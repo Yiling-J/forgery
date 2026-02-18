@@ -70,10 +70,26 @@ bun run dev
 # server available at http://localhost:3000
 ```
 
-### Docker Quickstart
+### Docker Quickstart (Compose)
+
+If you have cloned the repository or have the `docker-compose.yml` file:
 
 ```bash
 docker compose up -d
+# server available at http://localhost:3000
+```
+
+### Docker Quickstart (Standalone)
+
+You can run the latest version directly without cloning the repository:
+
+```bash
+mkdir -p data
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  --name forgery \
+  yilingj/forgery:latest
 # server available at http://localhost:3000
 ```
 
