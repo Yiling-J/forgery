@@ -1,4 +1,4 @@
-import { MoreHorizontal } from 'lucide-react'
+import { Download, MoreHorizontal } from 'lucide-react'
 import React from 'react'
 import { cn } from '../lib/utils'
 import { Button } from './ui/button'
@@ -54,7 +54,7 @@ export const VibeCard: React.FC<VibeCardProps> = ({
 
         {/* 3. Content Layer - Stays fixed size relative to parent, creating the cutout effect */}
         <div className="absolute inset-[1px] bg-slate-100 clip-path-slant overflow-hidden">
-          {actions.length > 0 && (
+          {(actions.length > 0 || image) && (
             <div
               className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
               onClick={(e) => e.stopPropagation()}
@@ -70,6 +70,22 @@ export const VibeCard: React.FC<VibeCardProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  {image && (
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        const link = document.createElement('a')
+                        link.href = image
+                        link.download = image.split('/').pop() || 'download'
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                      }}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download
+                    </DropdownMenuItem>
+                  )}
                   {actions.map((action, i) => (
                     <DropdownMenuItem
                       key={i}
