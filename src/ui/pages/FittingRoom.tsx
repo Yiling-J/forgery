@@ -122,7 +122,7 @@ export default function FittingRoom() {
             <img
               src={character.image?.path ? `/files/${character.image.path}` : ''}
               alt={character.name}
-              className="w-full h-full object-cover object-top drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-contain object-top drop-shadow-2xl hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-md p-4 rounded-xl border border-white/50 shadow-sm">
               <h3 className="font-bold text-stone-800 text-lg">{character.name}</h3>
@@ -143,21 +143,21 @@ export default function FittingRoom() {
             <span className="text-xs font-mono text-stone-400">{generations.length} LOOKS</span>
           </div>
 
-          <ScrollArea className="flex-1 p-4">
-            {generations.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-stone-400 gap-4">
-                <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center">
-                  <Plus className="w-8 h-8 text-stone-300" />
-                </div>
-                <div className="text-center">
-                  <p className="font-medium text-stone-600">No looks generated yet.</p>
-                  <p className="text-xs mt-1">Create your first look to get started.</p>
-                </div>
-                <Button variant="outline" onClick={() => setCreateLookOpen(true)}>
-                  Create Look
-                </Button>
+          {generations.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-stone-400 gap-4">
+              <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center">
+                <Plus className="w-8 h-8 text-stone-300" />
               </div>
-            ) : (
+              <div className="text-center">
+                <p className="font-medium text-stone-600">No looks generated yet.</p>
+                <p className="text-xs mt-1">Create your first look to get started.</p>
+              </div>
+              <Button variant="outline" onClick={() => setCreateLookOpen(true)}>
+                Create Look
+              </Button>
+            </div>
+          ) : (
+            <ScrollArea className="flex-1 p-4">
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 {generations.map((gen) => (
                   <div
@@ -208,8 +208,8 @@ export default function FittingRoom() {
                   </div>
                 ))}
               </div>
-            )}
-          </ScrollArea>
+            </ScrollArea>
+          )}
         </div>
       </div>
 
