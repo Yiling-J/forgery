@@ -127,7 +127,7 @@ export const RefineStage: React.FC<RefineStageProps> = ({
       </ScrollArea>
 
       {isComplete && (
-        <div className="flex items-center gap-4 mt-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm shrink-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex flex-col gap-4 mt-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm shrink-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center space-x-2">
             <Checkbox
               id="saveOutfit"
@@ -146,7 +146,7 @@ export const RefineStage: React.FC<RefineStageProps> = ({
               placeholder="Outfit Name"
               value={outfitName}
               onChange={(e) => setOutfitName(e.target.value)}
-              className="max-w-xs animate-in fade-in zoom-in duration-300"
+              className="w-full animate-in fade-in zoom-in duration-300"
               autoFocus
             />
           )}
