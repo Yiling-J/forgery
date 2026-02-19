@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai'
-import OpenAI from 'openai'
+import OpenAI, { toFile } from 'openai'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { z } from 'zod'
 import { settingService } from './setting'
@@ -176,6 +176,7 @@ export class UnifiedAIService implements AIService {
 
     const result = await client.models.generateContent({
       model: model,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       contents: { parts: parts as any[] }, // Type assertion due to slight mismatch or library version
       config: config,
     })
@@ -236,48 +237,40 @@ export class UnifiedAIService implements AIService {
 
   private async generateImageOpenAI(model: string, parts: AIPart[]): Promise<string> {
     const client = await this.getOpenAIClient()
-
-    // Construct input for Responses API
+    const promptParts: string[] = []
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const input: any[] = []
+    const images: any[] = []
 
     for (const part of parts) {
       if (part.text) {
-        input.push({
-          type: 'input_text',
-          text: part.text,
-        })
+        promptParts.push(part.text)
       } else if (part.inlineData) {
-        input.push({
-          type: 'input_image',
-          image_url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`,
+        const buffer = Buffer.from(part.inlineData.data, 'base64')
+        const file = await toFile(buffer, 'image.png', {
+          type: part.inlineData.mimeType,
         })
+        images.push(file)
       }
     }
 
-    // Use Responses API with image_generation tool
-    // @ts-ignore - response API might not be fully typed in the SDK version installed yet
-    const response = await client.responses.create({
+    const prompt = promptParts.join('\n')
+
+    // @ts-ignore - The OpenAI type definitions might not be fully updated for this specific usage
+    const response = await client.images.edit({
       model: model,
-      input: input,
-      tools: [{ type: 'image_generation' }],
+      image: images, // Pass array of images as requested
+      prompt: prompt,
+      response_format: 'b64_json',
     })
 
-    // Parse output to find image generation result
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const imageData = response.output
-      .filter((output: any) => output.type === 'image_generation_call')
-      .map((output: any) => output.result)
-
-    if (imageData.length > 0) {
-      const base64 = imageData[0]
-      // Assuming png by default or we could inspect headers, but base64 usually lacks mime prefix from this API
-      // The previous code appended `data:image/png;base64,` manually if needed.
-      // DALL-E usually returns just the base64 data.
-      return `data:image/png;base64,${base64}`
+    if (response.data && response.data.length > 0) {
+      const b64Json = response.data[0].b64_json
+      if (b64Json) {
+        return `data:image/png;base64,${b64Json}`
+      }
     }
 
-    throw new Error('No image generated from OpenAI Responses API')
+    throw new Error('No image generated from OpenAI Image Edit API')
   }
 
   private async generateImageGoogle(model: string, parts: AIPart[]): Promise<string> {
@@ -294,6 +287,7 @@ export class UnifiedAIService implements AIService {
 
     const result = await client.models.generateContent({
       model: model,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       contents: { parts: parts as any[] }, // Type assertion
     })
 
