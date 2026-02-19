@@ -153,16 +153,6 @@ export const RefineStage: React.FC<RefineStageProps> = ({
         </div>
       )}
 
-      <style>{`
-        @keyframes scanline {
-          0% {
-            transform: translateY(-100%);
-          }
-          100% {
-            transform: translateY(400px);
-          }
-        }
-      `}</style>
     </div>
   )
 }

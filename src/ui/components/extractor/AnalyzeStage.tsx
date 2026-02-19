@@ -17,7 +17,7 @@ export const AnalyzeStage: React.FC<AnalyzeStageProps> = ({ imageSrc, isAnalyzin
           {/* Scan Line Animation (only when analyzing) */}
           {isAnalyzing && (
             <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
-              <div className="w-full h-[2px] bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-[scanline_2s_linear_infinite]"></div>
+              <div className="w-full h-[2px] bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-[scanline-analyze_2s_linear_infinite]"></div>
             </div>
           )}
 
@@ -32,7 +32,7 @@ export const AnalyzeStage: React.FC<AnalyzeStageProps> = ({ imageSrc, isAnalyzin
         </div>
       </div>
       <style>{`
-        @keyframes scanline {
+        @keyframes scanline-analyze {
           0% {
             transform: translateY(-100%);
           }
