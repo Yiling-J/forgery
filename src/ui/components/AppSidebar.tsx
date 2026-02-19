@@ -1,17 +1,17 @@
-import { Backpack, Frame, Settings, Smile, Users } from 'lucide-react'
+import { Crown, Frame, Settings, Shirt, Smile } from 'lucide-react'
 import logo from 'public/logo.webp'
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { BackupRestoreDialog } from './BackupRestoreDialog'
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
 } from './ui/sidebar'
 
 // Menu items.
@@ -19,12 +19,12 @@ const items = [
   {
     title: 'Characters',
     url: '/characters',
-    icon: Users,
+    icon: Crown,
   },
   {
     title: 'Equipments',
     url: '/equipments',
-    icon: Backpack,
+    icon: Shirt,
   },
   {
     title: 'Poses',
