@@ -24,7 +24,7 @@ export default function Layout() {
             <Github className="h-5 w-5" />
           </a>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4">
+        <main className="flex flex-1 flex-col gap-4 px-4">
           <Outlet />
         </main>
       </SidebarInset>

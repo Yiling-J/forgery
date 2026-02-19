@@ -132,7 +132,7 @@ export default function Equipments() {
   }
 
   return (
-    <div className="w-full h-full p-4 pt-2 flex flex-col font-sans text-slate-900 relative">
+    <div className="w-full h-full px-4 flex flex-col font-sans text-slate-900 relative">
       <PageHeader
         title={viewMode === 'equipments' ? 'Equipments' : 'Outfits'}
         subtitle={
@@ -295,28 +295,28 @@ export default function Equipments() {
                     <div className="w-full h-[80%] grid grid-cols-3 grid-rows-3">
                       {Array.from({ length: 9 }).map((_, i) => {
                         const item = outfit.equipments[i]
-                      const totalCount = outfit.equipments.length
+                        const totalCount = outfit.equipments.length
 
-                      if (i === 8 && totalCount > 9) {
-                        const extraCount = totalCount - 8
-                        return (
-                          <div
-                            key={i}
-                            className="relative w-full h-full border-[0.5px] border-slate-200 bg-slate-50 overflow-hidden"
-                          >
-                            {item && item.equipment.image?.path && (
-                              <img
-                                src={`/files/${item.equipment.image.path}`}
-                                alt="More"
-                                className="w-full h-full object-cover opacity-50 grayscale"
-                              />
-                            )}
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white font-bold text-lg backdrop-blur-[1px]">
-                              +{extraCount}
+                        if (i === 8 && totalCount > 9) {
+                          const extraCount = totalCount - 8
+                          return (
+                            <div
+                              key={i}
+                              className="relative w-full h-full border-[0.5px] border-slate-200 bg-slate-50 overflow-hidden"
+                            >
+                              {item && item.equipment.image?.path && (
+                                <img
+                                  src={`/files/${item.equipment.image.path}`}
+                                  alt="More"
+                                  className="w-full h-full object-cover opacity-50 grayscale"
+                                />
+                              )}
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white font-bold text-lg backdrop-blur-[1px]">
+                                +{extraCount}
+                              </div>
                             </div>
-                          </div>
-                        )
-                      }
+                          )
+                        }
 
                         return (
                           <div
@@ -324,15 +324,15 @@ export default function Equipments() {
                             className="relative w-full h-full border-[0.5px] border-slate-200 bg-slate-50 overflow-hidden"
                           >
                             {item ? (
-                            <img
-                              src={
-                                item.equipment.image?.path
-                                  ? `/files/${item.equipment.image.path}`
-                                  : ''
-                              }
-                              alt={item.equipment.name}
-                              className="w-full h-full object-cover"
-                            />
+                              <img
+                                src={
+                                  item.equipment.image?.path
+                                    ? `/files/${item.equipment.image.path}`
+                                    : ''
+                                }
+                                alt={item.equipment.name}
+                                className="w-full h-full object-cover"
+                              />
                             ) : (
                               <div className="w-full h-full bg-slate-100/50" />
                             )}

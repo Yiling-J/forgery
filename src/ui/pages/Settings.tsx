@@ -143,7 +143,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="w-full h-full p-4 pt-2 flex flex-col font-sans text-slate-900 relative space-y-8">
+    <div className="w-full h-full px-4 flex flex-col font-sans text-slate-900 relative space-y-8">
       <PageHeader title="Settings" subtitle="System // Configuration" />
 
       <div className="max-w-4xl mx-auto w-full grid gap-8">

@@ -26,7 +26,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        'w-full flex flex-col gap-4 pb-4 pt-2 transition-all duration-300',
+        'w-full flex flex-col gap-4 pb-4 pt-3 transition-all duration-300',
         sticky &&
           'sticky z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60',
         className,

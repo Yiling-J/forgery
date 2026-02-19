@@ -83,7 +83,7 @@ export default function FittingRoom() {
   }
 
   return (
-    <div className="px-8 pb-8 pt-2 h-[calc(100vh-6rem)] flex flex-col bg-stone-50/30 relative">
+    <div className="px-8 pb-2 h-[calc(100vh-6rem)] flex flex-col bg-stone-50/30 relative">
       <PageHeader
         title="Fitting Room"
         subtitle="System // FITTING_ROOM"
@@ -134,8 +134,8 @@ export default function FittingRoom() {
         </div>
 
         {/* Right: Generations Grid */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden h-full min-h-0">
-          <div className="p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
+        <div className="flex flex-col bg-white rounded-2xl border border-stone-200 shadow-sm h-full">
+          <div className="flex-none p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
             <h3 className="font-bold text-stone-700 uppercase tracking-wider text-xs flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
               Generated Looks
@@ -157,7 +157,7 @@ export default function FittingRoom() {
               </Button>
             </div>
           ) : (
-            <ScrollArea className="flex-1 h-full">
+            <ScrollArea className="grow overflow-hidden">
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
                 {generations.map((gen) => (
                   <div
@@ -216,7 +216,7 @@ export default function FittingRoom() {
                       alt="Generation"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                       <p className="text-white text-xs font-bold">
                         {new Date(gen.createdAt).toLocaleDateString()}
                       </p>
