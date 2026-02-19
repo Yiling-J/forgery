@@ -260,7 +260,6 @@ export class UnifiedAIService implements AIService {
       model: model,
       image: images, // Pass array of images as requested
       prompt: prompt,
-      response_format: 'b64_json',
     })
 
     if (response.data && response.data.length > 0) {
