@@ -188,16 +188,20 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
   /**
    * Refines a cropped asset (removes background, upscales).
    */
-  async refineAsset(base64: string): Promise<string> {
+  async refineAsset(base64: string, name: string, description: string): Promise<string> {
     const buffer = Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
     const file = new File([buffer], 'crop.png', { type: 'image/png' })
 
     const prompt = `
-Task: Asset Refinement
+Task: Asset Extraction & Refinement
+
+Input Context:
+Equipment Name: ${name}
+Description: ${description}
 
 Instructions:
-1. Process the provided asset image.
-2. Remove any remaining background artifacts and ensure a pure white background.
+1. Analyze the input image and identify the main equipment matching the description.
+2. Extract this main equipment and place it onto a pure white background (#FFFFFF).
 3. Upscale the image and enhance details for high-quality game asset presentation.
 4. Ensure the object is centered and fully visible.
 5. EXTREME DETAIL: Preserve every existing detail, texture, and pattern from the input image. Do not change the design. Only sharpen and clarify.
