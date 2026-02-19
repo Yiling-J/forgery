@@ -118,10 +118,13 @@ describe('ExtractionService', () => {
     // We expect 4 calls.
     expect(extractMock).toHaveBeenCalledTimes(4)
 
+    // Access calls safely by casting mock.calls to any[][] to bypass the tuple type restriction
+    const calls = extractMock.mock.calls as unknown as any[][]
+
     // Call 0 (Item A): 0,0 -> x=0..100, y=0..66.
     // Padding 3.
     // Expected: left: 3, top: 3, width: 94, height: 60.
-    const args0 = extractMock.mock.calls[0][0] as any
+    const args0 = calls[0][0]
     expect(args0.left).toBe(3)
     expect(args0.top).toBe(3)
     expect(args0.width).toBe(94)
@@ -129,7 +132,7 @@ describe('ExtractionService', () => {
 
     // Call 1 (Item B): 0,1 -> x=100..300, y=0..66.
     // Expected: left: 103, top: 3, width: 194, height: 60.
-    const args1 = extractMock.mock.calls[1][0] as any
+    const args1 = calls[1][0]
     expect(args1.left).toBe(103)
     expect(args1.top).toBe(3)
     expect(args1.width).toBe(194)
