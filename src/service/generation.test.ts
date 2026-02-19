@@ -1,4 +1,4 @@
-import { describe, it, expect, mock, afterEach } from 'bun:test'
+import { afterEach, describe, expect, it, mock } from 'bun:test'
 
 const mockPrisma = {
   generation: {
@@ -157,7 +157,7 @@ describe('GenerationService', () => {
     expect(mockPrisma.generation.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          pose: 'pose1',
+          poseId: 'pose1',
         }),
       }),
     )
