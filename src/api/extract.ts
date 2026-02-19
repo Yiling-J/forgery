@@ -13,6 +13,23 @@ const analyzeSchema = z.object({
   image: z.instanceof(File),
 })
 
+const splitSchema = z.object({
+  image: z.string(),
+  assets: z.array(
+    z.object({
+      item_name: z.string(),
+      description: z.string(),
+      category: z.string(),
+    }),
+  ),
+  splitConfig: z
+    .object({
+      verticalLines: z.array(z.number()),
+      horizontalLines: z.array(z.number()),
+    })
+    .optional(),
+})
+
 const refineSchema = z.object({
   assets: z.array(
     z.object({
@@ -72,50 +89,19 @@ const route = app
           )
         }
 
-        // 2.5 Emit texture sheet to client
+        // 2.5 Emit texture sheet and assets to client
         const dimensions = extractionService.getGridDimensions(analysis.assets.length)
         await stream.writeSSE({
           event: 'texture_generated',
           data: JSON.stringify({
             image: sheetBase64,
             grid: dimensions,
+            assets: analysis.assets,
           }),
         })
 
-        // 3. Crop Assets (Splitting)
-        await stream.writeSSE({
-          event: 'status',
-          data: JSON.stringify({ status: 'splitting', message: 'Splitting texture sheet...' }),
-        })
-
-        let crops
-        try {
-          crops = await extractionService.cropAssets(sheetBase64, analysis.assets)
-        } catch (err: unknown) {
-          throw new Error(`Splitting failed: ${err instanceof Error ? err.message : String(err)}`, {
-            cause: err,
-          })
-        }
-
-        // 4. Combine crops with metadata and return
-        const candidates = crops.map((crop) => {
-          const originalMeta = analysis.assets.find((a) => a.item_name === crop.name) || {
-            item_name: crop.name,
-            description: 'Extracted asset',
-            category: 'Others',
-          }
-          return {
-            name: originalMeta.item_name,
-            description: originalMeta.description,
-            category: originalMeta.category,
-            base64: crop.base64,
-          }
-        })
-
-        await stream.writeSSE({
-          event: 'complete',
-          data: JSON.stringify({ assets: candidates }),
-        })
+        // We stop here to allow manual split adjustment on the frontend.
+        // The frontend will call /split next.
       } catch (e: unknown) {
         console.error(e)
         const error = e instanceof Error ? e : new Error(String(e))
@@ -125,6 +111,33 @@ const route = app
         })
       }
     })
+  })
+  .post('/split', zValidator('json', splitSchema), async (c) => {
+    const { image, assets, splitConfig } = c.req.valid('json')
+
+    try {
+      const crops = await extractionService.cropAssets(image, assets, splitConfig)
+
+      const candidates = crops.map((crop) => {
+        const originalMeta = assets.find((a) => a.item_name === crop.name) || {
+          item_name: crop.name,
+          description: 'Extracted asset',
+          category: 'Others',
+        }
+        return {
+          name: originalMeta.item_name,
+          description: originalMeta.description,
+          category: originalMeta.category,
+          base64: crop.base64,
+        }
+      })
+
+      return c.json({ assets: candidates })
+    } catch (e: unknown) {
+      console.error(e)
+      const error = e instanceof Error ? e : new Error(String(e))
+      return c.json({ error: error.message || 'Splitting failed' }, 500)
+    }
   })
   .post('/refine', zValidator('json', refineSchema), async (c) => {
     const { assets } = c.req.valid('json')

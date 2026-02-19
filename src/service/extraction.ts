@@ -73,7 +73,7 @@ Instructions:
 Analyze the character in the provided image and extract the following ${assets.length} specific assets into a new, single image organized in a ${rows}x${cols} grid layout. The out put image should be square(1:1 aspect ratio) and each grid should be equal size.
 
 Core Constraints:
-1. Grid Layout: The output image must be a strict ${rows} rows x ${cols} columns grid. The grid layout should split by black line. The grid must take all available space of the image, no border padding.
+1. Grid Layout: The output image must be a strict ${rows} rows x ${cols} columns grid. The grid layout should split by 2px width single black line(Inside Borders). The grid must take all available space of the image, and the top left corner of the grid is (0%, 0%) of the image and the bottom-right corner is (100%, 100%). The grid has no outline border, 
 2. Equal Cells: Every cell in the grid MUST have identical width and height.
 3. Sequential Placement: Place the assets in the grid cells in the order listed below, starting from top-left, moving right, then down to the next row.
 4. Empty Cells: If there are fewer assets than grid cells, leave the remaining cells at the end (bottom-right) completely empty (pure white).
@@ -93,11 +93,12 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
   }
 
   /**
-   * Crops assets from the texture sheet based on calculated grid.
+   * Crops assets from the texture sheet based on calculated grid or provided split configuration.
    */
   async cropAssets(
     sheetBase64: string,
     assets: ExtractedAsset[],
+    splitConfig?: { verticalLines: number[]; horizontalLines: number[] },
   ): Promise<{ name: string; base64: string }[]> {
     const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
     const image = sharp(buffer)
@@ -106,27 +107,67 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
     if (!metadata.width || !metadata.height) throw new Error('Could not determine image dimensions')
 
     const { rows, cols } = this.getGridDimensions(assets.length)
-    const cellWidth = Math.floor(metadata.width / cols)
-    const cellHeight = Math.floor(metadata.height / rows)
-
     const croppedAssets = []
+
+    // Helper to get pixel position from percentage
+    const getPos = (pct: number, dim: number) => Math.floor(pct * dim)
+
+    // Construct grid boundaries
+    let vLines = splitConfig?.verticalLines || []
+    let hLines = splitConfig?.horizontalLines || []
+
+    // Ensure lines are sorted
+    vLines.sort((a, b) => a - b)
+    hLines.sort((a, b) => a - b)
+
+    // If no config (or empty arrays), use default equal grid logic
+    // We populate the lines arrays to simulate the equal grid for consistent processing
+    if (!splitConfig || (vLines.length === 0 && hLines.length === 0)) {
+      vLines = Array.from({ length: cols - 1 }, (_, i) => (i + 1) / cols)
+      hLines = Array.from({ length: rows - 1 }, (_, i) => (i + 1) / rows)
+    }
+
+    // Add boundaries (0 and 1)
+    const colBoundaries = [0, ...vLines, 1]
+    const rowBoundaries = [0, ...hLines, 1]
 
     for (let i = 0; i < assets.length; i++) {
       const row = Math.floor(i / cols)
       const col = i % cols
 
-      // Calculate coordinates with 3px inner padding to avoid grid lines
-      const padding = 3
-      const left = col * cellWidth + padding
-      const top = row * cellHeight + padding
-      const width = cellWidth - padding * 2
-      const height = cellHeight - padding * 2
+      // Ensure we have boundaries for this cell
+      if (col + 1 >= colBoundaries.length || row + 1 >= rowBoundaries.length) {
+        console.warn(`Grid mismatch for asset ${i}: row=${row}, col=${col}. Skipping.`)
+        continue
+      }
 
-      // Ensure we don't go out of bounds (though math implies we fit)
-      const safeLeft = Math.max(0, left)
-      const safeTop = Math.max(0, top)
-      const safeWidth = Math.min(width, metadata.width - safeLeft)
-      const safeHeight = Math.min(height, metadata.height - safeTop)
+      // Get boundaries for this cell
+      const startX = colBoundaries[col]
+      const endX = colBoundaries[col + 1]
+      const startY = rowBoundaries[row]
+      const endY = rowBoundaries[row + 1]
+
+      // Convert to pixels
+      const left = getPos(startX, metadata.width!)
+      const top = getPos(startY, metadata.height!)
+      const right = getPos(endX, metadata.width!)
+      const bottom = getPos(endY, metadata.height!)
+
+      const width = right - left
+      const height = bottom - top
+
+      // Apply padding
+      const padding = 3
+      const paddedLeft = left + padding
+      const paddedTop = top + padding
+      const paddedWidth = width - padding * 2
+      const paddedHeight = height - padding * 2
+
+      // Safe bounds
+      const safeLeft = Math.max(0, paddedLeft)
+      const safeTop = Math.max(0, paddedTop)
+      const safeWidth = Math.min(paddedWidth, metadata.width! - safeLeft)
+      const safeHeight = Math.min(paddedHeight, metadata.height! - safeTop)
 
       if (safeWidth <= 0 || safeHeight <= 0) continue
 
