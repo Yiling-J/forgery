@@ -134,7 +134,7 @@ export default function FittingRoom() {
         </div>
 
         {/* Right: Generations Grid */}
-        <div className="flex flex-col bg-white rounded-2xl border border-stone-200 shadow-sm h-full">
+        <div className="flex flex-col bg-white rounded-2xl border border-stone-200 shadow-sm h-full w-full">
           <div className="flex-none p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
             <h3 className="font-bold text-stone-700 uppercase tracking-wider text-xs flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
