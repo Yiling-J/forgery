@@ -1231,8 +1231,8 @@ export const GenerationScalarFieldEnum = {
   characterId: 'characterId',
   imageId: 'imageId',
   userPrompt: 'userPrompt',
-  pose: 'pose',
-  expression: 'expression',
+  poseId: 'poseId',
+  expressionId: 'expressionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

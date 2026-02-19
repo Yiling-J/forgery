@@ -65,19 +65,21 @@ model Equipment {
 }
 
 model Generation {
-  id          String   @id @default(ulid())
-  characterId String   @map("character_id")
-  imageId     String   @map("image_id")
-  userPrompt  String?  @map("user_prompt")
-  pose        String?
-  expression  String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(ulid())
+  characterId  String   @map("character_id")
+  imageId      String   @map("image_id")
+  userPrompt   String?  @map("user_prompt")
+  poseId       String?  @map("pose")
+  expressionId String?  @map("expression")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  character   Character             @relation(fields: [characterId], references: [id])
-  image       Asset                 @relation(fields: [imageId], references: [id])
-  equipments  GenerationEquipment[]
+  character  Character             @relation(fields: [characterId], references: [id])
+  image      Asset                 @relation(fields: [imageId], references: [id])
+  pose       Pose?                 @relation(fields: [poseId], references: [id])
+  expression Expression?           @relation(fields: [expressionId], references: [id])
+  equipments GenerationEquipment[]
 
   @@map("generations")
 }
@@ -135,7 +137,8 @@ model Pose {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  image Asset @relation(fields: [imageId], references: [id])
+  image       Asset        @relation(fields: [imageId], references: [id])
+  generations Generation[]
 
   @@map("poses")
 }
@@ -148,7 +151,8 @@ model Expression {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  image Asset @relation(fields: [imageId], references: [id])
+  image       Asset        @relation(fields: [imageId], references: [id])
+  generations Generation[]
 
   @@map("expressions")
 }

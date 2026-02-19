@@ -151,8 +151,8 @@ export class ExampleDataService {
         id: g.id,
         characterId: g.characterId,
         userPrompt: g.userPrompt,
-        pose: g.pose,
-        expression: g.expression,
+        pose: g.poseId,
+        expression: g.expressionId,
         asset: {
           name: g.image.name,
           type: g.image.type,
@@ -267,8 +267,8 @@ export class ExampleDataService {
             id: item.id,
             characterId: item.characterId,
             userPrompt: item.userPrompt,
-            pose: item.pose,
-            expression: item.expression,
+            poseId: item.pose,
+            expressionId: item.expression,
             imageId: asset.id,
             equipments: {
               create: item.equipmentIds.map((id) => ({

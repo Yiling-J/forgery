@@ -186,8 +186,8 @@ category: ${eq.category}
         characterId: character.id,
         imageId: asset.id,
         userPrompt: userPrompt,
-        pose: poseId,
-        expression: expressionId,
+        poseId: poseId,
+        expressionId: expressionId,
         equipments: {
           create: equipmentIds.map((eqId) => ({
             equipmentId: eqId,
@@ -197,6 +197,8 @@ category: ${eq.category}
       include: {
         image: true,
         character: true,
+        pose: { include: { image: true } },
+        expression: { include: { image: true } },
         equipments: {
           include: {
             equipment: {
@@ -241,6 +243,8 @@ category: ${eq.category}
         include: {
           image: true,
           character: true,
+          pose: { include: { image: true } },
+          expression: { include: { image: true } },
           equipments: {
             include: {
               equipment: {
