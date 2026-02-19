@@ -167,7 +167,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
       setUserPrompt('')
     } catch (e) {
       console.error(e)
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+      toast.error(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
       setSubmitting(false)
     }
@@ -532,7 +532,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
             </div>
 
             <div className="flex items-center gap-4">
-              {error && <span className="text-red-500 text-sm font-medium">{error}</span>}
               <Button
                 size="lg"
                 className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg min-w-[150px]"
