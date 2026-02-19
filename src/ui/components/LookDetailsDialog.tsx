@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react'
 import { InferResponseType } from 'hono/client'
-import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react'
+import { RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { client } from '../client'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
 
 type GenerationResponse = InferResponseType<typeof client.generations.$get>
@@ -141,7 +141,7 @@ export const LookDetailsDialog: React.FC<LookDetailsDialogProps> = ({
         <div className="flex-1 overflow-hidden flex flex-col">
           {/* Top: Full Image Viewer */}
           <div
-            className="h-[60%] bg-stone-900 flex items-center justify-center p-4 overflow-hidden relative shrink-0 select-none"
+            className="h-[60%] bg-white flex items-center justify-center p-4 overflow-hidden relative shrink-0 select-none"
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
           >
@@ -166,7 +166,7 @@ export const LookDetailsDialog: React.FC<LookDetailsDialogProps> = ({
             />
 
             {/* Zoom Controls */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/50 backdrop-blur-sm p-1.5 rounded-full border border-white/10 z-10 shadow-lg">
+            <div className="absolute bottom-2 right-[5px] flex items-center gap-2 bg-black/35 backdrop-blur-sm p-1.5 rounded-full border border-white/10 z-10 shadow-lg">
               <button
                 onClick={handleZoomOut}
                 className="p-2 hover:bg-white/20 rounded-full text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
