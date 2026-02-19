@@ -73,7 +73,7 @@ Instructions:
 Analyze the character in the provided image and extract the following ${assets.length} specific assets into a new, single image organized in a ${rows}x${cols} grid layout. The out put image should be square(1:1 aspect ratio) and each grid should be equal size.
 
 Core Constraints:
-1. Grid Layout: The output image must be a strict ${rows} rows x ${cols} columns grid. The grid layout should split by black line. The grid must take all available space of the image, no border padding.
+1. Grid Layout: The output image must be a strict ${rows} rows x ${cols} columns grid. The grid layout should split by 2px width single black line(Inside Borders). The grid must take all available space of the image, and the top left corner of the grid is (0%, 0%) of the image and the bottom-right corner is (100%, 100%). The grid has no outline border, 
 2. Equal Cells: Every cell in the grid MUST have identical width and height.
 3. Sequential Placement: Place the assets in the grid cells in the order listed below, starting from top-left, moving right, then down to the next row.
 4. Empty Cells: If there are fewer assets than grid cells, leave the remaining cells at the end (bottom-right) completely empty (pure white).
