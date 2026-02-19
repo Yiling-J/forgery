@@ -7,6 +7,7 @@ import { AnalyzeStage } from './extractor/AnalyzeStage'
 import { RefineStage } from './extractor/RefineStage'
 import { SelectionStage } from './extractor/SelectionStage'
 import { UploadStage } from './extractor/UploadStage'
+import { SplitStage } from './extractor/SplitStage'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from './ui/dialog'
 
@@ -16,7 +17,13 @@ interface ExtractorDialogProps {
   onSuccess: (assets: ExtractedAsset[]) => void
 }
 
-type Stage = 'upload' | 'analyze' | 'selection' | 'refine'
+type Stage = 'upload' | 'analyze' | 'split' | 'selection' | 'refine'
+
+interface AnalyzedAsset {
+  item_name: string
+  description: string
+  category: string
+}
 
 export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   open,
@@ -33,6 +40,12 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const [selectedIndices, setSelectedIndices] = useState<number[]>([])
   const [results, setResults] = useState<ExtractedAsset[]>([])
   const [isRefineComplete, setIsRefineComplete] = useState(false)
+
+  // Split Stage Data
+  const [textureImage, setTextureImage] = useState<string | null>(null)
+  const [gridDimensions, setGridDimensions] = useState<{ rows: number; cols: number }>({ rows: 0, cols: 0 })
+  const [analyzedAssets, setAnalyzedAssets] = useState<AnalyzedAsset[]>([])
+  const [isSplitting, setIsSplitting] = useState(false)
 
   // Save as Outfit state
   const [saveAsOutfit, setSaveAsOutfit] = useState(false)
@@ -54,6 +67,10 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setIsRefineComplete(false)
     setSaveAsOutfit(false)
     setOutfitName('')
+    setTextureImage(null)
+    setGridDimensions({ rows: 0, cols: 0 })
+    setAnalyzedAssets([])
+    setIsSplitting(false)
     analyzeController.current?.abort()
     refineController.current?.abort()
   }
@@ -110,11 +127,15 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
               if (event === 'status') {
                 setStatusMessage(data.message)
-              } else if (event === 'complete') {
-                const newCandidates = data.assets as CandidateAsset[]
-                setCandidates(newCandidates)
-                setSelectedIndices(newCandidates.map((_, i) => i))
-                setStage('selection')
+              } else if (event === 'texture_generated') {
+                setTextureImage(data.image)
+                setGridDimensions(data.grid)
+                setAnalyzedAssets(data.assets)
+                setStage('split')
+                // We stop processing the stream here as we transition to manual split
+                // The stream might continue sending 'splitting'/'complete' if not updated on backend,
+                // but we ignore it by changing stage.
+                return
               } else if (event === 'error') {
                 throw new Error(data.message)
               }
@@ -127,6 +148,40 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
       const err = e instanceof Error ? e : new Error(String(e))
       toast.error(err.message || 'Analysis failed')
       setStage('upload')
+    }
+  }
+
+  const handleSplitConfirm = async (config: { verticalLines: number[]; horizontalLines: number[] }) => {
+    if (!textureImage) return
+    setIsSplitting(true)
+    try {
+      const res = await client.extract.split.$post({
+        json: {
+          image: textureImage,
+          assets: analyzedAssets.map((a) => ({
+            item_name: a.item_name,
+            description: a.description,
+            category: a.category,
+          })),
+          splitConfig: config,
+        },
+      })
+      if (!res.ok) throw new Error('Split failed')
+      const data = await res.json()
+
+      // Map response to CandidateAsset[]
+      // The backend returns { assets: CandidateAsset[] }
+      if ('error' in data) throw new Error(data.error as string)
+
+      const newCandidates = data.assets as CandidateAsset[]
+      setCandidates(newCandidates)
+      setSelectedIndices(newCandidates.map((_, i) => i))
+      setStage('selection')
+    } catch (e) {
+      console.error(e)
+      toast.error('Failed to split image')
+    } finally {
+      setIsSplitting(false)
     }
   }
 
@@ -251,6 +306,16 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
             <AnalyzeStage imageSrc={preview} isAnalyzing={isAnalyzing} />
           )}
 
+          {stage === 'split' && textureImage && (
+            <SplitStage
+              imageSrc={textureImage}
+              grid={gridDimensions}
+              onConfirm={handleSplitConfirm}
+              isSplitting={isSplitting}
+              onCancel={() => setStage('analyze')}
+            />
+          )}
+
           {stage === 'selection' && (
             <SelectionStage
               candidates={candidates}
@@ -273,69 +338,71 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         </div>
 
         {/* Footer */}
-        <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-white shrink-0 flex-none">
-          {stage === 'upload' && (
-            <Button variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
-          )}
-
-          {stage === 'analyze' && (
-            <>
+        {stage !== 'split' && (
+          <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-white shrink-0 flex-none">
+            {stage === 'upload' && (
               <Button variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button disabled={isAnalyzing} onClick={startAnalysis} className="min-w-[160px]">
-                {isAnalyzing ? (
+            )}
+
+            {stage === 'analyze' && (
+              <>
+                <Button variant="outline" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <Button disabled={isAnalyzing} onClick={startAnalysis} className="min-w-[160px]">
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {statusMessage || 'Analyzing...'}
+                    </>
+                  ) : (
+                    <>
+                      <Play className="mr-2 h-4 w-4" /> Start Extraction
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+
+            {stage === 'selection' && (
+              <>
+                <Button variant="outline" onClick={() => setStage('upload')}>
+                  Back to Upload
+                </Button>
+                <Button
+                  onClick={handleRefineConfirm}
+                  disabled={selectedIndices.length === 0}
+                  className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg border-none hover:opacity-90 min-w-[160px]"
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Start Refining ({selectedIndices.length})
+                </Button>
+              </>
+            )}
+
+            {stage === 'refine' && (
+              <>
+                {isRefineComplete ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {statusMessage || 'Analyzing...'}
+                    <Button variant="outline" onClick={resetState}>
+                      <RefreshCw className="mr-2 h-4 w-4" /> Start Over
+                    </Button>
+                    <Button onClick={handleDone} className="bg-green-600 hover:bg-green-700">
+                      Done
+                    </Button>
                   </>
                 ) : (
-                  <>
-                    <Play className="mr-2 h-4 w-4" /> Start Extraction
-                  </>
+                  <Button disabled className="min-w-[160px]">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Refining...
+                  </Button>
                 )}
-              </Button>
-            </>
-          )}
-
-          {stage === 'selection' && (
-            <>
-              <Button variant="outline" onClick={() => setStage('upload')}>
-                Back to Upload
-              </Button>
-              <Button
-                onClick={handleRefineConfirm}
-                disabled={selectedIndices.length === 0}
-                className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg border-none hover:opacity-90 min-w-[160px]"
-              >
-                <Sparkles className="mr-2 h-4 w-4" />
-                Start Refining ({selectedIndices.length})
-              </Button>
-            </>
-          )}
-
-          {stage === 'refine' && (
-            <>
-              {isRefineComplete ? (
-                <>
-                  <Button variant="outline" onClick={resetState}>
-                    <RefreshCw className="mr-2 h-4 w-4" /> Start Over
-                  </Button>
-                  <Button onClick={handleDone} className="bg-green-600 hover:bg-green-700">
-                    Done
-                  </Button>
-                </>
-              ) : (
-                <Button disabled className="min-w-[160px]">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Refining...
-                </Button>
-              )}
-            </>
-          )}
-        </DialogFooter>
+              </>
+            )}
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   )
