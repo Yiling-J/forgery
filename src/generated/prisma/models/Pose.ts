@@ -183,6 +183,7 @@ export type PoseWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Pose"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Pose"> | Date | string
   image?: Prisma.XOR<Prisma.AssetScalarRelationFilter, Prisma.AssetWhereInput>
+  generations?: Prisma.GenerationListRelationFilter
 }
 
 export type PoseOrderByWithRelationInput = {
@@ -192,6 +193,7 @@ export type PoseOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   image?: Prisma.AssetOrderByWithRelationInput
+  generations?: Prisma.GenerationOrderByRelationAggregateInput
 }
 
 export type PoseWhereUniqueInput = Prisma.AtLeast<{
@@ -204,6 +206,7 @@ export type PoseWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Pose"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Pose"> | Date | string
   image?: Prisma.XOR<Prisma.AssetScalarRelationFilter, Prisma.AssetWhereInput>
+  generations?: Prisma.GenerationListRelationFilter
 }, "id">
 
 export type PoseOrderByWithAggregationInput = {
@@ -234,6 +237,7 @@ export type PoseCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutPosesInput
+  generations?: Prisma.GenerationCreateNestedManyWithoutPoseInput
 }
 
 export type PoseUncheckedCreateInput = {
@@ -242,6 +246,7 @@ export type PoseUncheckedCreateInput = {
   imageId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutPoseInput
 }
 
 export type PoseUpdateInput = {
@@ -250,6 +255,7 @@ export type PoseUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutPosesNestedInput
+  generations?: Prisma.GenerationUpdateManyWithoutPoseNestedInput
 }
 
 export type PoseUncheckedUpdateInput = {
@@ -258,6 +264,7 @@ export type PoseUncheckedUpdateInput = {
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationUncheckedUpdateManyWithoutPoseNestedInput
 }
 
 export type PoseCreateManyInput = {
@@ -291,6 +298,11 @@ export type PoseListRelationFilter = {
 
 export type PoseOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type PoseNullableScalarRelationFilter = {
+  is?: Prisma.PoseWhereInput | null
+  isNot?: Prisma.PoseWhereInput | null
 }
 
 export type PoseCountOrderByAggregateInput = {
@@ -359,11 +371,28 @@ export type PoseUncheckedUpdateManyWithoutImageNestedInput = {
   deleteMany?: Prisma.PoseScalarWhereInput | Prisma.PoseScalarWhereInput[]
 }
 
+export type PoseCreateNestedOneWithoutGenerationsInput = {
+  create?: Prisma.XOR<Prisma.PoseCreateWithoutGenerationsInput, Prisma.PoseUncheckedCreateWithoutGenerationsInput>
+  connectOrCreate?: Prisma.PoseCreateOrConnectWithoutGenerationsInput
+  connect?: Prisma.PoseWhereUniqueInput
+}
+
+export type PoseUpdateOneWithoutGenerationsNestedInput = {
+  create?: Prisma.XOR<Prisma.PoseCreateWithoutGenerationsInput, Prisma.PoseUncheckedCreateWithoutGenerationsInput>
+  connectOrCreate?: Prisma.PoseCreateOrConnectWithoutGenerationsInput
+  upsert?: Prisma.PoseUpsertWithoutGenerationsInput
+  disconnect?: Prisma.PoseWhereInput | boolean
+  delete?: Prisma.PoseWhereInput | boolean
+  connect?: Prisma.PoseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PoseUpdateToOneWithWhereWithoutGenerationsInput, Prisma.PoseUpdateWithoutGenerationsInput>, Prisma.PoseUncheckedUpdateWithoutGenerationsInput>
+}
+
 export type PoseCreateWithoutImageInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  generations?: Prisma.GenerationCreateNestedManyWithoutPoseInput
 }
 
 export type PoseUncheckedCreateWithoutImageInput = {
@@ -371,6 +400,7 @@ export type PoseUncheckedCreateWithoutImageInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutPoseInput
 }
 
 export type PoseCreateOrConnectWithoutImageInput = {
@@ -409,6 +439,54 @@ export type PoseScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Pose"> | Date | string
 }
 
+export type PoseCreateWithoutGenerationsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  image: Prisma.AssetCreateNestedOneWithoutPosesInput
+}
+
+export type PoseUncheckedCreateWithoutGenerationsInput = {
+  id?: string
+  name: string
+  imageId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PoseCreateOrConnectWithoutGenerationsInput = {
+  where: Prisma.PoseWhereUniqueInput
+  create: Prisma.XOR<Prisma.PoseCreateWithoutGenerationsInput, Prisma.PoseUncheckedCreateWithoutGenerationsInput>
+}
+
+export type PoseUpsertWithoutGenerationsInput = {
+  update: Prisma.XOR<Prisma.PoseUpdateWithoutGenerationsInput, Prisma.PoseUncheckedUpdateWithoutGenerationsInput>
+  create: Prisma.XOR<Prisma.PoseCreateWithoutGenerationsInput, Prisma.PoseUncheckedCreateWithoutGenerationsInput>
+  where?: Prisma.PoseWhereInput
+}
+
+export type PoseUpdateToOneWithWhereWithoutGenerationsInput = {
+  where?: Prisma.PoseWhereInput
+  data: Prisma.XOR<Prisma.PoseUpdateWithoutGenerationsInput, Prisma.PoseUncheckedUpdateWithoutGenerationsInput>
+}
+
+export type PoseUpdateWithoutGenerationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  image?: Prisma.AssetUpdateOneRequiredWithoutPosesNestedInput
+}
+
+export type PoseUncheckedUpdateWithoutGenerationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type PoseCreateManyImageInput = {
   id?: string
   name: string
@@ -421,6 +499,7 @@ export type PoseUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationUpdateManyWithoutPoseNestedInput
 }
 
 export type PoseUncheckedUpdateWithoutImageInput = {
@@ -428,6 +507,7 @@ export type PoseUncheckedUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationUncheckedUpdateManyWithoutPoseNestedInput
 }
 
 export type PoseUncheckedUpdateManyWithoutImageInput = {
@@ -438,6 +518,35 @@ export type PoseUncheckedUpdateManyWithoutImageInput = {
 }
 
 
+/**
+ * Count Type PoseCountOutputType
+ */
+
+export type PoseCountOutputType = {
+  generations: number
+}
+
+export type PoseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  generations?: boolean | PoseCountOutputTypeCountGenerationsArgs
+}
+
+/**
+ * PoseCountOutputType without action
+ */
+export type PoseCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PoseCountOutputType
+   */
+  select?: Prisma.PoseCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PoseCountOutputType without action
+ */
+export type PoseCountOutputTypeCountGenerationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GenerationWhereInput
+}
+
 
 export type PoseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -446,6 +555,8 @@ export type PoseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
+  generations?: boolean | Prisma.Pose$generationsArgs<ExtArgs>
+  _count?: boolean | Prisma.PoseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pose"]>
 
 export type PoseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -477,6 +588,8 @@ export type PoseSelectScalar = {
 export type PoseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "imageId" | "createdAt" | "updatedAt", ExtArgs["result"]["pose"]>
 export type PoseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
+  generations?: boolean | Prisma.Pose$generationsArgs<ExtArgs>
+  _count?: boolean | Prisma.PoseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PoseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
@@ -489,6 +602,7 @@ export type $PosePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "Pose"
   objects: {
     image: Prisma.$AssetPayload<ExtArgs>
+    generations: Prisma.$GenerationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -891,6 +1005,7 @@ readonly fields: PoseFieldRefs;
 export interface Prisma__PoseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   image<T extends Prisma.AssetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssetDefaultArgs<ExtArgs>>): Prisma.Prisma__AssetClient<runtime.Types.Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  generations<T extends Prisma.Pose$generationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pose$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1316,6 +1431,30 @@ export type PoseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Poses to delete.
    */
   limit?: number
+}
+
+/**
+ * Pose.generations
+ */
+export type Pose$generationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Generation
+   */
+  select?: Prisma.GenerationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Generation
+   */
+  omit?: Prisma.GenerationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GenerationInclude<ExtArgs> | null
+  where?: Prisma.GenerationWhereInput
+  orderBy?: Prisma.GenerationOrderByWithRelationInput | Prisma.GenerationOrderByWithRelationInput[]
+  cursor?: Prisma.GenerationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GenerationScalarFieldEnum | Prisma.GenerationScalarFieldEnum[]
 }
 
 /**

@@ -183,6 +183,7 @@ export type ExpressionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Expression"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expression"> | Date | string
   image?: Prisma.XOR<Prisma.AssetScalarRelationFilter, Prisma.AssetWhereInput>
+  generations?: Prisma.GenerationListRelationFilter
 }
 
 export type ExpressionOrderByWithRelationInput = {
@@ -192,6 +193,7 @@ export type ExpressionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   image?: Prisma.AssetOrderByWithRelationInput
+  generations?: Prisma.GenerationOrderByRelationAggregateInput
 }
 
 export type ExpressionWhereUniqueInput = Prisma.AtLeast<{
@@ -204,6 +206,7 @@ export type ExpressionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Expression"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expression"> | Date | string
   image?: Prisma.XOR<Prisma.AssetScalarRelationFilter, Prisma.AssetWhereInput>
+  generations?: Prisma.GenerationListRelationFilter
 }, "id">
 
 export type ExpressionOrderByWithAggregationInput = {
@@ -234,6 +237,7 @@ export type ExpressionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutExpressionsInput
+  generations?: Prisma.GenerationCreateNestedManyWithoutExpressionInput
 }
 
 export type ExpressionUncheckedCreateInput = {
@@ -242,6 +246,7 @@ export type ExpressionUncheckedCreateInput = {
   imageId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutExpressionInput
 }
 
 export type ExpressionUpdateInput = {
@@ -250,6 +255,7 @@ export type ExpressionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutExpressionsNestedInput
+  generations?: Prisma.GenerationUpdateManyWithoutExpressionNestedInput
 }
 
 export type ExpressionUncheckedUpdateInput = {
@@ -258,6 +264,7 @@ export type ExpressionUncheckedUpdateInput = {
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationUncheckedUpdateManyWithoutExpressionNestedInput
 }
 
 export type ExpressionCreateManyInput = {
@@ -291,6 +298,11 @@ export type ExpressionListRelationFilter = {
 
 export type ExpressionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ExpressionNullableScalarRelationFilter = {
+  is?: Prisma.ExpressionWhereInput | null
+  isNot?: Prisma.ExpressionWhereInput | null
 }
 
 export type ExpressionCountOrderByAggregateInput = {
@@ -359,11 +371,28 @@ export type ExpressionUncheckedUpdateManyWithoutImageNestedInput = {
   deleteMany?: Prisma.ExpressionScalarWhereInput | Prisma.ExpressionScalarWhereInput[]
 }
 
+export type ExpressionCreateNestedOneWithoutGenerationsInput = {
+  create?: Prisma.XOR<Prisma.ExpressionCreateWithoutGenerationsInput, Prisma.ExpressionUncheckedCreateWithoutGenerationsInput>
+  connectOrCreate?: Prisma.ExpressionCreateOrConnectWithoutGenerationsInput
+  connect?: Prisma.ExpressionWhereUniqueInput
+}
+
+export type ExpressionUpdateOneWithoutGenerationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ExpressionCreateWithoutGenerationsInput, Prisma.ExpressionUncheckedCreateWithoutGenerationsInput>
+  connectOrCreate?: Prisma.ExpressionCreateOrConnectWithoutGenerationsInput
+  upsert?: Prisma.ExpressionUpsertWithoutGenerationsInput
+  disconnect?: Prisma.ExpressionWhereInput | boolean
+  delete?: Prisma.ExpressionWhereInput | boolean
+  connect?: Prisma.ExpressionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ExpressionUpdateToOneWithWhereWithoutGenerationsInput, Prisma.ExpressionUpdateWithoutGenerationsInput>, Prisma.ExpressionUncheckedUpdateWithoutGenerationsInput>
+}
+
 export type ExpressionCreateWithoutImageInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  generations?: Prisma.GenerationCreateNestedManyWithoutExpressionInput
 }
 
 export type ExpressionUncheckedCreateWithoutImageInput = {
@@ -371,6 +400,7 @@ export type ExpressionUncheckedCreateWithoutImageInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutExpressionInput
 }
 
 export type ExpressionCreateOrConnectWithoutImageInput = {
@@ -409,6 +439,54 @@ export type ExpressionScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Expression"> | Date | string
 }
 
+export type ExpressionCreateWithoutGenerationsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  image: Prisma.AssetCreateNestedOneWithoutExpressionsInput
+}
+
+export type ExpressionUncheckedCreateWithoutGenerationsInput = {
+  id?: string
+  name: string
+  imageId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ExpressionCreateOrConnectWithoutGenerationsInput = {
+  where: Prisma.ExpressionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ExpressionCreateWithoutGenerationsInput, Prisma.ExpressionUncheckedCreateWithoutGenerationsInput>
+}
+
+export type ExpressionUpsertWithoutGenerationsInput = {
+  update: Prisma.XOR<Prisma.ExpressionUpdateWithoutGenerationsInput, Prisma.ExpressionUncheckedUpdateWithoutGenerationsInput>
+  create: Prisma.XOR<Prisma.ExpressionCreateWithoutGenerationsInput, Prisma.ExpressionUncheckedCreateWithoutGenerationsInput>
+  where?: Prisma.ExpressionWhereInput
+}
+
+export type ExpressionUpdateToOneWithWhereWithoutGenerationsInput = {
+  where?: Prisma.ExpressionWhereInput
+  data: Prisma.XOR<Prisma.ExpressionUpdateWithoutGenerationsInput, Prisma.ExpressionUncheckedUpdateWithoutGenerationsInput>
+}
+
+export type ExpressionUpdateWithoutGenerationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  image?: Prisma.AssetUpdateOneRequiredWithoutExpressionsNestedInput
+}
+
+export type ExpressionUncheckedUpdateWithoutGenerationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ExpressionCreateManyImageInput = {
   id?: string
   name: string
@@ -421,6 +499,7 @@ export type ExpressionUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationUpdateManyWithoutExpressionNestedInput
 }
 
 export type ExpressionUncheckedUpdateWithoutImageInput = {
@@ -428,6 +507,7 @@ export type ExpressionUncheckedUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationUncheckedUpdateManyWithoutExpressionNestedInput
 }
 
 export type ExpressionUncheckedUpdateManyWithoutImageInput = {
@@ -438,6 +518,35 @@ export type ExpressionUncheckedUpdateManyWithoutImageInput = {
 }
 
 
+/**
+ * Count Type ExpressionCountOutputType
+ */
+
+export type ExpressionCountOutputType = {
+  generations: number
+}
+
+export type ExpressionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  generations?: boolean | ExpressionCountOutputTypeCountGenerationsArgs
+}
+
+/**
+ * ExpressionCountOutputType without action
+ */
+export type ExpressionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExpressionCountOutputType
+   */
+  select?: Prisma.ExpressionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ExpressionCountOutputType without action
+ */
+export type ExpressionCountOutputTypeCountGenerationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GenerationWhereInput
+}
+
 
 export type ExpressionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -446,6 +555,8 @@ export type ExpressionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdAt?: boolean
   updatedAt?: boolean
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
+  generations?: boolean | Prisma.Expression$generationsArgs<ExtArgs>
+  _count?: boolean | Prisma.ExpressionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["expression"]>
 
 export type ExpressionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -477,6 +588,8 @@ export type ExpressionSelectScalar = {
 export type ExpressionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "imageId" | "createdAt" | "updatedAt", ExtArgs["result"]["expression"]>
 export type ExpressionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
+  generations?: boolean | Prisma.Expression$generationsArgs<ExtArgs>
+  _count?: boolean | Prisma.ExpressionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ExpressionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
@@ -489,6 +602,7 @@ export type $ExpressionPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "Expression"
   objects: {
     image: Prisma.$AssetPayload<ExtArgs>
+    generations: Prisma.$GenerationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -891,6 +1005,7 @@ readonly fields: ExpressionFieldRefs;
 export interface Prisma__ExpressionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   image<T extends Prisma.AssetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssetDefaultArgs<ExtArgs>>): Prisma.Prisma__AssetClient<runtime.Types.Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  generations<T extends Prisma.Expression$generationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Expression$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1316,6 +1431,30 @@ export type ExpressionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many Expressions to delete.
    */
   limit?: number
+}
+
+/**
+ * Expression.generations
+ */
+export type Expression$generationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Generation
+   */
+  select?: Prisma.GenerationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Generation
+   */
+  omit?: Prisma.GenerationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GenerationInclude<ExtArgs> | null
+  where?: Prisma.GenerationWhereInput
+  orderBy?: Prisma.GenerationOrderByWithRelationInput | Prisma.GenerationOrderByWithRelationInput[]
+  cursor?: Prisma.GenerationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GenerationScalarFieldEnum | Prisma.GenerationScalarFieldEnum[]
 }
 
 /**
