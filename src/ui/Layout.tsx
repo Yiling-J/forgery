@@ -3,6 +3,7 @@ import { AppSidebar } from './components/AppSidebar'
 import { Icons } from './components/Icons'
 import { Separator } from './components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
+import { Toaster } from './components/ui/sonner'
 
 export default function Layout() {
   return (
@@ -28,6 +29,7 @@ export default function Layout() {
           <Outlet />
         </main>
       </SidebarInset>
+      <Toaster />
     </SidebarProvider>
   )
 }
