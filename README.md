@@ -29,8 +29,7 @@ Forge characters, not chaos. Forgery helps you extract equipments (props, clothi
 
 ### Requirements
 
-- [Bun](https://bun.sh)
-- **OR** [Docker](https://www.docker.com/)
+- [Bun](https://bun.sh) or [Docker](https://www.docker.com/)
 - API Keys for OpenAI or Google Gemini
 
 ### Local Quickstart
