@@ -83,7 +83,7 @@ export default function FittingRoom() {
   }
 
   return (
-    <div className="px-8 pb-8 pt-2 h-[calc(100vh-6rem)] flex flex-col bg-stone-50/30 relative">
+    <div className="px-8 pb-2 h-[calc(100vh-6rem)] flex flex-col bg-stone-50/30 relative">
       <PageHeader
         title="Fitting Room"
         subtitle="System // FITTING_ROOM"
@@ -108,9 +108,9 @@ export default function FittingRoom() {
         className="mb-6 shrink-0"
       />
 
-      <div className="flex flex-col lg:flex-row flex-1 gap-6 overflow-hidden pb-4">
+      <div className="flex flex-col lg:flex-row flex-1 gap-6 overflow-hidden pb-4 min-h-0">
         {/* Left: Character Preview */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-4 shrink-0 h-full">
+        <div className="w-full lg:w-1/3 flex flex-col gap-4 shrink-0 h-full min-h-0">
           <Card className="flex-1 border-stone-200 overflow-hidden bg-white flex items-center justify-center relative shadow-sm rounded-2xl p-8">
             <div
               className="absolute inset-0 opacity-5 pointer-events-none"
@@ -134,8 +134,8 @@ export default function FittingRoom() {
         </div>
 
         {/* Right: Generations Grid */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden h-full">
-          <div className="p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
+        <div className="flex flex-col bg-white rounded-2xl border border-stone-200 shadow-sm h-full">
+          <div className="flex-none p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
             <h3 className="font-bold text-stone-700 uppercase tracking-wider text-xs flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
               Generated Looks
@@ -157,8 +157,8 @@ export default function FittingRoom() {
               </Button>
             </div>
           ) : (
-            <ScrollArea className="flex-1 p-4">
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            <ScrollArea className="grow overflow-hidden">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
                 {generations.map((gen) => (
                   <div
                     key={gen.id}
@@ -216,7 +216,7 @@ export default function FittingRoom() {
                       alt="Generation"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                       <p className="text-white text-xs font-bold">
                         {new Date(gen.createdAt).toLocaleDateString()}
                       </p>

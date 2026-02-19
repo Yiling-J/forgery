@@ -40,7 +40,7 @@ export default function Expressions() {
   })
 
   return (
-    <div className="w-full h-full p-4 pt-2 flex flex-col text-slate-900 relative">
+    <div className="w-full h-full px-4 flex flex-col text-slate-900 relative">
       <PageHeader
         title="Expressions"
         subtitle="System // Expression_Library"

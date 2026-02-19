@@ -29,7 +29,6 @@ export type EquipmentMinAggregateOutputType = {
   name: string | null
   description: string | null
   category: string | null
-  subCategory: string | null
   imageId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -40,7 +39,6 @@ export type EquipmentMaxAggregateOutputType = {
   name: string | null
   description: string | null
   category: string | null
-  subCategory: string | null
   imageId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -51,7 +49,6 @@ export type EquipmentCountAggregateOutputType = {
   name: number
   description: number
   category: number
-  subCategory: number
   imageId: number
   createdAt: number
   updatedAt: number
@@ -64,7 +61,6 @@ export type EquipmentMinAggregateInputType = {
   name?: true
   description?: true
   category?: true
-  subCategory?: true
   imageId?: true
   createdAt?: true
   updatedAt?: true
@@ -75,7 +71,6 @@ export type EquipmentMaxAggregateInputType = {
   name?: true
   description?: true
   category?: true
-  subCategory?: true
   imageId?: true
   createdAt?: true
   updatedAt?: true
@@ -86,7 +81,6 @@ export type EquipmentCountAggregateInputType = {
   name?: true
   description?: true
   category?: true
-  subCategory?: true
   imageId?: true
   createdAt?: true
   updatedAt?: true
@@ -170,7 +164,6 @@ export type EquipmentGroupByOutputType = {
   name: string
   description: string
   category: string
-  subCategory: string | null
   imageId: string
   createdAt: Date
   updatedAt: Date
@@ -202,7 +195,6 @@ export type EquipmentWhereInput = {
   name?: Prisma.StringFilter<"Equipment"> | string
   description?: Prisma.StringFilter<"Equipment"> | string
   category?: Prisma.StringFilter<"Equipment"> | string
-  subCategory?: Prisma.StringNullableFilter<"Equipment"> | string | null
   imageId?: Prisma.StringFilter<"Equipment"> | string
   createdAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
@@ -216,7 +208,6 @@ export type EquipmentOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  subCategory?: Prisma.SortOrderInput | Prisma.SortOrder
   imageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -233,7 +224,6 @@ export type EquipmentWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Equipment"> | string
   description?: Prisma.StringFilter<"Equipment"> | string
   category?: Prisma.StringFilter<"Equipment"> | string
-  subCategory?: Prisma.StringNullableFilter<"Equipment"> | string | null
   imageId?: Prisma.StringFilter<"Equipment"> | string
   createdAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
@@ -247,7 +237,6 @@ export type EquipmentOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  subCategory?: Prisma.SortOrderInput | Prisma.SortOrder
   imageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -264,7 +253,6 @@ export type EquipmentScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Equipment"> | string
   description?: Prisma.StringWithAggregatesFilter<"Equipment"> | string
   category?: Prisma.StringWithAggregatesFilter<"Equipment"> | string
-  subCategory?: Prisma.StringNullableWithAggregatesFilter<"Equipment"> | string | null
   imageId?: Prisma.StringWithAggregatesFilter<"Equipment"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Equipment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Equipment"> | Date | string
@@ -275,7 +263,6 @@ export type EquipmentCreateInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutEquipmentsInput
@@ -288,7 +275,6 @@ export type EquipmentUncheckedCreateInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   imageId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -301,7 +287,6 @@ export type EquipmentUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutEquipmentsNestedInput
@@ -314,7 +299,6 @@ export type EquipmentUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -327,7 +311,6 @@ export type EquipmentCreateManyInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   imageId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -338,7 +321,6 @@ export type EquipmentUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -348,7 +330,6 @@ export type EquipmentUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -369,7 +350,6 @@ export type EquipmentCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  subCategory?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -380,7 +360,6 @@ export type EquipmentMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  subCategory?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -391,7 +370,6 @@ export type EquipmentMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  subCategory?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -477,7 +455,6 @@ export type EquipmentCreateWithoutImageInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationEquipmentCreateNestedManyWithoutEquipmentInput
@@ -489,7 +466,6 @@ export type EquipmentUncheckedCreateWithoutImageInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutEquipmentInput
@@ -529,7 +505,6 @@ export type EquipmentScalarWhereInput = {
   name?: Prisma.StringFilter<"Equipment"> | string
   description?: Prisma.StringFilter<"Equipment"> | string
   category?: Prisma.StringFilter<"Equipment"> | string
-  subCategory?: Prisma.StringNullableFilter<"Equipment"> | string | null
   imageId?: Prisma.StringFilter<"Equipment"> | string
   createdAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Equipment"> | Date | string
@@ -540,7 +515,6 @@ export type EquipmentCreateWithoutGenerationsInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutEquipmentsInput
@@ -552,7 +526,6 @@ export type EquipmentUncheckedCreateWithoutGenerationsInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   imageId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -580,7 +553,6 @@ export type EquipmentUpdateWithoutGenerationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutEquipmentsNestedInput
@@ -592,7 +564,6 @@ export type EquipmentUncheckedUpdateWithoutGenerationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -604,7 +575,6 @@ export type EquipmentCreateWithoutOutfitsInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   image: Prisma.AssetCreateNestedOneWithoutEquipmentsInput
@@ -616,7 +586,6 @@ export type EquipmentUncheckedCreateWithoutOutfitsInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   imageId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -644,7 +613,6 @@ export type EquipmentUpdateWithoutOutfitsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneRequiredWithoutEquipmentsNestedInput
@@ -656,7 +624,6 @@ export type EquipmentUncheckedUpdateWithoutOutfitsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -668,7 +635,6 @@ export type EquipmentCreateManyImageInput = {
   name: string
   description: string
   category: string
-  subCategory?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -678,7 +644,6 @@ export type EquipmentUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationEquipmentUpdateManyWithoutEquipmentNestedInput
@@ -690,7 +655,6 @@ export type EquipmentUncheckedUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -702,7 +666,6 @@ export type EquipmentUncheckedUpdateManyWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  subCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -752,7 +715,6 @@ export type EquipmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   name?: boolean
   description?: boolean
   category?: boolean
-  subCategory?: boolean
   imageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -767,7 +729,6 @@ export type EquipmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   description?: boolean
   category?: boolean
-  subCategory?: boolean
   imageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -779,7 +740,6 @@ export type EquipmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   description?: boolean
   category?: boolean
-  subCategory?: boolean
   imageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -791,13 +751,12 @@ export type EquipmentSelectScalar = {
   name?: boolean
   description?: boolean
   category?: boolean
-  subCategory?: boolean
   imageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EquipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "category" | "subCategory" | "imageId" | "createdAt" | "updatedAt", ExtArgs["result"]["equipment"]>
+export type EquipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "category" | "imageId" | "createdAt" | "updatedAt", ExtArgs["result"]["equipment"]>
 export type EquipmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   image?: boolean | Prisma.AssetDefaultArgs<ExtArgs>
   generations?: boolean | Prisma.Equipment$generationsArgs<ExtArgs>
@@ -823,7 +782,6 @@ export type $EquipmentPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     name: string
     description: string
     category: string
-    subCategory: string | null
     imageId: string
     createdAt: Date
     updatedAt: Date
@@ -1257,7 +1215,6 @@ export interface EquipmentFieldRefs {
   readonly name: Prisma.FieldRef<"Equipment", 'String'>
   readonly description: Prisma.FieldRef<"Equipment", 'String'>
   readonly category: Prisma.FieldRef<"Equipment", 'String'>
-  readonly subCategory: Prisma.FieldRef<"Equipment", 'String'>
   readonly imageId: Prisma.FieldRef<"Equipment", 'String'>
   readonly createdAt: Prisma.FieldRef<"Equipment", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Equipment", 'DateTime'>

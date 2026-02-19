@@ -51,7 +51,6 @@ model Equipment {
   name        String
   description String
   category    String
-  subCategory String?  @map("sub_category")
   imageId     String   @map("image_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -61,7 +60,7 @@ model Equipment {
   generations GenerationEquipment[]
   outfits     OutfitEquipment[]
 
-  @@index([category, subCategory])
+  @@index([category])
   @@map("equipments")
 }
 

@@ -1,7 +1,7 @@
 import { Loader2, Upload } from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
 import { toast } from 'sonner'
-import { EQUIPMENT_CATEGORIES, getSubCategories } from '../../lib/categories'
+import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
 import { client } from '../client'
 import { Button } from './ui/button'
 import {
@@ -31,7 +31,6 @@ export function UploadEquipmentDialog({
   const [file, setFile] = useState<File | null>(null)
   const [name, setName] = useState('')
   const [category, setCategory] = useState<string>('')
-  const [subCategory, setSubCategory] = useState<string>('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -122,7 +121,6 @@ export function UploadEquipmentDialog({
           name,
           imageId: asset.id,
           category,
-          subCategory: subCategory || undefined,
           description,
         },
       })
@@ -137,7 +135,6 @@ export function UploadEquipmentDialog({
       setFile(null)
       setName('')
       setCategory('')
-      setSubCategory('')
       setDescription('')
       setPreviewUrl(null)
     } catch (error) {
@@ -211,7 +208,6 @@ export function UploadEquipmentDialog({
                 value={category}
                 onValueChange={(val) => {
                   setCategory(val)
-                  setSubCategory('')
                 }}
               >
                 <SelectTrigger>
@@ -227,24 +223,6 @@ export function UploadEquipmentDialog({
               </Select>
             </div>
           </div>
-
-          {category && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="subCategory">Sub Category</Label>
-              <Select value={subCategory} onValueChange={setSubCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {getSubCategories(category).map((sub) => (
-                    <SelectItem key={sub} value={sub}>
-                      {sub}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="description">Description (Optional)</Label>

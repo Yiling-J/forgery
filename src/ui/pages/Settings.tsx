@@ -14,6 +14,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(true)
   const [settings, setSettings] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState<Record<string, boolean>>({})
+  const [saved, setSaved] = useState<Record<string, boolean>>({})
 
   // Lists for dropdowns
   const [openaiTextModels, setOpenaiTextModels] = useState<string[]>([])
@@ -54,6 +55,11 @@ export default function Settings() {
     }
   }
 
+  const handleInputChange = (key: string, value: string) => {
+    setSettings((prev) => ({ ...prev, [key]: value }))
+    setSaved((prev) => ({ ...prev, [key]: false }))
+  }
+
   const saveSetting = async (key: string, value: string) => {
     setSaving((prev) => ({ ...prev, [key]: true }))
     try {
@@ -68,6 +74,7 @@ export default function Settings() {
       }
 
       setSettings((prev) => ({ ...prev, [key]: value }))
+      setSaved((prev) => ({ ...prev, [key]: true }))
       toast({
         title: 'Success',
         description: 'Setting saved.',
@@ -112,6 +119,21 @@ export default function Settings() {
     updateModelList(key, newList, setList)
   }
 
+  const renderSaveButton = (key: string) => {
+    const isSaving = saving[key]
+    const isSaved = saved[key]
+
+    return (
+      <Button
+        onClick={() => saveSetting(key, settings[key] || '')}
+        disabled={isSaving || isSaved}
+        className={isSaved ? 'bg-green-600 hover:bg-green-700 text-white opacity-90' : ''}
+      >
+        {isSaving ? <Loader2 className="animate-spin" /> : isSaved ? 'Saved' : 'Save'}
+      </Button>
+    )
+  }
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center p-12">
@@ -121,7 +143,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="w-full h-full p-4 pt-2 flex flex-col font-sans text-slate-900 relative space-y-8">
+    <div className="w-full h-full px-4 flex flex-col font-sans text-slate-900 relative space-y-8">
       <PageHeader title="Settings" subtitle="System // Configuration" />
 
       <div className="max-w-4xl mx-auto w-full grid gap-8">
@@ -139,16 +161,11 @@ export default function Settings() {
                   id="openai_api_key"
                   type="password"
                   value={settings['openai_api_key'] || ''}
-                  onChange={(e) => setSettings({ ...settings, openai_api_key: e.target.value })}
+                  onChange={(e) => handleInputChange('openai_api_key', e.target.value)}
                   placeholder="sk-..."
                   className="font-mono text-sm"
                 />
-                <Button
-                  onClick={() => saveSetting('openai_api_key', settings['openai_api_key'] || '')}
-                  disabled={saving['openai_api_key']}
-                >
-                  {saving['openai_api_key'] ? <Loader2 className="animate-spin" /> : 'Save'}
-                </Button>
+                {renderSaveButton('openai_api_key')}
               </div>
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -157,16 +174,11 @@ export default function Settings() {
                 <Input
                   id="openai_base_url"
                   value={settings['openai_base_url'] || ''}
-                  onChange={(e) => setSettings({ ...settings, openai_base_url: e.target.value })}
+                  onChange={(e) => handleInputChange('openai_base_url', e.target.value)}
                   placeholder="https://api.openai.com/v1"
                   className="font-mono text-sm"
                 />
-                <Button
-                  onClick={() => saveSetting('openai_base_url', settings['openai_base_url'] || '')}
-                  disabled={saving['openai_base_url']}
-                >
-                  {saving['openai_base_url'] ? <Loader2 className="animate-spin" /> : 'Save'}
-                </Button>
+                {renderSaveButton('openai_base_url')}
               </div>
             </div>
 
@@ -207,16 +219,11 @@ export default function Settings() {
                   id="google_api_key"
                   type="password"
                   value={settings['google_api_key'] || ''}
-                  onChange={(e) => setSettings({ ...settings, google_api_key: e.target.value })}
+                  onChange={(e) => handleInputChange('google_api_key', e.target.value)}
                   placeholder="AIza..."
                   className="font-mono text-sm"
                 />
-                <Button
-                  onClick={() => saveSetting('google_api_key', settings['google_api_key'] || '')}
-                  disabled={saving['google_api_key']}
-                >
-                  {saving['google_api_key'] ? <Loader2 className="animate-spin" /> : 'Save'}
-                </Button>
+                {renderSaveButton('google_api_key')}
               </div>
             </div>
 
@@ -243,10 +250,10 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Extraction Flow Defaults */}
+        {/* Default Models */}
         <div>
           <div className="mb-4 ml-1">
-            <h3 className="text-lg font-semibold text-slate-900">Extraction Flow Defaults</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Default Models</h3>
             <p className="text-sm text-slate-500">
               Configure the AI models used for each step of the asset generation pipeline.
             </p>

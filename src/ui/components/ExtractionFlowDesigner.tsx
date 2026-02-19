@@ -1,12 +1,12 @@
 import { ArrowDown, FileSearch, Image as ImageIcon, User, Wand2 } from 'lucide-react'
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
 } from './ui/select'
 
 interface ExtractionFlowDesignerProps {
@@ -31,15 +31,15 @@ export function ExtractionFlowDesigner({
       id: 'analyze',
       key: 'step_analyze_model',
       title: 'Analyze Image',
-      description: 'Extracts visual features and descriptions from the input image.',
+      description: 'Analyze equipments from the input image.',
       icon: <FileSearch className="w-5 h-5 text-cyan-600" />,
       type: 'text',
     },
     {
       id: 'texture',
       key: 'step_texture_model',
-      title: 'Generate Texture',
-      description: 'Creates a texture sheet based on the analysis.',
+      title: 'Generate Equipment Sheet',
+      description: 'Creates a equipments image based on the analysis.',
       icon: <ImageIcon className="w-5 h-5 text-purple-600" />,
       type: 'image',
     },
@@ -56,7 +56,7 @@ export function ExtractionFlowDesigner({
       id: 'generation',
       key: 'step_generation_model',
       title: 'Character Generation',
-      description: 'Generates the final character using the equipment.',
+      description: 'Generates the final character using the equipments.',
       icon: <User className="w-5 h-5 text-blue-600" />,
       type: 'image',
     },
