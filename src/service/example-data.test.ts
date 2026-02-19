@@ -128,7 +128,6 @@ describe('ExampleDataService', () => {
           name: 'Eq 1',
           description: 'Desc E1',
           category: 'Cat1',
-          subCategory: null,
           image: { name: 'imgE1.png', type: 'image/png', path: 'imgE1.webp' },
         },
       ] as any)
@@ -229,7 +228,6 @@ describe('ExampleDataService', () => {
                 name: 'Eq 1',
                 description: 'Desc E1',
                 category: 'Cat1',
-                subCategory: null,
                 asset: { name: 'imgE1', type: 'image/png', path: 'imgE1.webp' },
               },
             ])

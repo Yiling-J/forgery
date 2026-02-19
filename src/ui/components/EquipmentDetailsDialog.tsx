@@ -69,7 +69,7 @@ export const EquipmentDetailsDialog: React.FC<EquipmentDetailsDialogProps> = ({
             Equipment Details
           </DialogTitle>
           <DialogDescription>
-            {equipment.category} {equipment.subCategory && `> ${equipment.subCategory}`}
+            {equipment.category}
           </DialogDescription>
         </DialogHeader>
 

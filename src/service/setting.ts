@@ -9,6 +9,10 @@ export class SettingService {
   }
 
   async set(key: string, value: string): Promise<void> {
+    // If the user sends the masked value, ignore the update
+    if (['openai_api_key', 'google_api_key'].includes(key) && value === '******') {
+      return
+    }
     await prisma.setting.upsert({
       where: { key },
       update: { value },
@@ -20,7 +24,11 @@ export class SettingService {
     const settingList = await prisma.setting.findMany()
     return settingList.reduce(
       (acc, setting) => {
-        acc[setting.key] = setting.value
+        let val = setting.value
+        if (['openai_api_key', 'google_api_key'].includes(setting.key) && val) {
+          val = '******'
+        }
+        acc[setting.key] = val
         return acc
       },
       {} as Record<string, string>,

@@ -9,16 +9,15 @@ const listSchema = z.object({
   page: z.coerce.number().optional().default(1),
   limit: z.coerce.number().optional().default(20),
   category: z.union([z.string(), z.array(z.string())]).optional(),
-  subCategory: z.string().optional(),
 })
 
 const route = app.get('/', zValidator('query', listSchema), async (c) => {
-  const { page, limit, category, subCategory } = c.req.valid('query')
+  const { page, limit, category } = c.req.valid('query')
   const categories = category ? (Array.isArray(category) ? category : [category]) : undefined
 
   const result = await equipmentService.listEquipments(
     { page, limit },
-    { category: categories, subCategory },
+    { category: categories },
   )
 
   return c.json(result)
@@ -28,19 +27,17 @@ const createSchema = z.object({
   name: z.string().min(1),
   imageId: z.string().min(1),
   category: z.string().min(1),
-  subCategory: z.string().optional(),
   description: z.string().optional().default(''),
 })
 
 const routeWithCreate = route.post('/', zValidator('json', createSchema), async (c) => {
-  const { name, imageId, category, subCategory, description } = c.req.valid('json')
+  const { name, imageId, category, description } = c.req.valid('json')
 
   try {
     const result = await equipmentService.createEquipment({
       name,
       imageId,
       category,
-      subCategory,
       description,
     })
     return c.json(result, 201)

@@ -8,7 +8,7 @@ export class EquipmentService {
    */
   async listEquipments(
     pagination: { page: number; limit: number },
-    filters?: { category?: string[]; subCategory?: string },
+    filters?: { category?: string[] },
   ) {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
@@ -16,9 +16,6 @@ export class EquipmentService {
 
     if (filters?.category && filters.category.length > 0) {
       where.category = { in: filters.category }
-    }
-    if (filters?.subCategory) {
-      where.subCategory = filters.subCategory
     }
 
     const [total, items] = await Promise.all([
@@ -47,7 +44,6 @@ export class EquipmentService {
     description: string
     imageId: string
     category: string
-    subCategory?: string
   }) {
     return prisma.equipment.create({
       data: {
@@ -55,7 +51,6 @@ export class EquipmentService {
         description: data.description,
         imageId: data.imageId,
         category: data.category,
-        subCategory: data.subCategory,
       },
       include: {
         image: true,

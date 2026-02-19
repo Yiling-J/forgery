@@ -21,7 +21,6 @@ interface EquipmentData {
   name: string
   description: string
   category: string
-  subCategory: string | null
   asset: AssetData
 }
 
@@ -95,7 +94,6 @@ export class ExampleDataService {
         name: e.name,
         description: e.description,
         category: e.category,
-        subCategory: e.subCategory,
         asset: {
           name: e.image.name,
           type: e.image.type,
@@ -208,7 +206,6 @@ export class ExampleDataService {
             name: item.name,
             description: item.description,
             category: item.category,
-            subCategory: item.subCategory,
             imageId: asset.id,
           },
         })

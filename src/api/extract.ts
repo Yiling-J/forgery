@@ -19,7 +19,6 @@ const refineSchema = z.object({
       name: z.string(),
       description: z.string(),
       category: z.string(),
-      subCategory: z.string().optional(),
       base64: z.string(),
     }),
   ),
@@ -104,13 +103,11 @@ const route = app
             item_name: crop.name,
             description: 'Extracted asset',
             category: 'Others',
-            sub_category: 'Others',
           }
           return {
             name: originalMeta.item_name,
             description: originalMeta.description,
             category: originalMeta.category,
-            subCategory: originalMeta.sub_category,
             base64: crop.base64,
           }
         })
@@ -161,7 +158,6 @@ const route = app
             description: asset.description,
             imageId: assetRecord.id,
             category: asset.category,
-            subCategory: asset.subCategory,
           })
 
           const refinedAsset = {

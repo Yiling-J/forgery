@@ -8,7 +8,6 @@ export interface ExtractedAsset {
   item_name: string
   description: string
   category: string
-  sub_category?: string
 }
 
 export interface AnalysisResponse {
@@ -28,9 +27,9 @@ Instructions:
 1. Analyze the character in the image and identify all distinct, extractable equipment and clothing items.
 2. Filter for items that are clearly visible.
 3. Limit to a maximum of 9 most prominent assets.
-4. Assign a category and sub-category to each item based on the provided list.
-   - Choose the best fitting "main_category" and "sub_categories".
-   - If no suitable category/sub-category is found, use "Others".
+4. Assign a category to each item based on the provided list.
+   - Choose the best fitting "main_category".
+   - If no suitable category is found, use "Others".
 
 Available Categories:
 ${categoriesJson}
@@ -45,7 +44,6 @@ Return ONLY a JSON object with a list of assets.
           item_name: z.string().describe('Name of the item'),
           description: z.string().describe('Description of the item'),
           category: z.string().describe('Main category of the item'),
-          sub_category: z.string().optional().describe('Sub category of the item'),
         }),
       ),
     })

@@ -3,7 +3,6 @@ export interface ExtractedAsset {
   name: string
   description: string
   category: string
-  subCategory?: string
   imageUrl: string
 }
 
@@ -11,7 +10,6 @@ export interface CandidateAsset {
   name: string
   description: string
   category: string
-  subCategory?: string
   base64: string
 }
 
