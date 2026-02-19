@@ -52,9 +52,7 @@ Return ONLY a JSON object with a list of assets.
   }
 
   public getGridDimensions(count: number): { rows: number; cols: number } {
-    if (count <= 3) return { rows: 1, cols: 3 }
     if (count <= 4) return { rows: 2, cols: 2 }
-    if (count <= 6) return { rows: 2, cols: 3 }
     return { rows: 3, cols: 3 }
   }
 

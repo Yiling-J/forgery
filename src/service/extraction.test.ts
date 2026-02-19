@@ -74,9 +74,9 @@ describe('ExtractionService', () => {
         category: 'Headwear',
       },
     ]
-    // 1 asset -> 1x3 grid. width 300 / 3 = 100. height 100 / 1 = 100.
+    // 1 asset -> 2x2 grid. width 300 / 2 = 150. height 100 / 2 = 50.
     // Padding is 3px.
-    // Expected crop: left: 0+3=3, top: 0+3=3, width: 100-6=94, height: 100-6=94
+    // Expected crop: left: 0+3=3, top: 0+3=3, width: 150-6=144, height: 50-6=44
 
     extractMock.mockClear()
     const result = await extractionService.cropAssets('data:image/png;base64,mockSheet', assets)
@@ -92,8 +92,8 @@ describe('ExtractionService', () => {
 
     expect(options?.left).toBe(3)
     expect(options?.top).toBe(3)
-    expect(options?.width).toBe(94)
-    expect(options?.height).toBe(94)
+    expect(options?.width).toBe(144)
+    expect(options?.height).toBe(44)
   })
 
   test('refineAsset calls AI service with correct prompt', async () => {
