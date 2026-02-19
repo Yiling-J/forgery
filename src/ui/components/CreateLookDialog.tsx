@@ -11,12 +11,12 @@ import { SaveOutfitDialog } from './SaveOutfitDialog'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from './ui/dialog'
 import { Label } from './ui/label'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
@@ -52,7 +52,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [selectedExpressionId, setSelectedExpressionId] = useState<string | null>(null)
   const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const [loadOutfitOpen, setLoadOutfitOpen] = useState(false)
   const [saveOutfitOpen, setSaveOutfitOpen] = useState(false)
@@ -143,7 +142,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const handleCreate = async () => {
     if (selectedEquipments.length === 0) return
     setSubmitting(true)
-    setError(null)
 
     try {
       const res = await client.generations.$post({
