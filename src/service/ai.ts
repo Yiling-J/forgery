@@ -260,6 +260,7 @@ export class UnifiedAIService implements AIService {
       model: model,
       image: images, // Pass array of images as requested
       prompt: prompt,
+      size: '1024x1024',
     })
 
     if (response.data && response.data.length > 0) {
@@ -288,6 +289,12 @@ export class UnifiedAIService implements AIService {
       model: model,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       contents: { parts: parts as any[] }, // Type assertion
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        imageConfig: {
+          aspectRatio: '1:1',
+        },
+      },
     })
 
     const candidate = result.candidates?.[0]
