@@ -18,9 +18,7 @@ const mockOpenAIClient = {
   },
   images: {
     generate: mock(),
-  },
-  responses: {
-    create: mock(),
+    edit: mock(),
   },
 }
 
@@ -33,11 +31,14 @@ mock.module('openai', () => {
       }
     },
     // Mock helper function
+    toFile: mock((data: unknown) => Promise.resolve({ data })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     zodResponseFormat: (schema: any) => ({ type: 'json_schema', json_schema: { schema } }),
   }
 })
 
 mock.module('openai/helpers/zod', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   zodResponseFormat: (schema: any) => ({ type: 'json_schema', json_schema: { schema } }),
 }))
 
@@ -69,7 +70,7 @@ describe('UnifiedAIService', () => {
     mockSettingService.get.mockReset()
     mockOpenAIClient.chat.completions.create.mockReset()
     mockOpenAIClient.images.generate.mockReset()
-    mockOpenAIClient.responses.create.mockReset()
+    mockOpenAIClient.images.edit.mockReset()
     mockGoogleGenAIClient.models.generateContent.mockReset()
   })
 
@@ -118,32 +119,38 @@ describe('UnifiedAIService', () => {
     expect(mockOpenAIClient.chat.completions.create).not.toHaveBeenCalled()
   })
 
-  it('should use OpenAI Responses API for image generation when configured', async () => {
+  it('should use OpenAI Image Edit API for image generation when configured', async () => {
     mockSettingService.get.mockImplementation(async (key: string) => {
       if (key === 'openai_api_key') return 'test_key'
-      if (key === 'step_generation_model') return 'openai:gpt-5'
+      if (key === 'step_generation_model') return 'openai:gpt-image-1.5'
       return null
     })
 
-    // Setup OpenAI response for image generation
-    mockOpenAIClient.responses.create.mockResolvedValue({
-      output: [
+    // Setup OpenAI response for image edit
+    mockOpenAIClient.images.edit.mockResolvedValue({
+      data: [
         {
-          type: 'image_generation_call',
-          result: 'base64image',
+          b64_json: 'base64image',
         },
       ],
     })
 
-    const parts = [{ text: 'test prompt' }]
+    // Create a dummy file part
+    const parts = [
+      { text: 'test prompt' },
+      { inlineData: { mimeType: 'image/png', data: 'imagedata' } },
+    ]
+
     const result = await aiService.generateImage(parts, [], 'step_generation_model')
 
     expect(result).toBe('data:image/png;base64,base64image')
-    expect(mockOpenAIClient.responses.create).toHaveBeenCalled()
-    const callArgs = mockOpenAIClient.responses.create.mock.calls[0][0]
-    expect(callArgs.model).toBe('gpt-5')
-    expect(callArgs.tools).toEqual([{ type: 'image_generation' }])
-    expect(callArgs.input).toEqual([{ type: 'input_text', text: 'test prompt' }])
+    expect(mockOpenAIClient.images.edit).toHaveBeenCalled()
+    const callArgs = mockOpenAIClient.images.edit.mock.calls[0][0]
+    expect(callArgs.model).toBe('gpt-image-1.5')
+    expect(callArgs.prompt).toBe('test prompt')
+    // We expect image to be an array of files (which are mocked objects from toFile)
+    expect(Array.isArray(callArgs.image)).toBe(true)
+    expect(callArgs.image.length).toBe(1)
   })
 
   it('should use Google for image generation when configured', async () => {
@@ -175,6 +182,6 @@ describe('UnifiedAIService', () => {
 
     expect(result).toBe('data:image/png;base64,base64image')
     expect(mockGoogleGenAIClient.models.generateContent).toHaveBeenCalled()
-    expect(mockOpenAIClient.responses.create).not.toHaveBeenCalled()
+    expect(mockOpenAIClient.images.edit).not.toHaveBeenCalled()
   })
 })
