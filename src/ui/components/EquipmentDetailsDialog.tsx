@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
 import { InferResponseType } from 'hono/client'
-import { client } from '../client'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
-import { Textarea } from './ui/textarea'
-import { Label } from './ui/label'
-import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { client } from '../client'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Textarea } from './ui/textarea'
 
 type EquipmentResponse = InferResponseType<typeof client.equipments.$get>
 type EquipmentItem = EquipmentResponse['items'][number]
@@ -68,14 +68,12 @@ export const EquipmentDetailsDialog: React.FC<EquipmentDetailsDialogProps> = ({
           <DialogTitle className="text-xl font-black uppercase tracking-tighter text-stone-800">
             Equipment Details
           </DialogTitle>
-          <DialogDescription>
-            {equipment.category}
-          </DialogDescription>
+          <DialogDescription>{equipment.category}</DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden flex flex-col">
           {/* Top: Full Image */}
-          <div className="h-[60%] bg-stone-900 flex items-center justify-center p-4 overflow-hidden relative shrink-0">
+          <div className="h-[60%] bg-white flex items-center justify-center p-4 overflow-hidden relative shrink-0">
             <div
               className="absolute inset-0 opacity-20 pointer-events-none"
               style={{
