@@ -11,12 +11,12 @@ import { SaveOutfitDialog } from './SaveOutfitDialog'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from './ui/dialog'
 import { Label } from './ui/label'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
@@ -52,7 +52,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [selectedExpressionId, setSelectedExpressionId] = useState<string | null>(null)
   const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const [loadOutfitOpen, setLoadOutfitOpen] = useState(false)
   const [saveOutfitOpen, setSaveOutfitOpen] = useState(false)
@@ -143,7 +142,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const handleCreate = async () => {
     if (selectedEquipments.length === 0) return
     setSubmitting(true)
-    setError(null)
 
     try {
       const res = await client.generations.$post({
@@ -167,7 +165,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
       setUserPrompt('')
     } catch (e) {
       console.error(e)
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+      toast.error(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
       setSubmitting(false)
     }
@@ -532,7 +530,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
             </div>
 
             <div className="flex items-center gap-4">
-              {error && <span className="text-red-500 text-sm font-medium">{error}</span>}
               <Button
                 size="lg"
                 className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg min-w-[150px]"
