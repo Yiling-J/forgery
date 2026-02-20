@@ -78,7 +78,7 @@ Forgery requires API keys for AI generation services (Google Gemini and/or OpenA
 
 For text generation, Gemini 3 Flash or GPT-5 Mini are typically sufficient for most use cases.
 
-For image generation, Nanao Banana Pro delivers the highest-quality results and is generally the best choice. However, if cost is a concern, you can consider Nano Banana (non-Pro) or GPT Image 1.5 as more budget-friendly alternatives.
+For image generation, Nano Banana Pro delivers the highest-quality results and is generally the best choice. However, if cost is a concern, you can consider Nano Banana (non-Pro) or GPT Image 1.5 as more budget-friendly alternatives.
 
 Keep in mind that Nano Banana (non-Pro) may struggle during the look generation step, especially when the prompt includes multiple pieces of equipment or complex visual elements.
 
