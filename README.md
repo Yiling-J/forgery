@@ -82,9 +82,11 @@ Forgery requires API keys for AI generation services (Google Gemini and/or OpenA
 
 ## Model Recommendations
 
-For optimal results in both equipment extraction and high-fidelity character generation, it is highly recommended to use the **Nana Banana Pro** model. This model provides superior precision for isolating modular assets and ensures the most consistent "looks" when remixing styles and accessories.
+For text generation, Gemini 3 Flash or GPT-5 Mini are typically sufficient for most use cases.
 
-For the Refine step, the standard Nano Banana model is typically sufficient to handle iterative adjustments and polish without the need for the Pro-level tier.
+For image generation, Nanao Banana Pro delivers the highest-quality results and is generally the best choice. However, if cost is a concern, you can consider Nano Banana (non-Pro) or GPT Image 1.5 as more budget-friendly alternatives.
+
+Keep in mind that Nano Banana (non-Pro) may struggle during the look generation step, especially when the prompt includes multiple pieces of equipment or complex visual elements.
 
 
 
