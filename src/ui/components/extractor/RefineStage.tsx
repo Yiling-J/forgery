@@ -27,9 +27,9 @@ export const RefineStage: React.FC<RefineStageProps> = ({
   setOutfitName,
 }) => {
   return (
-    <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-6">
+    <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-6 overflow-hidden">
       {/* Grid */}
-      <ScrollArea className="flex-1 px-2">
+      <ScrollArea className="flex-1 px-2 min-h-0">
         <div className="grid grid-cols-3 gap-2 p-1 pb-6">
           {selectedCandidates.map((candidate, index) => {
             const isFinished = index < results.length

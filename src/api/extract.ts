@@ -140,7 +140,11 @@ const route = app
 
         for (const asset of assets) {
           // Refine image
-          const refinedBase64 = await extractionService.refineAsset(asset.base64)
+          const refinedBase64 = await extractionService.refineAsset(
+            asset.base64,
+            asset.name,
+            asset.description,
+          )
 
           // Save to file system
           const savedFile = await fileService.saveBase64Image(refinedBase64)

@@ -101,7 +101,9 @@ describe('ExtractionService', () => {
     generateImageMock.mockClear()
 
     const base64 = 'data:image/png;base64,mockImageContent'
-    const result = await extractionService.refineAsset(base64)
+    const name = 'Magic Helmet'
+    const description = 'A glowing magical helmet'
+    const result = await extractionService.refineAsset(base64, name, description)
 
     expect(result).toBe('data:image/png;base64,mockImage')
     expect(generateImageMock).toHaveBeenCalled()
@@ -109,7 +111,9 @@ describe('ExtractionService', () => {
     const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
     const prompt = callArgs[0] as string
 
-    expect(prompt).toContain('Task: Asset Refinement')
-    expect(prompt).toContain('Return only the image.')
+    expect(prompt).toContain('Task: Asset Extraction and Refinement')
+    expect(prompt).toContain('Target Equipment: Magic Helmet')
+    expect(prompt).toContain('Description: A glowing magical helmet')
+    expect(prompt).toContain('Extract the main equipment specified')
   })
 })
