@@ -1,12 +1,12 @@
+<p align="left">
+    中文 &nbsp;｜&nbsp; <a href="README.md">English</a>
+</p>
+
 <div align="center">
   <img src="public/logo-large.webp" alt="Forgery Logo" width="200" height="200" />
   <h1>Forgery</h1>
   <p><strong>使用 AI 构建、重组和重塑角色</strong></p>
 </div>
-
-<p align="left">
-    中文 &nbsp;｜&nbsp; <a href="README.md">English</a>
-</p>
 
 <video src="https://github.com/user-attachments/assets/caa63fcf-ee64-4df0-8e17-c13672eeab46"></video>
 

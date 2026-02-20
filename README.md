@@ -1,12 +1,12 @@
+<p align="left">
+    English &nbsp;｜&nbsp; <a href="README_CN.md">中文</a>
+</p>
+
 <div align="center">
   <img src="public/logo-large.webp" alt="Forgery Logo" width="200" height="200" />
   <h1>Forgery</h1>
   <p><strong>Build, remix, and re-style characters with AI</strong></p>
 </div>
-
-<p align="left">
-    English &nbsp;｜&nbsp; <a href="README_CN.md">中文</a>
-</p>
 
 <video src="https://github.com/user-attachments/assets/caa63fcf-ee64-4df0-8e17-c13672eeab46"></video>
 
