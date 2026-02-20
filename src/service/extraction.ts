@@ -70,7 +70,7 @@ Return ONLY a JSON object with a list of assets.
 Task: Character Asset Extraction & Grid Generation
 
 Instructions:
-Analyze the character in the provided image and extract the following ${assets.length} specific assets into a new, single image organized in a ${rows}x${cols} grid layout. The out put image should be square(1:1 aspect ratio) and each grid should be equal size.
+Analyze the character in the provided image and extract the following ${assets.length} specific assets into a new, single chroma green Background image organized in a ${rows}x${cols} grid layout. The out put image should be square(1:1 aspect ratio) and each grid should be equal size.
 
 Core Constraints:
 1. Grid Layout: The output image must be a strict ${rows} rows x ${cols} columns grid. The grid layout should split by black line. The grid must take all available space of the image, no border padding.
