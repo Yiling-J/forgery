@@ -76,10 +76,10 @@ Core Constraints:
 1. Grid Layout: The output image must be a strict ${rows} rows x ${cols} columns grid. The grid layout should split by black line. The grid must take all available space of the image, no border padding.
 2. Equal Cells: Every cell in the grid MUST have identical width and height.
 3. Sequential Placement: Place the assets in the grid cells in the order listed below, starting from top-left, moving right, then down to the next row.
-4. Empty Cells: If there are fewer assets than grid cells, leave the remaining cells at the end (bottom-right) completely empty (pure white).
+4. Empty Cells: If there are fewer assets than grid cells, leave the remaining cells at the end (bottom-right) completely empty with Chroma Green background (#00FF00).
 5. Isolated Assets: Each item must be placed within its own distinct square tile. No overlapping.
 6. Ghost Mannequin Style: Extract ONLY the items. Remove the character's body entirely. Clothing and armor must appear as empty, 3D shells as if worn by an invisible person.
-7. Pure White Background: The entire background of the image and each cell must be pure white (#FFFFFF). No shadows, no gradients.
+7. Chroma Green Background: The entire background of the image and each cell must be Chroma Green (#00FF00). No shadows, no gradients.
 8. Output Format: Generate a square texture sheet. Ignore the original image aspect ratio for the final output canvas.
 9. EXACT REPLICA: You MUST reproduce the items exactly as they appear in the original image. Maintain all textures, patterns, logos, weathering, materials, and small details. Do not simplify or stylize.
 
@@ -147,20 +147,24 @@ Output Requirement: High-resolution texture sheet, flat lay presentation, sharp 
   /**
    * Refines a cropped asset (removes background, upscales).
    */
-  async refineAsset(base64: string): Promise<string> {
+  async refineAsset(base64: string, name: string, description: string): Promise<string> {
     const buffer = Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
     const file = new File([buffer], 'crop.png', { type: 'image/png' })
 
     const prompt = `
-Task: Asset Refinement
+Task: Asset Extraction and Refinement
+
+Input: A cropped image of a character's equipment.
+Target Equipment: ${name}
+Description: ${description}
 
 Instructions:
-1. Process the provided asset image.
-2. Remove any remaining background artifacts and ensure a pure white background.
-3. Upscale the image and enhance details for high-quality game asset presentation.
-4. Ensure the object is centered and fully visible.
-5. EXTREME DETAIL: Preserve every existing detail, texture, and pattern from the input image. Do not change the design. Only sharpen and clarify.
-6. Return only the image.
+1. Extract the main equipment specified by "Target Equipment" from the input image.
+2. Place the extracted equipment onto a pure white background (#FFFFFF).
+3. Ensure the equipment is fully visible, centered, and cleanly isolated.
+4. Remove all other elements, such as body parts, other clothing, or background artifacts.
+5. Enhance the details and textures of the equipment for high-quality presentation, but do not alter the original design.
+6. Return ONLY the image of the isolated equipment on a white background.
 `
     // Using generateImage with image input
     return aiService.generateImage(prompt, [file], 'step_refine_model')
