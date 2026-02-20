@@ -1,12 +1,12 @@
 import { ArrowDown, FileSearch, Image as ImageIcon, User, Wand2 } from 'lucide-react'
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
 } from './ui/select'
 
 interface ExtractionFlowDesignerProps {

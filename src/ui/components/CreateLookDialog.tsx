@@ -11,12 +11,12 @@ import { SaveOutfitDialog } from './SaveOutfitDialog'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from './ui/dialog'
 import { Label } from './ui/label'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'

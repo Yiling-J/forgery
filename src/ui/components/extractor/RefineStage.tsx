@@ -152,7 +152,6 @@ export const RefineStage: React.FC<RefineStageProps> = ({
           )}
         </div>
       )}
-
     </div>
   )
 }
