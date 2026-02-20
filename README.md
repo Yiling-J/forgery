@@ -4,6 +4,9 @@
   <p><strong>Build, remix, and re-style characters with AI</strong></p>
 </div>
 
+<video src="https://github.com/user-attachments/assets/caa63fcf-ee64-4df0-8e17-c13672eeab46"></video>
+
+
 Forge characters, not chaos. Forgery helps you extract equipments (props, clothing, accessories) from character images, save them as reusable items, and then generate new character _looks_ by applying selected equipments + pose/expression controls using AI image generation.
 
 
