@@ -15,10 +15,7 @@ const route = app.get('/', zValidator('query', listSchema), async (c) => {
   const { page, limit, category } = c.req.valid('query')
   const categories = category ? (Array.isArray(category) ? category : [category]) : undefined
 
-  const result = await equipmentService.listEquipments(
-    { page, limit },
-    { category: categories },
-  )
+  const result = await equipmentService.listEquipments({ page, limit }, { category: categories })
 
   return c.json(result)
 })

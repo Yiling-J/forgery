@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { BackupRestoreDialog } from './BackupRestoreDialog'
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from './ui/sidebar'
 
 // Menu items.
