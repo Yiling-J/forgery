@@ -82,6 +82,8 @@ For image generation, Nanao Banana Pro delivers the highest-quality results and 
 
 Keep in mind that Nano Banana (non-Pro) may struggle during the look generation step, especially when the prompt includes multiple pieces of equipment or complex visual elements.
 
+For **Refine Asset** step, Nano Banana (non-Pro) is good enough, do not use Banana Pro.
+
 ## Data Backup
 
 Your data is stored locally in data folder. To back up your library, character assets, and configuration, simply copy the data folder.

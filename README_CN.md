@@ -82,6 +82,8 @@ Forgery 需要 AI 生成服务的 API 密钥（Google Gemini 和/或 OpenAI）�
 
 请记住，Nano Banana (non-Pro) 在 Look 生成步骤中可能会遇到困难，特别是当提示包含多个装备或复杂的视觉元素时。
 
+对于 **Refine Asset** 步骤，Nano Banana (non-Pro) 已经足够好，请勿使用 Banana Pro。
+
 ## 数据备份
 
 你的数据存储在本地 data 文件夹中。要备份你的库、角色资产和配置，只需复制 data 文件夹。
