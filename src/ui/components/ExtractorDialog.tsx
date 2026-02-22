@@ -196,10 +196,11 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   }
 
   const extractAllItems = async (items: CandidateAsset[]) => {
-    // We execute in parallel but independent calls
-    items.forEach((item, index) => {
-      extractSingleItem(index, item)
-    })
+    // Execute sequentially to avoid rate limiting
+    for (let i = 0; i < items.length; i++) {
+      if (!isMounted.current) break
+      await extractSingleItem(i, items[i])
+    }
   }
 
   const extractSingleItem = async (index: number, item: CandidateAsset, model?: string, hint?: string) => {
