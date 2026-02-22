@@ -20,6 +20,7 @@ const itemExtractSchema = z.object({
   category: z.string().optional(),
   model: z.string().optional(),
   hint: z.string().optional(),
+  previousEquipmentId: z.string().optional(), // New field for re-extraction
 })
 
 const route = app
@@ -78,7 +79,7 @@ const route = app
     })
   })
   .post('/item', zValidator('json', itemExtractSchema), async (c) => {
-    const { imagePath, name, description, category, model, hint } = c.req.valid('json')
+    const { imagePath, name, description, category, model, hint, previousEquipmentId } = c.req.valid('json')
 
     try {
       // Extract asset
@@ -101,13 +102,36 @@ const route = app
         path: savedFile.filename,
       })
 
-      // Create Equipment record
-      const equipment = await equipmentService.createEquipment({
-        name: name,
-        description: description,
-        imageId: assetRecord.id,
-        category: category || 'Others',
-      })
+      let equipment
+
+      if (previousEquipmentId) {
+        // Update existing equipment
+        try {
+          equipment = await equipmentService.updateEquipment(previousEquipmentId, {
+            name: name,
+            description: description,
+            category: category || 'Others',
+            imageId: assetRecord.id,
+          })
+        } catch (e) {
+          console.warn(`Failed to update previous equipment ${previousEquipmentId}, creating new one`, e)
+          // Fallback to create if update fails (e.g., record deleted)
+          equipment = await equipmentService.createEquipment({
+            name: name,
+            description: description,
+            imageId: assetRecord.id,
+            category: category || 'Others',
+          })
+        }
+      } else {
+        // Create new equipment
+        equipment = await equipmentService.createEquipment({
+          name: name,
+          description: description,
+          imageId: assetRecord.id,
+          category: category || 'Others',
+        })
+      }
 
       const result = {
         ...equipment,

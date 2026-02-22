@@ -211,6 +211,9 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
       return next
     })
 
+    // Get previous equipment ID if it exists (for re-extraction)
+    const previousEquipmentId = extractionResults[index]?.id
+
     try {
       const res = await client.extract.item.$post({
         json: {
@@ -220,6 +223,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
           category: item.category,
           model,
           hint,
+          previousEquipmentId,
         },
       })
 

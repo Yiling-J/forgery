@@ -60,19 +60,39 @@ export class EquipmentService {
 
   /**
    * Updates an existing equipment item.
+   * If imageId is provided, the old asset is deleted.
    */
   async updateEquipment(
     id: string,
     data: {
       name?: string
       description?: string
+      category?: string
+      imageId?: string
     },
   ) {
+    // If updating image, handle old asset cleanup
+    if (data.imageId) {
+      const current = await prisma.equipment.findUnique({
+        where: { id },
+        select: { imageId: true },
+      })
+
+      if (current?.imageId && current.imageId !== data.imageId) {
+        // Queue deletion of old asset (don't block update)
+        assetService.deleteAsset(current.imageId).catch(e => {
+          console.warn(`Failed to cleanup old asset ${current.imageId} for equipment ${id}`, e)
+        })
+      }
+    }
+
     return prisma.equipment.update({
       where: { id },
       data: {
         name: data.name,
         description: data.description,
+        category: data.category,
+        imageId: data.imageId,
       },
       include: {
         image: true,

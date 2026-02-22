@@ -17,7 +17,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
   onToggleSelection,
 }) => {
   return (
-    <div className="flex flex-col h-full w-full max-w-4xl mx-auto px-4 py-6 overflow-hidden">
+    <div className="flex flex-col h-full w-full max-w-2xl mx-auto px-4 py-6 overflow-hidden">
       <div className="flex items-center justify-between mb-4 px-2 shrink-0">
         <h3 className="text-lg font-semibold text-slate-800">
           Detected Items ({candidates.length})
@@ -28,7 +28,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
       </div>
 
       <ScrollArea className="flex-1 min-h-0 -mx-2 px-2">
-        <div className="flex flex-col gap-3 pb-6">
+        <div className="flex flex-col gap-3 pb-6 w-full">
           {candidates.map((item, index) => {
             const isSelected = selectedIndices.includes(index)
             return (
