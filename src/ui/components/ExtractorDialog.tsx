@@ -1,10 +1,10 @@
-import { Loader2, Play, RefreshCw, Sparkles } from 'lucide-react'
+import { Loader2, Play, Sparkles } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { CandidateAsset, ExtractedAsset } from '../types'
 import { AnalyzeStage } from './extractor/AnalyzeStage'
-import { RefineStage } from './extractor/RefineStage'
+import { ExtractionStage, ItemStatus } from './extractor/ExtractionStage'
 import { SelectionStage } from './extractor/SelectionStage'
 import { UploadStage } from './extractor/UploadStage'
 import { Button } from './ui/button'
@@ -16,7 +16,7 @@ interface ExtractorDialogProps {
   onSuccess: (assets: ExtractedAsset[]) => void
 }
 
-type Stage = 'upload' | 'analyze' | 'selection' | 'refine'
+type Stage = 'upload' | 'analyze' | 'selection' | 'extraction'
 
 export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   open,
@@ -29,18 +29,27 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const [statusMessage, setStatusMessage] = useState<string>('')
 
   // Data
+  const [imagePath, setImagePath] = useState<string>('')
   const [candidates, setCandidates] = useState<CandidateAsset[]>([])
   const [selectedIndices, setSelectedIndices] = useState<number[]>([])
-  const [results, setResults] = useState<ExtractedAsset[]>([])
-  const [isRefineComplete, setIsRefineComplete] = useState(false)
+
+  // Extraction State
+  // We maintain parallel arrays for the *selected* items
+  const [extractionCandidates, setExtractionCandidates] = useState<CandidateAsset[]>([])
+  const [extractionResults, setExtractionResults] = useState<(ExtractedAsset | null)[]>([])
+  const [extractionStatuses, setExtractionStatuses] = useState<ItemStatus[]>([])
 
   // Save as Outfit state
   const [saveAsOutfit, setSaveAsOutfit] = useState(false)
   const [outfitName, setOutfitName] = useState('')
 
+  // Models
+  const [availableModels, setAvailableModels] = useState<string[]>([])
+  const [defaultModel, setDefaultModel] = useState<string>('')
+
   // Refs for cleanup
   const analyzeController = useRef<AbortController | null>(null)
-  const refineController = useRef<AbortController | null>(null)
+  const isMounted = useRef(true)
 
   const resetState = () => {
     setStage('upload')
@@ -48,22 +57,55 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     if (preview) URL.revokeObjectURL(preview)
     setPreview(null)
     setStatusMessage('')
+    setImagePath('')
     setCandidates([])
     setSelectedIndices([])
-    setResults([])
-    setIsRefineComplete(false)
+    setExtractionCandidates([])
+    setExtractionResults([])
+    setExtractionStatuses([])
     setSaveAsOutfit(false)
     setOutfitName('')
     analyzeController.current?.abort()
-    refineController.current?.abort()
   }
+
+  // Fetch available models
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const res = await client.settings.$get()
+        if (res.ok) {
+          const data = await res.json()
+          const openai = JSON.parse(data['openai_image_models'] || '[]')
+          const google = JSON.parse(data['google_image_models'] || '[]')
+          const models = [
+            ...openai.map((m: string) => `openai:${m}`),
+            ...google.map((m: string) => `google:${m}`),
+          ]
+          const defaultExtractModel = data['step_refine_model']
+          if (isMounted.current) {
+            setAvailableModels(models)
+            setDefaultModel(defaultExtractModel || '')
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch models', e)
+      }
+    }
+    if (open) {
+      fetchModels()
+    }
+  }, [open])
 
   // Handle dialog close
   useEffect(() => {
+    isMounted.current = true
     if (!open) {
-      // Small delay to allow animation to finish if needed, or just reset immediately
+      // Small delay to allow animation to finish
       const t = setTimeout(resetState, 300)
       return () => clearTimeout(t)
+    }
+    return () => {
+      isMounted.current = false
     }
   }, [open])
 
@@ -112,7 +154,9 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                 setStatusMessage(data.message)
               } else if (event === 'complete') {
                 const newCandidates = data.assets as CandidateAsset[]
+                const path = data.imagePath as string
                 setCandidates(newCandidates)
+                setImagePath(path)
                 setSelectedIndices(newCandidates.map((_, i) => i))
                 setStage('selection')
               } else if (event === 'error') {
@@ -136,79 +180,103 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     )
   }
 
-  const handleRefineConfirm = () => {
+  const handleStartExtraction = () => {
     if (selectedIndices.length === 0) return
-    setStage('refine')
-    handleRefine(selectedIndices)
+
+    // Prepare extraction state
+    const selectedCandidates = candidates.filter((_, i) => selectedIndices.includes(i))
+    setExtractionCandidates(selectedCandidates)
+    setExtractionResults(new Array(selectedCandidates.length).fill(null))
+
+    // Initialize statuses and trigger extraction
+    const initialStatuses = new Array(selectedCandidates.length).fill('pending') as ItemStatus[]
+    setExtractionStatuses(initialStatuses)
+
+    setStage('extraction')
+
+    // Start extraction loop
+    extractAllItems(selectedCandidates)
   }
 
-  const handleRefine = async (indices: number[]) => {
-    const selectedCandidates = candidates.filter((_, i) => indices.includes(i))
+  const extractAllItems = async (items: CandidateAsset[]) => {
+    // Execute sequentially to avoid rate limiting
+    for (let i = 0; i < items.length; i++) {
+      if (!isMounted.current) break
+      await extractSingleItem(i, items[i])
+    }
+  }
 
-    setResults([])
-    setIsRefineComplete(false)
-    setStatusMessage('Starting refinement...')
+  const extractSingleItem = async (index: number, item: CandidateAsset, model?: string, hint?: string) => {
+    // Update status to processing
+    setExtractionStatuses((prev) => {
+      const next = [...prev]
+      next[index] = 'processing'
+      return next
+    })
+
+    // Get previous equipment ID if it exists (for re-extraction)
+    const previousEquipmentId = extractionResults[index]?.id
 
     try {
-      const response = await client.extract.refine.$post({
-        json: { assets: selectedCandidates },
+      const res = await client.extract.item.$post({
+        json: {
+          imagePath,
+          name: item.name,
+          description: item.description,
+          category: item.category,
+          model,
+          hint,
+          previousEquipmentId,
+        },
       })
 
-      if (!response.ok) throw new Error('Server error')
-      if (!response.body) throw new Error('No response body')
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          if (line.startsWith('event: ')) {
-            const eventMatch = line.match(/^event: (.+)$/m)
-            const dataMatch = line.match(/^data: (.+)$/m)
-
-            if (eventMatch && dataMatch) {
-              const event = eventMatch[1].trim()
-              const data = JSON.parse(dataMatch[1])
-
-              if (event === 'status') {
-                setStatusMessage(data.message)
-              } else if (event === 'asset_refined') {
-                setResults((prev) => [...prev, data.asset])
-              } else if (event === 'complete') {
-                setIsRefineComplete(true)
-              } else if (event === 'error') {
-                throw new Error(data.message)
-              }
-            }
-          }
+      if (res.ok) {
+        const asset = await res.json()
+        if (isMounted.current) {
+          setExtractionResults((prev) => {
+            const next = [...prev]
+            next[index] = asset
+            return next
+          })
+          setExtractionStatuses((prev) => {
+            const next = [...prev]
+            next[index] = 'done'
+            return next
+          })
         }
+      } else {
+        throw new Error('Failed to extract')
       }
-    } catch (e: unknown) {
+    } catch (e) {
       console.error(e)
-      const err = e instanceof Error ? e : new Error(String(e))
-      toast.error(err.message || 'Refinement failed')
-      setStage('selection')
+      if (isMounted.current) {
+        setExtractionStatuses((prev) => {
+          const next = [...prev]
+          next[index] = 'error'
+          return next
+        })
+        toast.error(`Failed to extract ${item.name}`)
+      }
     }
+  }
+
+  const handleReExtract = (index: number, model: string, hint: string) => {
+    const item = extractionCandidates[index]
+    extractSingleItem(index, item, model || undefined, hint || undefined)
   }
 
   const handleClose = () => onOpenChange(false)
 
   const handleDone = async () => {
+    const successfulResults = extractionResults.filter((r): r is ExtractedAsset => r !== null)
+
     if (saveAsOutfit) {
       if (!outfitName.trim()) {
         toast.error('Please enter an outfit name')
         return
       }
       try {
-        const equipmentIds = results.map((r) => r.id)
+        const equipmentIds = successfulResults.map((r) => r.id)
         const res = await client.outfits.$post({
           json: {
             name: outfitName,
@@ -225,7 +293,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         toast.error('Failed to create outfit')
       }
     }
-    onSuccess(results)
+
+    onSuccess(successfulResults)
     handleClose()
   }
 
@@ -233,7 +302,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full p-0 bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col gap-0">
+      <DialogContent className="w-full p-0 bg-slate-50 border-none shadow-2xl rounded-2xl flex flex-col gap-0 max-w-5xl">
         <DialogTitle className="sr-only">Extractor</DialogTitle>
 
         {/* Top Navigation / Branding Bar */}
@@ -244,7 +313,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="relative grow h-[70dvh]">
+        <div className="relative grow h-[70dvh] overflow-hidden">
           {stage === 'upload' && <UploadStage onImageUpload={handleImageUpload} />}
 
           {stage === 'analyze' && preview && (
@@ -259,11 +328,15 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
             />
           )}
 
-          {stage === 'refine' && (
-            <RefineStage
-              selectedCandidates={candidates.filter((_, i) => selectedIndices.includes(i))}
-              results={results}
-              isComplete={isRefineComplete}
+          {stage === 'extraction' && (
+            <ExtractionStage
+              candidates={extractionCandidates}
+              results={extractionResults}
+              statuses={extractionStatuses}
+              onReExtract={handleReExtract}
+              onDone={handleDone}
+              availableModels={availableModels}
+              defaultModel={defaultModel}
               saveAsOutfit={saveAsOutfit}
               setSaveAsOutfit={setSaveAsOutfit}
               outfitName={outfitName}
@@ -273,6 +346,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         </div>
 
         {/* Footer */}
+        {stage !== 'extraction' && (
         <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-white shrink-0 flex-none">
           {stage === 'upload' && (
             <Button variant="outline" onClick={handleClose}>
@@ -306,36 +380,17 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
                 Back to Upload
               </Button>
               <Button
-                onClick={handleRefineConfirm}
+                onClick={handleStartExtraction}
                 disabled={selectedIndices.length === 0}
                 className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg border-none hover:opacity-90 min-w-[160px]"
               >
                 <Sparkles className="mr-2 h-4 w-4" />
-                Start Refining ({selectedIndices.length})
+                Start Extraction ({selectedIndices.length})
               </Button>
             </>
           )}
-
-          {stage === 'refine' && (
-            <>
-              {isRefineComplete ? (
-                <>
-                  <Button variant="outline" onClick={resetState}>
-                    <RefreshCw className="mr-2 h-4 w-4" /> Start Over
-                  </Button>
-                  <Button onClick={handleDone} className="bg-green-600 hover:bg-green-700">
-                    Done
-                  </Button>
-                </>
-              ) : (
-                <Button disabled className="min-w-[160px]">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Refining...
-                </Button>
-              )}
-            </>
-          )}
         </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   )

@@ -1,11 +1,11 @@
+import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
-import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
+import { assetService } from '../service/asset'
+import { equipmentService } from '../service/equipment'
 import { extractionService } from '../service/extraction'
 import { fileService } from '../service/file'
-import { equipmentService } from '../service/equipment'
-import { assetService } from '../service/asset'
 
 const app = new Hono()
 
@@ -13,15 +13,14 @@ const analyzeSchema = z.object({
   image: z.instanceof(File),
 })
 
-const refineSchema = z.object({
-  assets: z.array(
-    z.object({
-      name: z.string(),
-      description: z.string(),
-      category: z.string(),
-      base64: z.string(),
-    }),
-  ),
+const itemExtractSchema = z.object({
+  imagePath: z.string(),
+  name: z.string(),
+  description: z.string(),
+  category: z.string().optional(),
+  model: z.string().optional(),
+  hint: z.string().optional(),
+  previousEquipmentId: z.string().optional(), // New field for re-extraction
 })
 
 const route = app
@@ -31,7 +30,15 @@ const route = app
 
     return streamSSE(c, async (stream) => {
       try {
-        // 1. Analyze
+        // 1. Save file
+        await stream.writeSSE({
+          event: 'status',
+          data: JSON.stringify({ status: 'analyzing', message: 'Uploading image...' }),
+        })
+
+        const savedFile = await fileService.saveFile(file)
+
+        // 2. Analyze
         await stream.writeSSE({
           event: 'status',
           data: JSON.stringify({ status: 'analyzing', message: 'Analyzing character assets...' }),
@@ -39,82 +46,27 @@ const route = app
 
         let analysis
         try {
-          analysis = await extractionService.analyzeImage(file)
+          analysis = await extractionService.analyzeImage(savedFile.path)
         } catch (err: unknown) {
           throw new Error(`Analysis failed: ${err instanceof Error ? err.message : String(err)}`, {
             cause: err,
           })
         }
 
-        if (!analysis.assets || analysis.assets.length === 0) {
-          await stream.writeSSE({
-            event: 'complete',
-            data: JSON.stringify({ assets: [] }),
-          })
-          return
-        }
-
-        // 2. Generate Texture Sheet
-        await stream.writeSSE({
-          event: 'status',
-          data: JSON.stringify({ status: 'generating', message: 'Generating texture sheet...' }),
-        })
-
-        let sheetBase64: string
-        try {
-          sheetBase64 = await extractionService.generateTextureSheet(file, analysis.assets)
-        } catch (err: unknown) {
-          throw new Error(
-            `Generation failed: ${err instanceof Error ? err.message : String(err)}`,
-            {
-              cause: err,
-            },
-          )
-        }
-
-        // 2.5 Emit texture sheet to client
-        const dimensions = extractionService.getGridDimensions(analysis.assets.length)
-        await stream.writeSSE({
-          event: 'texture_generated',
-          data: JSON.stringify({
-            image: sheetBase64,
-            grid: dimensions,
-          }),
-        })
-
-        // 3. Crop Assets (Splitting)
-        await stream.writeSSE({
-          event: 'status',
-          data: JSON.stringify({ status: 'splitting', message: 'Splitting texture sheet...' }),
-        })
-
-        let crops
-        try {
-          crops = await extractionService.cropAssets(sheetBase64, analysis.assets)
-        } catch (err: unknown) {
-          throw new Error(`Splitting failed: ${err instanceof Error ? err.message : String(err)}`, {
-            cause: err,
-          })
-        }
-
-        // 4. Combine crops with metadata and return
-        const candidates = crops.map((crop) => {
-          const originalMeta = analysis.assets.find((a) => a.item_name === crop.name) || {
-            item_name: crop.name,
-            description: 'Extracted asset',
-            category: 'Others',
-          }
-          return {
-            name: originalMeta.item_name,
-            description: originalMeta.description,
-            category: originalMeta.category,
-            base64: crop.base64,
-          }
-        })
+        // 3. Return candidates and image path
+        // Map backend assets (item_name) to frontend CandidateAsset (name)
+        const candidates = analysis.assets.map((a) => ({
+          name: a.item_name,
+          description: a.description,
+          category: a.category,
+        }))
 
         await stream.writeSSE({
           event: 'complete',
-          data: JSON.stringify({ assets: candidates }),
+          data: JSON.stringify({
+            assets: candidates,
+            imagePath: savedFile.path,
+          }),
         })
       } catch (e: unknown) {
         console.error(e)
@@ -126,71 +78,72 @@ const route = app
       }
     })
   })
-  .post('/refine', zValidator('json', refineSchema), async (c) => {
-    const { assets } = c.req.valid('json')
+  .post('/item', zValidator('json', itemExtractSchema), async (c) => {
+    const { imagePath, name, description, category, model, hint, previousEquipmentId } = c.req.valid('json')
 
-    return streamSSE(c, async (stream) => {
-      try {
-        await stream.writeSSE({
-          event: 'status',
-          data: JSON.stringify({ status: 'refining', message: 'Refining and saving assets...' }),
-        })
+    try {
+      // Extract asset
+      const extractedBase64 = await extractionService.extractAsset(
+        imagePath,
+        name,
+        description,
+        category,
+        model,
+        hint,
+      )
 
-        const refinedAssets = []
+      // Save to file system
+      const savedFile = await fileService.saveBase64Image(extractedBase64)
 
-        for (const asset of assets) {
-          // Refine image
-          const refinedBase64 = await extractionService.refineAsset(
-            asset.base64,
-            asset.name,
-            asset.description,
-          )
+      // Create Asset record
+      const assetRecord = await assetService.createAssetRecord({
+        name: name,
+        type: 'image/webp',
+        path: savedFile.filename,
+      })
 
-          // Save to file system
-          const savedFile = await fileService.saveBase64Image(refinedBase64)
+      let equipment
 
-          // Create Asset record
-          const assetRecord = await assetService.createAssetRecord({
-            name: asset.name,
-            type: 'image/webp',
-            path: savedFile.filename,
-          })
-
-          // Create Equipment record
-          const equipment = await equipmentService.createEquipment({
-            name: asset.name,
-            description: asset.description,
+      if (previousEquipmentId) {
+        // Update existing equipment
+        try {
+          equipment = await equipmentService.updateEquipment(previousEquipmentId, {
+            name: name,
+            description: description,
+            category: category || 'Others',
             imageId: assetRecord.id,
-            category: asset.category,
           })
-
-          const refinedAsset = {
-            ...equipment,
-            imageUrl: `/files/${savedFile.filename}`,
-          }
-
-          refinedAssets.push(refinedAsset)
-
-          // Stream event for progressive display
-          await stream.writeSSE({
-            event: 'asset_refined',
-            data: JSON.stringify({ asset: refinedAsset }),
+        } catch (e) {
+          console.warn(`Failed to update previous equipment ${previousEquipmentId}, creating new one`, e)
+          // Fallback to create if update fails (e.g., record deleted)
+          equipment = await equipmentService.createEquipment({
+            name: name,
+            description: description,
+            imageId: assetRecord.id,
+            category: category || 'Others',
           })
         }
-
-        await stream.writeSSE({
-          event: 'complete',
-          data: JSON.stringify({ assets: refinedAssets }),
-        })
-      } catch (e: unknown) {
-        console.error(e)
-        const error = e instanceof Error ? e : new Error(String(e))
-        await stream.writeSSE({
-          event: 'error',
-          data: JSON.stringify({ message: error.message || 'Refinement failed' }),
+      } else {
+        // Create new equipment
+        equipment = await equipmentService.createEquipment({
+          name: name,
+          description: description,
+          imageId: assetRecord.id,
+          category: category || 'Others',
         })
       }
-    })
+
+      const result = {
+        ...equipment,
+        imageUrl: `/files/${savedFile.filename}`,
+      }
+
+      return c.json(result)
+    } catch (e: unknown) {
+      console.error(e)
+      const error = e instanceof Error ? e : new Error(String(e))
+      return c.json({ error: error.message || 'Extraction failed' }, 500)
+    }
   })
 
 export default route

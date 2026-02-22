@@ -10,7 +10,6 @@ export interface CandidateAsset {
   name: string
   description: string
   category: string
-  base64: string
 }
 
 export type ExtractionStatus =

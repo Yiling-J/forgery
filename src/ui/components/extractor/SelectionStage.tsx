@@ -2,6 +2,7 @@ import { Check } from 'lucide-react'
 import React from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset } from '../../types'
+import { Badge } from '../ui/badge'
 import { ScrollArea } from '../ui/scroll-area'
 
 interface SelectionStageProps {
@@ -16,10 +17,15 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
   onToggleSelection,
 }) => {
   return (
-    <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-2 py-2">
-      {/* Grid */}
-      <ScrollArea className="h-full px-2">
-        <div className="grid grid-cols-3 gap-2 p-1 h-full pb-6">
+    <div className="flex flex-col h-full w-full max-w-2xl mx-auto px-4 py-6 overflow-hidden">
+      <div className="flex items-center justify-between mb-4 px-2 shrink-0">
+        <h3 className="text-lg font-semibold text-slate-800">
+          Detected Items ({candidates.length})
+        </h3>
+      </div>
+
+      <ScrollArea className="min-h-0 -mx-2 px-2 [&_[data-slot=scroll-area-viewport]>div]:block!">
+        <div className="flex flex-col gap-3 pb-6 w-full px-2">
           {candidates.map((item, index) => {
             const isSelected = selectedIndices.includes(index)
             return (
@@ -27,44 +33,39 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 key={index}
                 onClick={() => onToggleSelection(index)}
                 className={cn(
-                  'group relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2 bg-white animate-fade-in-up flex-shrink-0 flex flex-col',
+                  'group relative p-4 rounded-xl border-3 cursor-pointer transition-all duration-200 flex items-center justify-between gap-4 bg-white hover:shadow-md select-none',
                   isSelected
-                    ? 'border-cyan-500 shadow-lg shadow-cyan-100 scale-[1.02]'
-                    : 'border-slate-200 opacity-80 hover:opacity-100 hover:border-slate-300',
+                    ? 'border-cyan-500 bg-cyan-50/30'
+                    : 'border-slate-200 hover:border-cyan-200',
                 )}
-                style={{ animationDelay: `${index * 50}ms` }}
               >
-                <img
-                  src={item.base64}
-                  alt={item.name}
-                  className="w-full h-full object-contain p-4"
-                />
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className="flex flex-col gap-1 min-w-0 flex-1">
+                    <div className="flex items-center gap-3">
+                      <h4 className="font-bold text-slate-800 text-sm truncate">{item.name}</h4>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 font-mono uppercase tracking-wide shrink-0"
+                      >
+                        {item.category}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-slate-500 truncate pr-2">{item.description}</p>
+                  </div>
+                </div>
 
-                {/* Selection Overlay */}
                 <div
                   className={cn(
-                    'absolute inset-0 bg-cyan-900/10 transition-opacity duration-200',
-                    isSelected ? 'opacity-100' : 'opacity-0',
-                  )}
-                />
-
-                {/* Checkbox Indicator */}
-                <div
-                  className={cn(
-                    'absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200',
+                    'w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors duration-200 border',
                     isSelected
-                      ? 'bg-cyan-500 text-white shadow-md scale-100'
-                      : 'bg-white/80 border border-slate-300 text-transparent scale-90 group-hover:border-slate-400',
+                      ? 'bg-cyan-500 border-cyan-500 text-white'
+                      : 'bg-white border-slate-300 text-transparent group-hover:border-cyan-300',
                   )}
                 >
-                  <Check className="w-4 h-4" strokeWidth={3} />
+                  <Check className="w-3.5 h-3.5 stroke-[3px]" />
                 </div>
 
-                {/* Label */}
-                <div className="p-2 bg-green-400/10 border-t border-slate-100">
-                  <p className="text-xs font-bold text-slate-700 truncate">{item.name}</p>
-                  <p className="text-[10px] text-slate-400 truncate uppercase">{item.category}</p>
-                </div>
+                {/* Selection Overlay (subtle) */}
               </div>
             )
           })}
