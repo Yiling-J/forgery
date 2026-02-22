@@ -85,7 +85,7 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
               <div
                 key={index}
                 className={cn(
-                  'relative rounded-xl overflow-hidden border-2 transition-all duration-300 bg-white flex flex-col h-[320px]',
+                  'relative rounded-xl overflow-hidden border-2 transition-all duration-300 bg-white flex flex-col',
                   isProcessing
                     ? 'border-amber-400 shadow-lg shadow-amber-100'
                     : isDone
@@ -96,7 +96,7 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
                 )}
               >
                 {/* Image Area */}
-                <div className="relative flex-1 bg-slate-50 flex items-center justify-center overflow-hidden">
+                <div className="relative w-full aspect-square bg-slate-50 flex items-center justify-center overflow-hidden">
                   {/* Checkerboard bg */}
                   <div
                     className="absolute inset-0 opacity-10 pointer-events-none"
@@ -186,40 +186,56 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
       </ScrollArea>
 
       {/* Footer / Done Actions */}
-      {isAllDone && (
-        <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-4 bg-white/50 backdrop-blur-sm rounded-xl">
-          <div className="flex items-center space-x-2 px-2">
-            <Checkbox
-              id="saveOutfit"
-              checked={saveAsOutfit}
-              onCheckedChange={(c) => setSaveAsOutfit(c === true)}
-            />
-            <Label
-              htmlFor="saveOutfit"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Save as Outfit
-            </Label>
-          </div>
-          {saveAsOutfit && (
-            <Input
-              placeholder="Outfit Name"
-              value={outfitName}
-              onChange={(e) => setOutfitName(e.target.value)}
-              className="w-full animate-in fade-in zoom-in duration-300"
-            />
-          )}
-
-           <div className="flex justify-end gap-2 mt-2">
-            <Button variant="ghost" onClick={onCancel}>
-                Cancel
-            </Button>
-            <Button onClick={onDone} className="bg-green-600 hover:bg-green-700 min-w-[120px]">
-                Finish
-            </Button>
-           </div>
+      <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-4 bg-white/50 backdrop-blur-sm rounded-xl">
+        <div className="flex items-center space-x-2 px-2">
+          <Checkbox
+            id="saveOutfit"
+            checked={saveAsOutfit}
+            onCheckedChange={(c) => setSaveAsOutfit(c === true)}
+            disabled={!isAllDone}
+          />
+          <Label
+            htmlFor="saveOutfit"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Save as Outfit
+          </Label>
         </div>
-      )}
+        {saveAsOutfit && (
+          <Input
+            placeholder="Outfit Name"
+            value={outfitName}
+            onChange={(e) => setOutfitName(e.target.value)}
+            disabled={!isAllDone}
+            className="w-full animate-in fade-in zoom-in duration-300"
+          />
+        )}
+
+          <div className="flex justify-end gap-2 mt-2">
+          <Button
+            onClick={onDone}
+            disabled={!isAllDone}
+            className={cn(
+              "min-w-[120px]",
+              isAllDone
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-slate-400 cursor-not-allowed"
+            )}
+          >
+              {isAllDone ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  Finish
+                </>
+              ) : (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Extracting...
+                </>
+              )}
+          </Button>
+          </div>
+      </div>
 
       {/* Re-extract Dialog */}
       <Dialog open={reExtractIndex !== null} onOpenChange={(open) => !open && setReExtractIndex(null)}>
@@ -239,7 +255,6 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
                 <SelectContent>
-                   <SelectItem value="default">Default</SelectItem>
                   {availableModels.map((m) => (
                     <SelectItem key={m} value={m}>
                       {m}
@@ -263,7 +278,9 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
             <Button variant="outline" onClick={() => setReExtractIndex(null)}>
               Cancel
             </Button>
-            <Button onClick={handleConfirmReExtract}>Extract</Button>
+            <Button onClick={handleConfirmReExtract} disabled={!model}>
+              Extract
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
