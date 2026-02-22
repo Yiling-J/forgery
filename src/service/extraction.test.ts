@@ -20,6 +20,7 @@ mock.module('./ai', () => ({
 }))
 
 describe('ExtractionService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let extractionService: any
 
   beforeAll(async () => {
@@ -51,6 +52,7 @@ describe('ExtractionService', () => {
     expect(result).toBe('data:image/png;base64,mockImage')
     expect(generateImageMock).toHaveBeenCalled()
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
     const prompt = callArgs[0] as string
 

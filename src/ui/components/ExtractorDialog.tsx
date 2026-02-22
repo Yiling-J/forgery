@@ -1,4 +1,4 @@
-import { Loader2, Play, RefreshCw, Sparkles } from 'lucide-react'
+import { Loader2, Play, Sparkles } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'

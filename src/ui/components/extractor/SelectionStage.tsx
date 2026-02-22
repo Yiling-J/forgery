@@ -1,4 +1,4 @@
-import { Check, CheckCircle2 } from 'lucide-react'
+import { Check } from 'lucide-react'
 import React from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset } from '../../types'

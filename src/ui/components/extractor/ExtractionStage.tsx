@@ -65,7 +65,6 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
   }
 
   const isAllDone = statuses.every((s) => s === 'done' || s === 'error')
-  const hasError = statuses.some((s) => s === 'error')
 
   return (
     <div className="flex flex-col h-full w-full max-w-6xl mx-auto px-4 py-6 overflow-hidden">
