@@ -2,6 +2,7 @@ import { CheckCircle2, Loader2, RefreshCw, XCircle } from 'lucide-react'
 import React, { useState } from 'react'
 import { cn } from '../../lib/utils'
 import { CandidateAsset, ExtractedAsset } from '../../types'
+import { EnlargableImage } from '../EnlargableImage'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import {
@@ -105,10 +106,11 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
                   />
 
                   {isDone && result?.imageUrl ? (
-                    <img
+                    <EnlargableImage
                       src={result.imageUrl}
                       alt={candidate.name}
-                      className="w-full h-full object-contain p-1"
+                      className="w-full h-full border-none bg-transparent rounded-none"
+                      imageClassName="p-1"
                     />
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-slate-400">
