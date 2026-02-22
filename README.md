@@ -82,7 +82,7 @@ For image generation, Nano Banana Pro delivers the highest-quality results and i
 
 Keep in mind that Nano Banana (non-Pro) may struggle during the look generation step, especially when the prompt includes multiple pieces of equipment or complex visual elements.
 
-For **Extract Asset** step, Nano Banana (non-Pro) is good enough, do not use Banana Pro.
+For the **Extract Asset** step, **Nano Banana (non-Pro)** is typically good enough for most cases. We recommend starting with it; if you are not satisfied with the result, you can re-extract using **Nano Banana Pro**.
 
 ## Data Backup
 

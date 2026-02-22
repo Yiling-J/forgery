@@ -78,11 +78,11 @@ Forgery 需要 AI 生成服务的 API 密钥（Google Gemini 和/或 OpenAI）�
 
 对于文本生成，Gemini 3 Flash 或 GPT-5 Mini 通常足以满足大多数用例。
 
-对于图像生成，Nanao Banana Pro 提供最高质量的结果，通常是最佳选择。但是，如果考虑到成本，你可以考虑 Nano Banana (non-Pro) 或 GPT Image 1.5 作为更经济实惠的替代方案。
+对于图像生成，Nano Banana Pro 提供最高质量的结果，通常是最佳选择。但是，如果考虑到成本，你可以考虑 Nano Banana (non-Pro) 或 GPT Image 1.5 作为更经济实惠的替代方案。
 
 请记住，Nano Banana (non-Pro) 在 Look 生成步骤中可能会遇到困难，特别是当提示包含多个装备或复杂的视觉元素时。
 
-对于 **Extract Asset** 步骤，Nano Banana (non-Pro) 已经足够好，请勿使用 Banana Pro。
+对于 **Extract Asset** 步骤，**Nano Banana (non-Pro)** 通常已经足够。建议先尝试使用它；如果对结果不满意，可以使用 **Nano Banana Pro** 重新提取。
 
 ## 数据备份
 
