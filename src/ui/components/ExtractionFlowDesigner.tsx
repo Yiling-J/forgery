@@ -1,4 +1,4 @@
-import { ArrowDown, FileSearch, Image as ImageIcon, User, Wand2 } from 'lucide-react'
+import { ArrowDown, FileSearch, User, Wand2 } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -36,19 +36,10 @@ export function ExtractionFlowDesigner({
       type: 'text',
     },
     {
-      id: 'texture',
-      key: 'step_texture_model',
-      title: 'Generate Equipment Sheet',
-      description: 'Creates a equipments image based on the analysis.',
-      icon: <ImageIcon className="w-5 h-5 text-purple-600" />,
-      type: 'image',
-    },
-    // Bounding Box Detection step removed as part of grid-based extraction refactor
-    {
-      id: 'refine',
+      id: 'extract',
       key: 'step_refine_model',
-      title: 'Refine Asset',
-      description: 'Polishes and isolates each equipment piece.',
+      title: 'Extract Asset',
+      description: 'Extracts and isolates each equipment piece.',
       icon: <Wand2 className="w-5 h-5 text-emerald-600" />,
       type: 'image',
     },

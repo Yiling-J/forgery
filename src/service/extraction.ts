@@ -1,4 +1,3 @@
-import sharp from 'sharp'
 import { z } from 'zod'
 import { EQUIPMENT_CATEGORIES } from '../lib/categories'
 import { aiService } from './ai'
@@ -17,8 +16,9 @@ export interface AnalysisResponse {
 export class ExtractionService {
   /**
    * Analyzes an image to identify extractable assets.
+   * @param fileOrPath A File object or a string path to the file
    */
-  async analyzeImage(file: File): Promise<AnalysisResponse> {
+  async analyzeImage(fileOrPath: File | string): Promise<AnalysisResponse> {
     const categoriesJson = JSON.stringify(EQUIPMENT_CATEGORIES, null, 2)
     const prompt = `
 Task: Character Asset Identification for Extraction
@@ -48,126 +48,132 @@ Return ONLY a JSON object with a list of assets.
       ),
     })
 
-    return aiService.generateText<AnalysisResponse>(prompt, [file], schema, 'step_analyze_model')
-  }
+    const file =
+      typeof fileOrPath === 'string' ? (Bun.file(fileOrPath) as unknown as File) : fileOrPath
 
-  public getGridDimensions(count: number): { rows: number; cols: number } {
-    if (count <= 4) return { rows: 2, cols: 2 }
-    return { rows: 3, cols: 3 }
+    return aiService.generateText<AnalysisResponse>(
+      prompt,
+      [file],
+      schema,
+      'step_analyze_model',
+    )
   }
 
   /**
-   * Generates a texture sheet with isolated assets on solid backgrounds.
+   * Extracts a specific asset from the image.
    */
-  async generateTextureSheet(file: File, assets: ExtractedAsset[]): Promise<string> {
-    const { rows, cols } = this.getGridDimensions(assets.length)
+  async extractAsset(
+    fileOrPath: File | string,
+    name: string,
+    description: string,
+    category?: string,
+    model?: string,
+    hint?: string,
+  ): Promise<string> {
+    const file =
+      typeof fileOrPath === 'string' ? (Bun.file(fileOrPath) as unknown as File) : fileOrPath
 
-    const assetList = assets
-      .map((asset, index) => `${index + 1}. ${asset.item_name}: ${asset.description}`)
-      .join('\n')
+    let prompt = `
+Task: Asset Extraction
 
-    const prompt = `
-Task: Character Asset Extraction & Grid Generation
-
-Instructions:
-Analyze the character in the provided image and extract the following ${assets.length} specific assets into a new, single chroma green Background image organized in a ${rows}x${cols} grid layout. The out put image should be square(1:1 aspect ratio) and each grid should be equal size.
-
-Core Constraints:
-1. Grid Layout: The output image must be a strict ${rows} rows x ${cols} columns grid. The grid layout should split by black line. The grid must take all available space of the image, no border padding.
-2. Equal Cells: Every cell in the grid MUST have identical width and height.
-3. Sequential Placement: Place the assets in the grid cells in the order listed below, starting from top-left, moving right, then down to the next row.
-4. Empty Cells: If there are fewer assets than grid cells, leave the remaining cells at the end (bottom-right) completely empty with Chroma Green background (#00FF00).
-5. Isolated Assets: Each item must be placed within its own distinct square tile. No overlapping.
-6. Ghost Mannequin Style: Extract ONLY the items. Remove the character's body entirely. Clothing and armor must appear as empty, 3D shells as if worn by an invisible person.
-7. Chroma Green Background: The entire background of the image and each cell must be Chroma Green (#00FF00). No shadows, no gradients.
-8. Output Format: Generate a square texture sheet. Ignore the original image aspect ratio for the final output canvas.
-9. EXACT REPLICA: You MUST reproduce the items exactly as they appear in the original image. Maintain all textures, patterns, logos, weathering, materials, and small details. Do not simplify or stylize.
-
-Assets to Extract (in order):
-${assetList}
-
-Output Requirement: High-resolution texture sheet, flat lay presentation, sharp edges, and uniform lighting across all assets.
+Input: An image containing a character with equipment.
+Target Item: ${name}
+Description: ${description}
 `
-
-    return aiService.generateImage(prompt, [file], 'step_texture_model')
-  }
-
-  /**
-   * Crops assets from the texture sheet based on calculated grid.
-   */
-  async cropAssets(
-    sheetBase64: string,
-    assets: ExtractedAsset[],
-  ): Promise<{ name: string; base64: string }[]> {
-    const buffer = Buffer.from(sheetBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
-    const image = sharp(buffer)
-    const metadata = await image.metadata()
-
-    if (!metadata.width || !metadata.height) throw new Error('Could not determine image dimensions')
-
-    const { rows, cols } = this.getGridDimensions(assets.length)
-    const cellWidth = Math.floor(metadata.width / cols)
-    const cellHeight = Math.floor(metadata.height / rows)
-
-    const croppedAssets = []
-
-    for (let i = 0; i < assets.length; i++) {
-      const row = Math.floor(i / cols)
-      const col = i % cols
-
-      // Calculate coordinates with 3px inner padding to avoid grid lines
-      const padding = 3
-      const left = col * cellWidth + padding
-      const top = row * cellHeight + padding
-      const width = cellWidth - padding * 2
-      const height = cellHeight - padding * 2
-
-      // Ensure we don't go out of bounds (though math implies we fit)
-      const safeLeft = Math.max(0, left)
-      const safeTop = Math.max(0, top)
-      const safeWidth = Math.min(width, metadata.width - safeLeft)
-      const safeHeight = Math.min(height, metadata.height - safeTop)
-
-      if (safeWidth <= 0 || safeHeight <= 0) continue
-
-      const cropBuffer = await image
-        .clone()
-        .extract({ left: safeLeft, top: safeTop, width: safeWidth, height: safeHeight })
-        .toBuffer()
-
-      croppedAssets.push({
-        name: assets[i].item_name,
-        base64: `data:image/png;base64,${cropBuffer.toString('base64')}`,
-      })
+    if (category) {
+      prompt += `Category: ${category}\n`
+    }
+    if (hint) {
+      prompt += `User Hint: ${hint}\n`
     }
 
-    return croppedAssets
-  }
-
-  /**
-   * Refines a cropped asset (removes background, upscales).
-   */
-  async refineAsset(base64: string, name: string, description: string): Promise<string> {
-    const buffer = Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
-    const file = new File([buffer], 'crop.png', { type: 'image/png' })
-
-    const prompt = `
-Task: Asset Extraction and Refinement
-
-Input: A cropped image of a character's equipment.
-Target Equipment: ${name}
-Description: ${description}
-
+    prompt += `
 Instructions:
-1. Extract the main equipment specified by "Target Equipment" from the input image.
-2. Place the extracted equipment onto a pure white background (#FFFFFF).
-3. Ensure the equipment is fully visible, centered, and cleanly isolated.
-4. Remove all other elements, such as body parts, other clothing, or background artifacts.
-5. Enhance the details and textures of the equipment for high-quality presentation, but do not alter the original design.
-6. Return ONLY the image of the isolated equipment on a white background.
+1. Identify the specific item described above in the input image.
+2. Extract ONLY this item.
+3. Place it on a pure white background (#FFFFFF).
+4. Ensure the item is fully visible, centered, and cleanly isolated.
+5. Remove all other elements (character body, other items, background).
+6. Maintain high quality and original details.
+7. Return ONLY the image of the isolated equipment on a white background.
 `
-    // Using generateImage with image input
-    return aiService.generateImage(prompt, [file], 'step_refine_model')
+    // Use the model override if provided, otherwise default to step_refine_model
+    // (We reuse step_refine_model key for extraction as discussed in plan, or we can use a new key but let's stick to existing config keys where possible or pass model directly)
+
+    // aiService.generateImage uses getModelForStep. If we want to pass a specific model (e.g. from user selection),
+    // we might need to modify aiService or trick it.
+    // Wait, aiService.generateImage(..., step) takes a step name.
+    // If I want to pass a specific model name, I can't directly via 'step'.
+    // However, aiService implementation of `getModelForStep` handles 'provider:model' string if it's in settings.
+    // But here 'model' argument is the model name (e.g. "openai:gpt-4o" or "gemini-1.5-pro").
+    // I need to support passing the model directly.
+
+    // I will verify aiService.generateImage again.
+    // It calls `getModelForStep(step)`.
+    // If step is not a config key, but a direct model string like "openai:gpt-4o", `getModelForStep` will check settings.get("openai:gpt-4o"). likely returning null.
+    // Then it falls back to: `return { provider: 'google', model: modelString }`.
+    // So if I pass "openai:gpt-4o" as `step`, it will try to look it up, fail, and then treat "openai:gpt-4o" as the model name for google provider?
+    // Wait:
+    /*
+    if (modelString.includes(':')) {
+      const [provider, model] = modelString.split(':')
+      return { provider: provider as 'openai' | 'google', model }
+    }
+    */
+    // This logic applies to the *value retrieved from settings*.
+
+    // If I pass a `step` that is NOT in settings, `settingService.get(step)` returns null.
+    // Then `if (!modelString)` block executes.
+    // It returns default google flash.
+
+    // So I cannot pass a model name directly to `generateImage` as `step` currently.
+    // I should modify `aiService` to allow passing explicit model configuration, OR I just temporarily hack it by setting a temporary setting? No that's bad/concurrent unsafe.
+
+    // I should probably modify `aiService` to accept `modelOverride` or similar.
+    // But `aiService` is in `src/service/ai.ts`.
+    // Let's look at `src/service/ai.ts` again.
+    /*
+      async generateImage(
+        input: string | AIPart[],
+        referenceImages: File[] = [],
+        step?: string,
+      ): Promise<string> {
+        const { provider, model } = await this.getModelForStep(step)
+    */
+
+    // I'll update `extractAsset` to work for now with 'step_refine_model' (which I will rename conceptually to extract).
+    // For the "Re-extract" feature where user picks a model:
+    // I need to support that.
+
+    // If I pass the model name as `step`?
+    // `settingService.get("gemini-1.5-pro")` -> null.
+    // `getModelForStep` returns default.
+
+    // I must modify `aiService` to support direct model passing.
+    // Or I can modify `getModelForStep` to handle the case where `step` is a model identifier (e.g. starts with "model:").
+    // Or just "openai:..." or "google:...".
+
+    // Let's modify `src/service/ai.ts` first?
+    // The plan didn't explicitly say modify `aiService`, but it's needed for "user choice of model".
+
+    // Let's verify `getModelForStep` logic in `aiService`.
+    /*
+    const modelString = await settingService.get(step)
+    if (!modelString) {
+       // ... defaults
+       return { provider: 'google', model: 'gemini-2.0-flash' }
+    }
+    */
+
+    // If I want to support dynamic model, I should probably overload the `step` parameter to allow `{ provider, model }` object or similar.
+    // But `step` is typed as `string`.
+
+    // I'll stick to `step_refine_model` for the default case.
+    // For the override case...
+    // I will check if I can modify `aiService` quickly.
+    // Yes, I should.
+
+    return aiService.generateImage(prompt, [file], model || 'step_refine_model')
   }
 }
 

@@ -65,6 +65,14 @@ export class UnifiedAIService implements AIService {
       return { provider: 'google', model: 'gemini-2.0-flash' }
     }
 
+    // Direct model support
+    if (step.startsWith('openai:')) {
+      return { provider: 'openai', model: step.replace('openai:', '') }
+    }
+    if (step.startsWith('google:')) {
+      return { provider: 'google', model: step.replace('google:', '') }
+    }
+
     const modelString = await settingService.get(step)
     if (!modelString) {
       // Fallback defaults if not configured

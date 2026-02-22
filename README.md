@@ -20,7 +20,7 @@ Forge characters, not chaos. Forgery helps you extract equipments (props, clothi
 
 ## How It Works
 
-1. **Extractor**: Upload an image. Forgery analyzes it to identify and extract equipment (outfits, weapons, accessories).
+1. **Extractor**: Upload an image. Forgery analyzes it to identify extractable items. Select what you want, and Forgery extracts each item individually.
 2. **Create Character**: Upload a base portrait for your character.
 3. **Fitting Room**: Combine your character with selected equipment, choose a pose, and set an expression.
 4. **Generate**: Watch as Forgery generates a new Look for your character.
@@ -82,7 +82,7 @@ For image generation, Nano Banana Pro delivers the highest-quality results and i
 
 Keep in mind that Nano Banana (non-Pro) may struggle during the look generation step, especially when the prompt includes multiple pieces of equipment or complex visual elements.
 
-For **Refine Asset** step, Nano Banana (non-Pro) is good enough, do not use Banana Pro.
+For **Extract Asset** step, Nano Banana (non-Pro) is good enough, do not use Banana Pro.
 
 ## Data Backup
 
