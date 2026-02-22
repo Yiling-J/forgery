@@ -306,7 +306,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="relative grow h-[70dvh]">
+        <div className="relative grow h-[70dvh] overflow-hidden">
           {stage === 'upload' && <UploadStage onImageUpload={handleImageUpload} />}
 
           {stage === 'analyze' && preview && (
