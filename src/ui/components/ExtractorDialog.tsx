@@ -335,7 +335,6 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               statuses={extractionStatuses}
               onReExtract={handleReExtract}
               onDone={handleDone}
-              onCancel={() => setStage('selection')}
               availableModels={availableModels}
               defaultModel={defaultModel}
               saveAsOutfit={saveAsOutfit}

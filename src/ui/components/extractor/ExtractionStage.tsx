@@ -26,7 +26,6 @@ interface ExtractionStageProps {
   statuses: ItemStatus[]
   onReExtract: (index: number, model: string, hint: string) => void
   onDone: () => void
-  onCancel: () => void
   availableModels: string[]
   defaultModel?: string
   saveAsOutfit: boolean
@@ -41,7 +40,6 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
   statuses,
   onReExtract,
   onDone,
-  onCancel,
   availableModels,
   defaultModel,
   saveAsOutfit,
