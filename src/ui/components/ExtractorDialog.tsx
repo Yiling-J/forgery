@@ -81,7 +81,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
             ...openai.map((m: string) => `openai:${m}`),
             ...google.map((m: string) => `google:${m}`),
           ]
-          const defaultExtractModel = data['default_extract_model']
+          const defaultExtractModel = data['step_refine_model']
           if (isMounted.current) {
             setAvailableModels(models)
             setDefaultModel(defaultExtractModel || '')
