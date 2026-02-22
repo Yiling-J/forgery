@@ -45,6 +45,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
   // Models
   const [availableModels, setAvailableModels] = useState<string[]>([])
+  const [defaultModel, setDefaultModel] = useState<string>('')
 
   // Refs for cleanup
   const analyzeController = useRef<AbortController | null>(null)
@@ -80,8 +81,10 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
             ...openai.map((m: string) => `openai:${m}`),
             ...google.map((m: string) => `google:${m}`),
           ]
+          const defaultExtractModel = data['default_extract_model']
           if (isMounted.current) {
             setAvailableModels(models)
+            setDefaultModel(defaultExtractModel || '')
           }
         }
       } catch (e) {
@@ -334,6 +337,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               onDone={handleDone}
               onCancel={() => setStage('selection')}
               availableModels={availableModels}
+              defaultModel={defaultModel}
               saveAsOutfit={saveAsOutfit}
               setSaveAsOutfit={setSaveAsOutfit}
               outfitName={outfitName}

@@ -28,6 +28,7 @@ interface ExtractionStageProps {
   onDone: () => void
   onCancel: () => void
   availableModels: string[]
+  defaultModel?: string
   saveAsOutfit: boolean
   setSaveAsOutfit: (value: boolean) => void
   outfitName: string
@@ -42,6 +43,7 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
   onDone,
   onCancel,
   availableModels,
+  defaultModel,
   saveAsOutfit,
   setSaveAsOutfit,
   outfitName,
@@ -53,7 +55,7 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
 
   const handleOpenReExtract = (index: number) => {
     setReExtractIndex(index)
-    setModel('') // Reset or set default if possible
+    setModel(defaultModel || '')
     setHint('')
   }
 
