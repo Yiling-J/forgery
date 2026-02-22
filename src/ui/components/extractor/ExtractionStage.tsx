@@ -5,12 +5,12 @@ import { CandidateAsset, ExtractedAsset } from '../../types'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
@@ -108,7 +108,7 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
                     <img
                       src={result.imageUrl}
                       alt={candidate.name}
-                      className="w-full h-full object-contain p-4"
+                      className="w-full h-full object-contain p-1"
                     />
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-slate-400">
@@ -136,7 +136,10 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
                 <div className="p-3 border-t border-slate-100 bg-white flex flex-col gap-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-bold text-sm text-slate-800 truncate" title={candidate.name}>
+                      <p
+                        className="font-bold text-sm text-slate-800 truncate"
+                        title={candidate.name}
+                      >
                         {candidate.name}
                       </p>
                       <p className="text-[10px] text-slate-500 uppercase font-mono">
@@ -167,14 +170,12 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
                     </Button>
                   )}
                   {isProcessing && (
-                     <div className="text-xs text-amber-600 font-medium text-center py-1">
-                        Extracting...
-                     </div>
+                    <div className="text-xs text-amber-600 font-medium text-center py-1">
+                      Extracting...
+                    </div>
                   )}
                   {isPending && (
-                     <div className="text-xs text-slate-400 text-center py-1">
-                        Waiting...
-                     </div>
+                    <div className="text-xs text-slate-400 text-center py-1">Waiting...</div>
                   )}
                 </div>
               </div>
@@ -209,34 +210,35 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
           />
         )}
 
-          <div className="flex justify-end gap-2 mt-2">
+        <div className="flex justify-end gap-2 mt-2">
           <Button
             onClick={onDone}
             disabled={!isAllDone}
             className={cn(
-              "min-w-[120px]",
-              isAllDone
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-slate-400 cursor-not-allowed"
+              'min-w-[120px]',
+              isAllDone ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-400 cursor-not-allowed',
             )}
           >
-              {isAllDone ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Finish
-                </>
-              ) : (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Extracting...
-                </>
-              )}
+            {isAllDone ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                Finish
+              </>
+            ) : (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Extracting...
+              </>
+            )}
           </Button>
-          </div>
+        </div>
       </div>
 
       {/* Re-extract Dialog */}
-      <Dialog open={reExtractIndex !== null} onOpenChange={(open) => !open && setReExtractIndex(null)}>
+      <Dialog
+        open={reExtractIndex !== null}
+        onOpenChange={(open) => !open && setReExtractIndex(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Re-extract Item</DialogTitle>

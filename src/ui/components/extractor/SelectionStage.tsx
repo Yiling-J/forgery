@@ -22,13 +22,10 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
         <h3 className="text-lg font-semibold text-slate-800">
           Detected Items ({candidates.length})
         </h3>
-        <span className="text-sm text-slate-500">
-          Select items to extract ({selectedIndices.length})
-        </span>
       </div>
 
-      <ScrollArea className="flex-1 min-h-0 -mx-2 px-2">
-        <div className="flex flex-col gap-3 pb-6 w-full">
+      <ScrollArea className="min-h-0 -mx-2 px-2 [&_[data-slot=scroll-area-viewport]>div]:block!">
+        <div className="flex flex-col gap-3 pb-6 w-full px-2">
           {candidates.map((item, index) => {
             const isSelected = selectedIndices.includes(index)
             return (
@@ -36,7 +33,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 key={index}
                 onClick={() => onToggleSelection(index)}
                 className={cn(
-                  'group relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex items-center justify-between gap-4 bg-white hover:shadow-md select-none',
+                  'group relative p-4 rounded-xl border-3 cursor-pointer transition-all duration-200 flex items-center justify-between gap-4 bg-white hover:shadow-md select-none',
                   isSelected
                     ? 'border-cyan-500 bg-cyan-50/30'
                     : 'border-slate-200 hover:border-cyan-200',
@@ -53,9 +50,7 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                         {item.category}
                       </Badge>
                     </div>
-                    <p className="text-sm text-slate-500 truncate pr-2">
-                      {item.description}
-                    </p>
+                    <p className="text-sm text-slate-500 truncate pr-2">{item.description}</p>
                   </div>
                 </div>
 
@@ -71,9 +66,6 @@ export const SelectionStage: React.FC<SelectionStageProps> = ({
                 </div>
 
                 {/* Selection Overlay (subtle) */}
-                {isSelected && (
-                  <div className="absolute inset-0 rounded-xl border-2 border-cyan-500 pointer-events-none" />
-                )}
               </div>
             )
           })}
