@@ -7,7 +7,6 @@ const generateTextMock = mock(async () => ({
       item_name: 'Helmet',
       description: 'A rusty helmet',
       category: 'Headwear',
-      sub_category: 'Helmet',
     },
   ],
 }))
@@ -19,23 +18,6 @@ mock.module('./ai', () => ({
     generateImage: generateImageMock,
   },
 }))
-
-// Create a spy for the extract method to verify dimensions
-const extractMock = mock(() => ({
-  toBuffer: () => Promise.resolve(Buffer.from('mockCrop')),
-}))
-
-mock.module('sharp', () => {
-  const sharpInstance = {
-    metadata: () => Promise.resolve({ width: 300, height: 100 }),
-    clone: () => ({
-      extract: extractMock,
-    }),
-  }
-  return {
-    default: () => sharpInstance,
-  }
-})
 
 describe('ExtractionService', () => {
   let extractionService: any
@@ -51,59 +33,20 @@ describe('ExtractionService', () => {
     const result = await extractionService.analyzeImage(file)
     expect(result.assets.length).toBe(1)
     expect(result.assets[0].item_name).toBe('Helmet')
+    expect(generateTextMock).toHaveBeenCalled()
   })
 
-  test('generateTextureSheet calls AI service', async () => {
-    const file = new File(['dummy'], 'test.png', { type: 'image/png' })
-    const assets = [
-      {
-        item_name: 'Helmet',
-        description: 'desc',
-        category: 'Headwear',
-      },
-    ]
-    const result = await extractionService.generateTextureSheet(file, assets)
-    expect(result).toBe('data:image/png;base64,mockImage')
-  })
-
-  test('cropAssets splits image based on grid with padding', async () => {
-    const assets = [
-      {
-        item_name: 'Helmet',
-        description: 'desc',
-        category: 'Headwear',
-      },
-    ]
-    // 1 asset -> 2x2 grid. width 300 / 2 = 150. height 100 / 2 = 50.
-    // Padding is 3px.
-    // Expected crop: left: 0+3=3, top: 0+3=3, width: 150-6=144, height: 50-6=44
-
-    extractMock.mockClear()
-    const result = await extractionService.cropAssets('data:image/png;base64,mockSheet', assets)
-
-    expect(result.length).toBe(1)
-    expect(result[0].name).toBe('Helmet')
-    expect(result[0].base64).toContain('data:image/png;base64,')
-
-    expect(extractMock).toHaveBeenCalled()
-    // Cast to unknown then any array to avoid tuple length errors
-    const callArgs = extractMock.mock.calls[0] as unknown as any[]
-    const options = callArgs[0]
-
-    expect(options?.left).toBe(3)
-    expect(options?.top).toBe(3)
-    expect(options?.width).toBe(144)
-    expect(options?.height).toBe(44)
-  })
-
-  test('refineAsset calls AI service with correct prompt', async () => {
+  test('extractAsset calls AI service with correct prompt', async () => {
     // Clear previous calls
     generateImageMock.mockClear()
 
-    const base64 = 'data:image/png;base64,mockImageContent'
+    const file = new File(['dummy'], 'test.png', { type: 'image/png' })
     const name = 'Magic Helmet'
     const description = 'A glowing magical helmet'
-    const result = await extractionService.refineAsset(base64, name, description)
+    const category = 'Headwear'
+    const hint = 'Focus on the glow'
+
+    const result = await extractionService.extractAsset(file, name, description, category, undefined, hint)
 
     expect(result).toBe('data:image/png;base64,mockImage')
     expect(generateImageMock).toHaveBeenCalled()
@@ -111,9 +54,10 @@ describe('ExtractionService', () => {
     const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
     const prompt = callArgs[0] as string
 
-    expect(prompt).toContain('Task: Asset Extraction and Refinement')
-    expect(prompt).toContain('Target Equipment: Magic Helmet')
+    expect(prompt).toContain('Task: Asset Extraction')
+    expect(prompt).toContain('Target Item: Magic Helmet')
     expect(prompt).toContain('Description: A glowing magical helmet')
-    expect(prompt).toContain('Extract the main equipment specified')
+    expect(prompt).toContain('Category: Headwear')
+    expect(prompt).toContain('User Hint: Focus on the glow')
   })
 })

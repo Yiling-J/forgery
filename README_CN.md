@@ -20,7 +20,7 @@
 
 ## 工作原理
 
-1. **Extractor**：上传一张图片。Forgery 会分析它以识别并提取装备（服装、武器、配饰）。
+1. **Extractor**：上传一张图片。Forgery 会分析它以识别可提取的物品。选择你想要的物品，Forgery 会逐个提取。
 2. **Create Character**：上传一张角色的基础肖像。
 3. **Fitting Room**：将你的角色与所选装备结合，选择姿势并设定表情。
 4. **Generate**：观看 Forgery 为你的角色生成新的 Look。
@@ -82,7 +82,7 @@ Forgery 需要 AI 生成服务的 API 密钥（Google Gemini 和/或 OpenAI）�
 
 请记住，Nano Banana (non-Pro) 在 Look 生成步骤中可能会遇到困难，特别是当提示包含多个装备或复杂的视觉元素时。
 
-对于 **Refine Asset** 步骤，Nano Banana (non-Pro) 已经足够好，请勿使用 Banana Pro。
+对于 **Extract Asset** 步骤，Nano Banana (non-Pro) 已经足够好，请勿使用 Banana Pro。
 
 ## 数据备份
 
