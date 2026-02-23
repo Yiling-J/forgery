@@ -46,6 +46,71 @@ model Character {
   @@map("characters")
 }
 
+model Category {
+  id          String   @id @default(ulid())
+  name        String   @unique
+  description String?
+
+  // Stores the schema definition for this category
+  // Example: [{ "key": "category", "type": "select", "options": ["top", "bottom"] }, { "key": "description", "type": "text" }, { "key": "image", "type": "image" }]
+  fields      Json
+
+  imagePrompt Json?
+
+  enabled     Boolean  @default(true)
+  maxCount    Int      @default(1)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  data        Data[]
+
+  @@map("categories")
+}
+
+model Data {
+  id          String   @id @default(ulid())
+
+  categoryId  String   @map("category_id")
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  // Stores the actual extracted data matching the Category's `fields` definition
+  // Example: { "category": "top", "description": "A red t-shirt", "imageId": "xxxxx" }
+  values      Json
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  generations Generation[]
+
+  @@map("data")
+}
+
+model Generation {
+  id           String   @id @default(ulid())
+  characterId  String   @map("character_id")
+  imageId      String   @map("image_id")
+  userPrompt   String?  @map("user_prompt")
+
+  // Deprecated: Migrated to Data
+  poseId       String?  @map("pose")
+  expressionId String?  @map("expression")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  character  Character             @relation(fields: [characterId], references: [id])
+  image      Asset                 @relation(fields: [imageId], references: [id])
+  pose       Pose?                 @relation(fields: [poseId], references: [id])
+  expression Expression?           @relation(fields: [expressionId], references: [id])
+  equipments GenerationEquipment[]
+  data       Data[]
+
+  @@map("generations")
+}
+
+// Deprecated
 model Equipment {
   id          String   @id @default(ulid())
   name        String
@@ -64,26 +129,7 @@ model Equipment {
   @@map("equipments")
 }
 
-model Generation {
-  id           String   @id @default(ulid())
-  characterId  String   @map("character_id")
-  imageId      String   @map("image_id")
-  userPrompt   String?  @map("user_prompt")
-  poseId       String?  @map("pose")
-  expressionId String?  @map("expression")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  character  Character             @relation(fields: [characterId], references: [id])
-  image      Asset                 @relation(fields: [imageId], references: [id])
-  pose       Pose?                 @relation(fields: [poseId], references: [id])
-  expression Expression?           @relation(fields: [expressionId], references: [id])
-  equipments GenerationEquipment[]
-
-  @@map("generations")
-}
-
+// Deprecated
 model GenerationEquipment {
   generationId String @map("generation_id")
   equipmentId  String @map("equipment_id")
@@ -129,6 +175,7 @@ model Setting {
   @@map("settings")
 }
 
+// Deprecated
 model Pose {
   id        String   @id @default(ulid())
   name      String
@@ -143,6 +190,7 @@ model Pose {
   @@map("poses")
 }
 
+// Deprecated
 model Expression {
   id        String   @id @default(ulid())
   name      String

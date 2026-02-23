@@ -2,11 +2,16 @@ import { describe, expect, test, mock, beforeAll } from 'bun:test'
 
 // Mock dependencies
 const generateTextMock = mock(async () => ({
-  assets: [
+  results: [
     {
-      item_name: 'Helmet',
-      description: 'A rusty helmet',
-      category: 'Headwear',
+      category: 'Equipment',
+      data: [
+        {
+          name: 'Helmet',
+          description: 'A rusty helmet',
+          category: 'Headwear',
+        },
+      ],
     },
   ],
 }))
@@ -16,6 +21,29 @@ mock.module('./ai', () => ({
   aiService: {
     generateText: generateTextMock,
     generateImage: generateImageMock,
+  },
+}))
+
+const mockCategory = {
+  id: 'cat1',
+  name: 'Equipment',
+  description: 'Test category',
+  maxCount: 9,
+  fields: [
+    { key: 'name', type: 'text', label: 'Name' },
+    { key: 'description', type: 'text', label: 'Description' },
+  ],
+  imagePrompt: {
+    text: 'Extract {{name}} with description {{description}}',
+    imageIds: [],
+  },
+  enabled: true,
+}
+
+mock.module('./category', () => ({
+  categoryService: {
+    getAllCategories: mock(async () => [mockCategory]),
+    getCategory: mock(async () => mockCategory),
   },
 }))
 
@@ -32,8 +60,9 @@ describe('ExtractionService', () => {
   test('analyzeImage calls AI service', async () => {
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
     const result = await extractionService.analyzeImage(file)
-    expect(result.assets.length).toBe(1)
-    expect(result.assets[0].item_name).toBe('Helmet')
+    expect(result.results.length).toBe(1)
+    const data = result.results[0].data as any[]
+    expect(data[0].name).toBe('Helmet')
     expect(generateTextMock).toHaveBeenCalled()
   })
 
@@ -42,12 +71,13 @@ describe('ExtractionService', () => {
     generateImageMock.mockClear()
 
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
-    const name = 'Magic Helmet'
-    const description = 'A glowing magical helmet'
-    const category = 'Headwear'
-    const hint = 'Focus on the glow'
+    const values = {
+      name: 'Magic Helmet',
+      description: 'A glowing magical helmet',
+    }
+    const categoryId = 'cat1'
 
-    const result = await extractionService.extractAsset(file, name, description, category, undefined, hint)
+    const result = await extractionService.extractAsset(file, categoryId, values)
 
     expect(result).toBe('data:image/png;base64,mockImage')
     expect(generateImageMock).toHaveBeenCalled()
@@ -56,10 +86,7 @@ describe('ExtractionService', () => {
     const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
     const prompt = callArgs[0] as string
 
-    expect(prompt).toContain('Task: Asset Extraction')
-    expect(prompt).toContain('Target Item: Magic Helmet')
-    expect(prompt).toContain('Description: A glowing magical helmet')
-    expect(prompt).toContain('Category: Headwear')
-    expect(prompt).toContain('User Hint: Focus on the glow')
+    // Check prompt generation via Handlebars
+    expect(prompt).toContain('Extract Magic Helmet with description A glowing magical helmet')
   })
 })

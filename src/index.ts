@@ -5,7 +5,9 @@ import { cors } from 'hono/cors'
 import { existsSync, mkdirSync } from 'node:fs'
 import asset from './api/asset'
 import backup from './api/backup'
+import category from './api/category'
 import character from './api/character'
+import data from './api/data'
 import equipment from './api/equipment'
 import extract from './api/extract'
 import expression from './api/expression'
@@ -14,8 +16,7 @@ import outfit from './api/outfit'
 import pose from './api/pose'
 import restore from './api/restore'
 import setting from './api/setting'
-import { prisma } from './db'
-import { exampleDataService } from './service/example-data'
+import { migrationService } from './service/migration'
 import { settingService } from './service/setting'
 import index from './ui/index.html'
 
@@ -34,7 +35,9 @@ const api = new Hono()
 const route = api
   .route('/assets', asset)
   .route('/backup', backup)
+  .route('/categories', category)
   .route('/characters', character)
+  .route('/data', data)
   .route('/equipments', equipment)
   .route('/generations', generation)
   .route('/extract', extract)
@@ -65,21 +68,8 @@ if (process.env.NODE_ENV === 'production') {
 // Export type for RPC
 export type AppType = typeof route
 
-// Check and seed example data
-const initialized = await settingService.get('system_initialized')
-if (!initialized) {
-  try {
-    const hasData = (await prisma.character.count()) > 0
-    if (!hasData) {
-      console.log('🌱 Seeding example data...')
-      await exampleDataService.import()
-      console.log('✅ Example data seeded')
-    }
-    await settingService.set('system_initialized', 'true')
-  } catch (error) {
-    console.error('Failed to seed example data:', error)
-  }
-}
+// Run migrations
+await migrationService.runMigrations()
 
 // Serve the frontend
 const server = Bun.serve({

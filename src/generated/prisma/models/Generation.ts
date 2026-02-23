@@ -211,6 +211,7 @@ export type GenerationWhereInput = {
   pose?: Prisma.XOR<Prisma.PoseNullableScalarRelationFilter, Prisma.PoseWhereInput> | null
   expression?: Prisma.XOR<Prisma.ExpressionNullableScalarRelationFilter, Prisma.ExpressionWhereInput> | null
   equipments?: Prisma.GenerationEquipmentListRelationFilter
+  data?: Prisma.DataListRelationFilter
 }
 
 export type GenerationOrderByWithRelationInput = {
@@ -227,6 +228,7 @@ export type GenerationOrderByWithRelationInput = {
   pose?: Prisma.PoseOrderByWithRelationInput
   expression?: Prisma.ExpressionOrderByWithRelationInput
   equipments?: Prisma.GenerationEquipmentOrderByRelationAggregateInput
+  data?: Prisma.DataOrderByRelationAggregateInput
 }
 
 export type GenerationWhereUniqueInput = Prisma.AtLeast<{
@@ -246,6 +248,7 @@ export type GenerationWhereUniqueInput = Prisma.AtLeast<{
   pose?: Prisma.XOR<Prisma.PoseNullableScalarRelationFilter, Prisma.PoseWhereInput> | null
   expression?: Prisma.XOR<Prisma.ExpressionNullableScalarRelationFilter, Prisma.ExpressionWhereInput> | null
   equipments?: Prisma.GenerationEquipmentListRelationFilter
+  data?: Prisma.DataListRelationFilter
 }, "id">
 
 export type GenerationOrderByWithAggregationInput = {
@@ -286,6 +289,7 @@ export type GenerationCreateInput = {
   pose?: Prisma.PoseCreateNestedOneWithoutGenerationsInput
   expression?: Prisma.ExpressionCreateNestedOneWithoutGenerationsInput
   equipments?: Prisma.GenerationEquipmentCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationUncheckedCreateInput = {
@@ -298,6 +302,7 @@ export type GenerationUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataUncheckedCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationUpdateInput = {
@@ -310,6 +315,7 @@ export type GenerationUpdateInput = {
   pose?: Prisma.PoseUpdateOneWithoutGenerationsNestedInput
   expression?: Prisma.ExpressionUpdateOneWithoutGenerationsNestedInput
   equipments?: Prisma.GenerationEquipmentUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateInput = {
@@ -322,6 +328,7 @@ export type GenerationUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUncheckedUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationCreateManyInput = {
@@ -485,6 +492,44 @@ export type GenerationUncheckedUpdateManyWithoutCharacterNestedInput = {
   deleteMany?: Prisma.GenerationScalarWhereInput | Prisma.GenerationScalarWhereInput[]
 }
 
+export type GenerationCreateNestedManyWithoutDataInput = {
+  create?: Prisma.XOR<Prisma.GenerationCreateWithoutDataInput, Prisma.GenerationUncheckedCreateWithoutDataInput> | Prisma.GenerationCreateWithoutDataInput[] | Prisma.GenerationUncheckedCreateWithoutDataInput[]
+  connectOrCreate?: Prisma.GenerationCreateOrConnectWithoutDataInput | Prisma.GenerationCreateOrConnectWithoutDataInput[]
+  connect?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+}
+
+export type GenerationUncheckedCreateNestedManyWithoutDataInput = {
+  create?: Prisma.XOR<Prisma.GenerationCreateWithoutDataInput, Prisma.GenerationUncheckedCreateWithoutDataInput> | Prisma.GenerationCreateWithoutDataInput[] | Prisma.GenerationUncheckedCreateWithoutDataInput[]
+  connectOrCreate?: Prisma.GenerationCreateOrConnectWithoutDataInput | Prisma.GenerationCreateOrConnectWithoutDataInput[]
+  connect?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+}
+
+export type GenerationUpdateManyWithoutDataNestedInput = {
+  create?: Prisma.XOR<Prisma.GenerationCreateWithoutDataInput, Prisma.GenerationUncheckedCreateWithoutDataInput> | Prisma.GenerationCreateWithoutDataInput[] | Prisma.GenerationUncheckedCreateWithoutDataInput[]
+  connectOrCreate?: Prisma.GenerationCreateOrConnectWithoutDataInput | Prisma.GenerationCreateOrConnectWithoutDataInput[]
+  upsert?: Prisma.GenerationUpsertWithWhereUniqueWithoutDataInput | Prisma.GenerationUpsertWithWhereUniqueWithoutDataInput[]
+  set?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  disconnect?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  delete?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  connect?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  update?: Prisma.GenerationUpdateWithWhereUniqueWithoutDataInput | Prisma.GenerationUpdateWithWhereUniqueWithoutDataInput[]
+  updateMany?: Prisma.GenerationUpdateManyWithWhereWithoutDataInput | Prisma.GenerationUpdateManyWithWhereWithoutDataInput[]
+  deleteMany?: Prisma.GenerationScalarWhereInput | Prisma.GenerationScalarWhereInput[]
+}
+
+export type GenerationUncheckedUpdateManyWithoutDataNestedInput = {
+  create?: Prisma.XOR<Prisma.GenerationCreateWithoutDataInput, Prisma.GenerationUncheckedCreateWithoutDataInput> | Prisma.GenerationCreateWithoutDataInput[] | Prisma.GenerationUncheckedCreateWithoutDataInput[]
+  connectOrCreate?: Prisma.GenerationCreateOrConnectWithoutDataInput | Prisma.GenerationCreateOrConnectWithoutDataInput[]
+  upsert?: Prisma.GenerationUpsertWithWhereUniqueWithoutDataInput | Prisma.GenerationUpsertWithWhereUniqueWithoutDataInput[]
+  set?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  disconnect?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  delete?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  connect?: Prisma.GenerationWhereUniqueInput | Prisma.GenerationWhereUniqueInput[]
+  update?: Prisma.GenerationUpdateWithWhereUniqueWithoutDataInput | Prisma.GenerationUpdateWithWhereUniqueWithoutDataInput[]
+  updateMany?: Prisma.GenerationUpdateManyWithWhereWithoutDataInput | Prisma.GenerationUpdateManyWithWhereWithoutDataInput[]
+  deleteMany?: Prisma.GenerationScalarWhereInput | Prisma.GenerationScalarWhereInput[]
+}
+
 export type GenerationCreateNestedOneWithoutEquipmentsInput = {
   create?: Prisma.XOR<Prisma.GenerationCreateWithoutEquipmentsInput, Prisma.GenerationUncheckedCreateWithoutEquipmentsInput>
   connectOrCreate?: Prisma.GenerationCreateOrConnectWithoutEquipmentsInput
@@ -592,6 +637,7 @@ export type GenerationCreateWithoutImageInput = {
   pose?: Prisma.PoseCreateNestedOneWithoutGenerationsInput
   expression?: Prisma.ExpressionCreateNestedOneWithoutGenerationsInput
   equipments?: Prisma.GenerationEquipmentCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationUncheckedCreateWithoutImageInput = {
@@ -603,6 +649,7 @@ export type GenerationUncheckedCreateWithoutImageInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataUncheckedCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationCreateOrConnectWithoutImageInput = {
@@ -653,6 +700,7 @@ export type GenerationCreateWithoutCharacterInput = {
   pose?: Prisma.PoseCreateNestedOneWithoutGenerationsInput
   expression?: Prisma.ExpressionCreateNestedOneWithoutGenerationsInput
   equipments?: Prisma.GenerationEquipmentCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationUncheckedCreateWithoutCharacterInput = {
@@ -664,6 +712,7 @@ export type GenerationUncheckedCreateWithoutCharacterInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataUncheckedCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationCreateOrConnectWithoutCharacterInput = {
@@ -691,6 +740,51 @@ export type GenerationUpdateManyWithWhereWithoutCharacterInput = {
   data: Prisma.XOR<Prisma.GenerationUpdateManyMutationInput, Prisma.GenerationUncheckedUpdateManyWithoutCharacterInput>
 }
 
+export type GenerationCreateWithoutDataInput = {
+  id?: string
+  userPrompt?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  character: Prisma.CharacterCreateNestedOneWithoutGenerationsInput
+  image: Prisma.AssetCreateNestedOneWithoutGenerationsInput
+  pose?: Prisma.PoseCreateNestedOneWithoutGenerationsInput
+  expression?: Prisma.ExpressionCreateNestedOneWithoutGenerationsInput
+  equipments?: Prisma.GenerationEquipmentCreateNestedManyWithoutGenerationInput
+}
+
+export type GenerationUncheckedCreateWithoutDataInput = {
+  id?: string
+  characterId: string
+  imageId: string
+  userPrompt?: string | null
+  poseId?: string | null
+  expressionId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
+}
+
+export type GenerationCreateOrConnectWithoutDataInput = {
+  where: Prisma.GenerationWhereUniqueInput
+  create: Prisma.XOR<Prisma.GenerationCreateWithoutDataInput, Prisma.GenerationUncheckedCreateWithoutDataInput>
+}
+
+export type GenerationUpsertWithWhereUniqueWithoutDataInput = {
+  where: Prisma.GenerationWhereUniqueInput
+  update: Prisma.XOR<Prisma.GenerationUpdateWithoutDataInput, Prisma.GenerationUncheckedUpdateWithoutDataInput>
+  create: Prisma.XOR<Prisma.GenerationCreateWithoutDataInput, Prisma.GenerationUncheckedCreateWithoutDataInput>
+}
+
+export type GenerationUpdateWithWhereUniqueWithoutDataInput = {
+  where: Prisma.GenerationWhereUniqueInput
+  data: Prisma.XOR<Prisma.GenerationUpdateWithoutDataInput, Prisma.GenerationUncheckedUpdateWithoutDataInput>
+}
+
+export type GenerationUpdateManyWithWhereWithoutDataInput = {
+  where: Prisma.GenerationScalarWhereInput
+  data: Prisma.XOR<Prisma.GenerationUpdateManyMutationInput, Prisma.GenerationUncheckedUpdateManyWithoutDataInput>
+}
+
 export type GenerationCreateWithoutEquipmentsInput = {
   id?: string
   userPrompt?: string | null
@@ -700,6 +794,7 @@ export type GenerationCreateWithoutEquipmentsInput = {
   image: Prisma.AssetCreateNestedOneWithoutGenerationsInput
   pose?: Prisma.PoseCreateNestedOneWithoutGenerationsInput
   expression?: Prisma.ExpressionCreateNestedOneWithoutGenerationsInput
+  data?: Prisma.DataCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationUncheckedCreateWithoutEquipmentsInput = {
@@ -711,6 +806,7 @@ export type GenerationUncheckedCreateWithoutEquipmentsInput = {
   expressionId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  data?: Prisma.DataUncheckedCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationCreateOrConnectWithoutEquipmentsInput = {
@@ -738,6 +834,7 @@ export type GenerationUpdateWithoutEquipmentsInput = {
   image?: Prisma.AssetUpdateOneRequiredWithoutGenerationsNestedInput
   pose?: Prisma.PoseUpdateOneWithoutGenerationsNestedInput
   expression?: Prisma.ExpressionUpdateOneWithoutGenerationsNestedInput
+  data?: Prisma.DataUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateWithoutEquipmentsInput = {
@@ -749,6 +846,7 @@ export type GenerationUncheckedUpdateWithoutEquipmentsInput = {
   expressionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  data?: Prisma.DataUncheckedUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationCreateWithoutPoseInput = {
@@ -760,6 +858,7 @@ export type GenerationCreateWithoutPoseInput = {
   image: Prisma.AssetCreateNestedOneWithoutGenerationsInput
   expression?: Prisma.ExpressionCreateNestedOneWithoutGenerationsInput
   equipments?: Prisma.GenerationEquipmentCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationUncheckedCreateWithoutPoseInput = {
@@ -771,6 +870,7 @@ export type GenerationUncheckedCreateWithoutPoseInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataUncheckedCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationCreateOrConnectWithoutPoseInput = {
@@ -807,6 +907,7 @@ export type GenerationCreateWithoutExpressionInput = {
   image: Prisma.AssetCreateNestedOneWithoutGenerationsInput
   pose?: Prisma.PoseCreateNestedOneWithoutGenerationsInput
   equipments?: Prisma.GenerationEquipmentCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationUncheckedCreateWithoutExpressionInput = {
@@ -818,6 +919,7 @@ export type GenerationUncheckedCreateWithoutExpressionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedCreateNestedManyWithoutGenerationInput
+  data?: Prisma.DataUncheckedCreateNestedManyWithoutGenerationsInput
 }
 
 export type GenerationCreateOrConnectWithoutExpressionInput = {
@@ -864,6 +966,7 @@ export type GenerationUpdateWithoutImageInput = {
   pose?: Prisma.PoseUpdateOneWithoutGenerationsNestedInput
   expression?: Prisma.ExpressionUpdateOneWithoutGenerationsNestedInput
   equipments?: Prisma.GenerationEquipmentUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateWithoutImageInput = {
@@ -875,6 +978,7 @@ export type GenerationUncheckedUpdateWithoutImageInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUncheckedUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateManyWithoutImageInput = {
@@ -906,6 +1010,7 @@ export type GenerationUpdateWithoutCharacterInput = {
   pose?: Prisma.PoseUpdateOneWithoutGenerationsNestedInput
   expression?: Prisma.ExpressionUpdateOneWithoutGenerationsNestedInput
   equipments?: Prisma.GenerationEquipmentUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateWithoutCharacterInput = {
@@ -917,10 +1022,46 @@ export type GenerationUncheckedUpdateWithoutCharacterInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUncheckedUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateManyWithoutCharacterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expressionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type GenerationUpdateWithoutDataInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  character?: Prisma.CharacterUpdateOneRequiredWithoutGenerationsNestedInput
+  image?: Prisma.AssetUpdateOneRequiredWithoutGenerationsNestedInput
+  pose?: Prisma.PoseUpdateOneWithoutGenerationsNestedInput
+  expression?: Prisma.ExpressionUpdateOneWithoutGenerationsNestedInput
+  equipments?: Prisma.GenerationEquipmentUpdateManyWithoutGenerationNestedInput
+}
+
+export type GenerationUncheckedUpdateWithoutDataInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  characterId?: Prisma.StringFieldUpdateOperationsInput | string
+  imageId?: Prisma.StringFieldUpdateOperationsInput | string
+  userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expressionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
+}
+
+export type GenerationUncheckedUpdateManyWithoutDataInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  characterId?: Prisma.StringFieldUpdateOperationsInput | string
   imageId?: Prisma.StringFieldUpdateOperationsInput | string
   userPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -948,6 +1089,7 @@ export type GenerationUpdateWithoutPoseInput = {
   image?: Prisma.AssetUpdateOneRequiredWithoutGenerationsNestedInput
   expression?: Prisma.ExpressionUpdateOneWithoutGenerationsNestedInput
   equipments?: Prisma.GenerationEquipmentUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateWithoutPoseInput = {
@@ -959,6 +1101,7 @@ export type GenerationUncheckedUpdateWithoutPoseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUncheckedUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateManyWithoutPoseInput = {
@@ -990,6 +1133,7 @@ export type GenerationUpdateWithoutExpressionInput = {
   image?: Prisma.AssetUpdateOneRequiredWithoutGenerationsNestedInput
   pose?: Prisma.PoseUpdateOneWithoutGenerationsNestedInput
   equipments?: Prisma.GenerationEquipmentUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateWithoutExpressionInput = {
@@ -1001,6 +1145,7 @@ export type GenerationUncheckedUpdateWithoutExpressionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   equipments?: Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput
+  data?: Prisma.DataUncheckedUpdateManyWithoutGenerationsNestedInput
 }
 
 export type GenerationUncheckedUpdateManyWithoutExpressionInput = {
@@ -1020,10 +1165,12 @@ export type GenerationUncheckedUpdateManyWithoutExpressionInput = {
 
 export type GenerationCountOutputType = {
   equipments: number
+  data: number
 }
 
 export type GenerationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   equipments?: boolean | GenerationCountOutputTypeCountEquipmentsArgs
+  data?: boolean | GenerationCountOutputTypeCountDataArgs
 }
 
 /**
@@ -1043,6 +1190,13 @@ export type GenerationCountOutputTypeCountEquipmentsArgs<ExtArgs extends runtime
   where?: Prisma.GenerationEquipmentWhereInput
 }
 
+/**
+ * GenerationCountOutputType without action
+ */
+export type GenerationCountOutputTypeCountDataArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DataWhereInput
+}
+
 
 export type GenerationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1058,6 +1212,7 @@ export type GenerationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   pose?: boolean | Prisma.Generation$poseArgs<ExtArgs>
   expression?: boolean | Prisma.Generation$expressionArgs<ExtArgs>
   equipments?: boolean | Prisma.Generation$equipmentsArgs<ExtArgs>
+  data?: boolean | Prisma.Generation$dataArgs<ExtArgs>
   _count?: boolean | Prisma.GenerationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["generation"]>
 
@@ -1109,6 +1264,7 @@ export type GenerationInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   pose?: boolean | Prisma.Generation$poseArgs<ExtArgs>
   expression?: boolean | Prisma.Generation$expressionArgs<ExtArgs>
   equipments?: boolean | Prisma.Generation$equipmentsArgs<ExtArgs>
+  data?: boolean | Prisma.Generation$dataArgs<ExtArgs>
   _count?: boolean | Prisma.GenerationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GenerationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1132,6 +1288,7 @@ export type $GenerationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     pose: Prisma.$PosePayload<ExtArgs> | null
     expression: Prisma.$ExpressionPayload<ExtArgs> | null
     equipments: Prisma.$GenerationEquipmentPayload<ExtArgs>[]
+    data: Prisma.$DataPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1541,6 +1698,7 @@ export interface Prisma__GenerationClient<T, Null = never, ExtArgs extends runti
   pose<T extends Prisma.Generation$poseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Generation$poseArgs<ExtArgs>>): Prisma.Prisma__PoseClient<runtime.Types.Result.GetResult<Prisma.$PosePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   expression<T extends Prisma.Generation$expressionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Generation$expressionArgs<ExtArgs>>): Prisma.Prisma__ExpressionClient<runtime.Types.Result.GetResult<Prisma.$ExpressionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   equipments<T extends Prisma.Generation$equipmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Generation$equipmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenerationEquipmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  data<T extends Prisma.Generation$dataArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Generation$dataArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DataPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2031,6 +2189,30 @@ export type Generation$equipmentsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.GenerationEquipmentScalarFieldEnum | Prisma.GenerationEquipmentScalarFieldEnum[]
+}
+
+/**
+ * Generation.data
+ */
+export type Generation$dataArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Data
+   */
+  select?: Prisma.DataSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Data
+   */
+  omit?: Prisma.DataOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DataInclude<ExtArgs> | null
+  where?: Prisma.DataWhereInput
+  orderBy?: Prisma.DataOrderByWithRelationInput | Prisma.DataOrderByWithRelationInput[]
+  cursor?: Prisma.DataWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DataScalarFieldEnum | Prisma.DataScalarFieldEnum[]
 }
 
 /**

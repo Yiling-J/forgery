@@ -260,48 +260,6 @@ export type GenerationEquipmentMinOrderByAggregateInput = {
   equipmentId?: Prisma.SortOrder
 }
 
-export type GenerationEquipmentCreateNestedManyWithoutEquipmentInput = {
-  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
-  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
-  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
-  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-}
-
-export type GenerationEquipmentUncheckedCreateNestedManyWithoutEquipmentInput = {
-  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
-  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
-  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
-  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-}
-
-export type GenerationEquipmentUpdateManyWithoutEquipmentNestedInput = {
-  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
-  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
-  upsert?: Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput[]
-  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
-  set?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  disconnect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  delete?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  update?: Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput[]
-  updateMany?: Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput[]
-  deleteMany?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
-}
-
-export type GenerationEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput = {
-  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
-  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
-  upsert?: Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput[]
-  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
-  set?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  disconnect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  delete?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
-  update?: Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput[]
-  updateMany?: Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput[]
-  deleteMany?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
-}
-
 export type GenerationEquipmentCreateNestedManyWithoutGenerationInput = {
   create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutGenerationInput, Prisma.GenerationEquipmentUncheckedCreateWithoutGenerationInput> | Prisma.GenerationEquipmentCreateWithoutGenerationInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutGenerationInput[]
   connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutGenerationInput | Prisma.GenerationEquipmentCreateOrConnectWithoutGenerationInput[]
@@ -344,45 +302,46 @@ export type GenerationEquipmentUncheckedUpdateManyWithoutGenerationNestedInput =
   deleteMany?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
 }
 
-export type GenerationEquipmentCreateWithoutEquipmentInput = {
-  generation: Prisma.GenerationCreateNestedOneWithoutEquipmentsInput
+export type GenerationEquipmentCreateNestedManyWithoutEquipmentInput = {
+  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
+  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
+  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
+  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
 }
 
-export type GenerationEquipmentUncheckedCreateWithoutEquipmentInput = {
-  generationId: string
+export type GenerationEquipmentUncheckedCreateNestedManyWithoutEquipmentInput = {
+  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
+  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
+  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
+  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
 }
 
-export type GenerationEquipmentCreateOrConnectWithoutEquipmentInput = {
-  where: Prisma.GenerationEquipmentWhereUniqueInput
-  create: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput>
+export type GenerationEquipmentUpdateManyWithoutEquipmentNestedInput = {
+  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
+  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
+  upsert?: Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput[]
+  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
+  set?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  disconnect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  delete?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  update?: Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput[]
+  updateMany?: Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput[]
+  deleteMany?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
 }
 
-export type GenerationEquipmentCreateManyEquipmentInputEnvelope = {
-  data: Prisma.GenerationEquipmentCreateManyEquipmentInput | Prisma.GenerationEquipmentCreateManyEquipmentInput[]
-}
-
-export type GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput = {
-  where: Prisma.GenerationEquipmentWhereUniqueInput
-  update: Prisma.XOR<Prisma.GenerationEquipmentUpdateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedUpdateWithoutEquipmentInput>
-  create: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput>
-}
-
-export type GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput = {
-  where: Prisma.GenerationEquipmentWhereUniqueInput
-  data: Prisma.XOR<Prisma.GenerationEquipmentUpdateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedUpdateWithoutEquipmentInput>
-}
-
-export type GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput = {
-  where: Prisma.GenerationEquipmentScalarWhereInput
-  data: Prisma.XOR<Prisma.GenerationEquipmentUpdateManyMutationInput, Prisma.GenerationEquipmentUncheckedUpdateManyWithoutEquipmentInput>
-}
-
-export type GenerationEquipmentScalarWhereInput = {
-  AND?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
-  OR?: Prisma.GenerationEquipmentScalarWhereInput[]
-  NOT?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
-  generationId?: Prisma.StringFilter<"GenerationEquipment"> | string
-  equipmentId?: Prisma.StringFilter<"GenerationEquipment"> | string
+export type GenerationEquipmentUncheckedUpdateManyWithoutEquipmentNestedInput = {
+  create?: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput> | Prisma.GenerationEquipmentCreateWithoutEquipmentInput[] | Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput[]
+  connectOrCreate?: Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput | Prisma.GenerationEquipmentCreateOrConnectWithoutEquipmentInput[]
+  upsert?: Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput[]
+  createMany?: Prisma.GenerationEquipmentCreateManyEquipmentInputEnvelope
+  set?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  disconnect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  delete?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  connect?: Prisma.GenerationEquipmentWhereUniqueInput | Prisma.GenerationEquipmentWhereUniqueInput[]
+  update?: Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput[]
+  updateMany?: Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput | Prisma.GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput[]
+  deleteMany?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
 }
 
 export type GenerationEquipmentCreateWithoutGenerationInput = {
@@ -418,20 +377,45 @@ export type GenerationEquipmentUpdateManyWithWhereWithoutGenerationInput = {
   data: Prisma.XOR<Prisma.GenerationEquipmentUpdateManyMutationInput, Prisma.GenerationEquipmentUncheckedUpdateManyWithoutGenerationInput>
 }
 
-export type GenerationEquipmentCreateManyEquipmentInput = {
+export type GenerationEquipmentScalarWhereInput = {
+  AND?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
+  OR?: Prisma.GenerationEquipmentScalarWhereInput[]
+  NOT?: Prisma.GenerationEquipmentScalarWhereInput | Prisma.GenerationEquipmentScalarWhereInput[]
+  generationId?: Prisma.StringFilter<"GenerationEquipment"> | string
+  equipmentId?: Prisma.StringFilter<"GenerationEquipment"> | string
+}
+
+export type GenerationEquipmentCreateWithoutEquipmentInput = {
+  generation: Prisma.GenerationCreateNestedOneWithoutEquipmentsInput
+}
+
+export type GenerationEquipmentUncheckedCreateWithoutEquipmentInput = {
   generationId: string
 }
 
-export type GenerationEquipmentUpdateWithoutEquipmentInput = {
-  generation?: Prisma.GenerationUpdateOneRequiredWithoutEquipmentsNestedInput
+export type GenerationEquipmentCreateOrConnectWithoutEquipmentInput = {
+  where: Prisma.GenerationEquipmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput>
 }
 
-export type GenerationEquipmentUncheckedUpdateWithoutEquipmentInput = {
-  generationId?: Prisma.StringFieldUpdateOperationsInput | string
+export type GenerationEquipmentCreateManyEquipmentInputEnvelope = {
+  data: Prisma.GenerationEquipmentCreateManyEquipmentInput | Prisma.GenerationEquipmentCreateManyEquipmentInput[]
 }
 
-export type GenerationEquipmentUncheckedUpdateManyWithoutEquipmentInput = {
-  generationId?: Prisma.StringFieldUpdateOperationsInput | string
+export type GenerationEquipmentUpsertWithWhereUniqueWithoutEquipmentInput = {
+  where: Prisma.GenerationEquipmentWhereUniqueInput
+  update: Prisma.XOR<Prisma.GenerationEquipmentUpdateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedUpdateWithoutEquipmentInput>
+  create: Prisma.XOR<Prisma.GenerationEquipmentCreateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedCreateWithoutEquipmentInput>
+}
+
+export type GenerationEquipmentUpdateWithWhereUniqueWithoutEquipmentInput = {
+  where: Prisma.GenerationEquipmentWhereUniqueInput
+  data: Prisma.XOR<Prisma.GenerationEquipmentUpdateWithoutEquipmentInput, Prisma.GenerationEquipmentUncheckedUpdateWithoutEquipmentInput>
+}
+
+export type GenerationEquipmentUpdateManyWithWhereWithoutEquipmentInput = {
+  where: Prisma.GenerationEquipmentScalarWhereInput
+  data: Prisma.XOR<Prisma.GenerationEquipmentUpdateManyMutationInput, Prisma.GenerationEquipmentUncheckedUpdateManyWithoutEquipmentInput>
 }
 
 export type GenerationEquipmentCreateManyGenerationInput = {
@@ -448,6 +432,22 @@ export type GenerationEquipmentUncheckedUpdateWithoutGenerationInput = {
 
 export type GenerationEquipmentUncheckedUpdateManyWithoutGenerationInput = {
   equipmentId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type GenerationEquipmentCreateManyEquipmentInput = {
+  generationId: string
+}
+
+export type GenerationEquipmentUpdateWithoutEquipmentInput = {
+  generation?: Prisma.GenerationUpdateOneRequiredWithoutEquipmentsNestedInput
+}
+
+export type GenerationEquipmentUncheckedUpdateWithoutEquipmentInput = {
+  generationId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type GenerationEquipmentUncheckedUpdateManyWithoutEquipmentInput = {
+  generationId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 

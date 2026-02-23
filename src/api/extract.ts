@@ -3,9 +3,10 @@ import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
 import { z } from 'zod'
 import { assetService } from '../service/asset'
-import { equipmentService } from '../service/equipment'
+import { dataService } from '../service/data'
 import { extractionService } from '../service/extraction'
 import { fileService } from '../service/file'
+import { categoryService } from '../service/category'
 
 const app = new Hono()
 
@@ -13,14 +14,13 @@ const analyzeSchema = z.object({
   image: z.instanceof(File),
 })
 
-const itemExtractSchema = z.object({
+// Generic extraction request schema
+const extractItemSchema = z.object({
+  categoryId: z.string(),
   imagePath: z.string(),
-  name: z.string(),
-  description: z.string(),
-  category: z.string().optional(),
+  values: z.record(z.any()), // Text values extracted in Step 1
   model: z.string().optional(),
-  hint: z.string().optional(),
-  previousEquipmentId: z.string().optional(), // New field for re-extraction
+  previousDataId: z.string().optional(), // For re-extraction/update
 })
 
 const route = app
@@ -41,7 +41,7 @@ const route = app
         // 2. Analyze
         await stream.writeSSE({
           event: 'status',
-          data: JSON.stringify({ status: 'analyzing', message: 'Analyzing character assets...' }),
+          data: JSON.stringify({ status: 'analyzing', message: 'Analyzing image assets...' }),
         })
 
         let analysis
@@ -54,17 +54,12 @@ const route = app
         }
 
         // 3. Return candidates and image path
-        // Map backend assets (item_name) to frontend CandidateAsset (name)
-        const candidates = analysis.assets.map((a) => ({
-          name: a.item_name,
-          description: a.description,
-          category: a.category,
-        }))
-
+        // The structure is { results: [{ category: string, data: ... }] }
+        // We pass this directly to frontend to handle.
         await stream.writeSSE({
           event: 'complete',
           data: JSON.stringify({
-            assets: candidates,
+            results: analysis.results,
             imagePath: savedFile.path,
           }),
         })
@@ -78,63 +73,66 @@ const route = app
       }
     })
   })
-  .post('/item', zValidator('json', itemExtractSchema), async (c) => {
-    const { imagePath, name, description, category, model, hint, previousEquipmentId } = c.req.valid('json')
+  .post('/item', zValidator('json', extractItemSchema), async (c) => {
+    const { imagePath, categoryId, values, model, previousDataId } = c.req.valid('json')
 
     try {
-      // Extract asset
+      // 1. Extract Asset (Image)
+      // This step generates the image based on values and category prompt
       const extractedBase64 = await extractionService.extractAsset(
         imagePath,
-        name,
-        description,
-        category,
+        categoryId,
+        values,
         model,
-        hint,
       )
 
-      // Save to file system
+      // 2. Save Image File
       const savedFile = await fileService.saveBase64Image(extractedBase64)
 
-      // Create Asset record
+      // 3. Create Asset Record
+      // Use a name from values if available, or generic
+      const assetName = values.name || 'Extracted Asset'
       const assetRecord = await assetService.createAssetRecord({
-        name: name,
+        name: assetName,
         type: 'image/webp',
         path: savedFile.filename,
       })
 
-      let equipment
+      // 4. Update values with image asset ID
+      // We assume the field key for image is "image" based on our migration script.
+      // But we should probably look up the category schema to be sure, or just assume "image" is the convention.
+      // The user schema example: `[{ "key": "image", "type": "image" }]`.
+      // So we set `values.image = assetRecord.id`.
+      const finalValues = {
+        ...values,
+        image: assetRecord.id,
+      }
 
-      if (previousEquipmentId) {
-        // Update existing equipment
+      let dataItem
+
+      if (previousDataId) {
+        // Update existing Data
         try {
-          equipment = await equipmentService.updateEquipment(previousEquipmentId, {
-            name: name,
-            description: description,
-            category: category || 'Others',
-            imageId: assetRecord.id,
+          dataItem = await dataService.updateData(previousDataId, {
+            values: JSON.stringify(finalValues),
           })
         } catch (e) {
-          console.warn(`Failed to update previous equipment ${previousEquipmentId}, creating new one`, e)
-          // Fallback to create if update fails (e.g., record deleted)
-          equipment = await equipmentService.createEquipment({
-            name: name,
-            description: description,
-            imageId: assetRecord.id,
-            category: category || 'Others',
+          console.warn(`Failed to update previous data ${previousDataId}, creating new one`, e)
+          dataItem = await dataService.createData({
+            categoryId,
+            values: JSON.stringify(finalValues),
           })
         }
       } else {
-        // Create new equipment
-        equipment = await equipmentService.createEquipment({
-          name: name,
-          description: description,
-          imageId: assetRecord.id,
-          category: category || 'Others',
+        // Create new Data
+        dataItem = await dataService.createData({
+          categoryId,
+          values: JSON.stringify(finalValues),
         })
       }
 
       const result = {
-        ...equipment,
+        ...dataItem,
         imageUrl: `/files/${savedFile.filename}`,
       }
 

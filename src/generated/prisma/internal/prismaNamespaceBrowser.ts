@@ -53,8 +53,10 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Asset: 'Asset',
   Character: 'Character',
-  Equipment: 'Equipment',
+  Category: 'Category',
+  Data: 'Data',
   Generation: 'Generation',
+  Equipment: 'Equipment',
   GenerationEquipment: 'GenerationEquipment',
   Outfit: 'Outfit',
   OutfitEquipment: 'OutfitEquipment',
@@ -100,17 +102,30 @@ export const CharacterScalarFieldEnum = {
 export type CharacterScalarFieldEnum = (typeof CharacterScalarFieldEnum)[keyof typeof CharacterScalarFieldEnum]
 
 
-export const EquipmentScalarFieldEnum = {
+export const CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
-  category: 'category',
-  imageId: 'imageId',
+  fields: 'fields',
+  imagePrompt: 'imagePrompt',
+  enabled: 'enabled',
+  maxCount: 'maxCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type EquipmentScalarFieldEnum = (typeof EquipmentScalarFieldEnum)[keyof typeof EquipmentScalarFieldEnum]
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const DataScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  values: 'values',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DataScalarFieldEnum = (typeof DataScalarFieldEnum)[keyof typeof DataScalarFieldEnum]
 
 
 export const GenerationScalarFieldEnum = {
@@ -125,6 +140,19 @@ export const GenerationScalarFieldEnum = {
 } as const
 
 export type GenerationScalarFieldEnum = (typeof GenerationScalarFieldEnum)[keyof typeof GenerationScalarFieldEnum]
+
+
+export const EquipmentScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  imageId: 'imageId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EquipmentScalarFieldEnum = (typeof EquipmentScalarFieldEnum)[keyof typeof EquipmentScalarFieldEnum]
 
 
 export const GenerationEquipmentScalarFieldEnum = {
@@ -194,9 +222,41 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]

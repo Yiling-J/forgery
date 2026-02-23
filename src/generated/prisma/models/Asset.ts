@@ -389,20 +389,6 @@ export type AssetUpdateOneRequiredWithoutCharactersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AssetUpdateToOneWithWhereWithoutCharactersInput, Prisma.AssetUpdateWithoutCharactersInput>, Prisma.AssetUncheckedUpdateWithoutCharactersInput>
 }
 
-export type AssetCreateNestedOneWithoutEquipmentsInput = {
-  create?: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
-  connectOrCreate?: Prisma.AssetCreateOrConnectWithoutEquipmentsInput
-  connect?: Prisma.AssetWhereUniqueInput
-}
-
-export type AssetUpdateOneRequiredWithoutEquipmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
-  connectOrCreate?: Prisma.AssetCreateOrConnectWithoutEquipmentsInput
-  upsert?: Prisma.AssetUpsertWithoutEquipmentsInput
-  connect?: Prisma.AssetWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AssetUpdateToOneWithWhereWithoutEquipmentsInput, Prisma.AssetUpdateWithoutEquipmentsInput>, Prisma.AssetUncheckedUpdateWithoutEquipmentsInput>
-}
-
 export type AssetCreateNestedOneWithoutGenerationsInput = {
   create?: Prisma.XOR<Prisma.AssetCreateWithoutGenerationsInput, Prisma.AssetUncheckedCreateWithoutGenerationsInput>
   connectOrCreate?: Prisma.AssetCreateOrConnectWithoutGenerationsInput
@@ -415,6 +401,20 @@ export type AssetUpdateOneRequiredWithoutGenerationsNestedInput = {
   upsert?: Prisma.AssetUpsertWithoutGenerationsInput
   connect?: Prisma.AssetWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AssetUpdateToOneWithWhereWithoutGenerationsInput, Prisma.AssetUpdateWithoutGenerationsInput>, Prisma.AssetUncheckedUpdateWithoutGenerationsInput>
+}
+
+export type AssetCreateNestedOneWithoutEquipmentsInput = {
+  create?: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
+  connectOrCreate?: Prisma.AssetCreateOrConnectWithoutEquipmentsInput
+  connect?: Prisma.AssetWhereUniqueInput
+}
+
+export type AssetUpdateOneRequiredWithoutEquipmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
+  connectOrCreate?: Prisma.AssetCreateOrConnectWithoutEquipmentsInput
+  upsert?: Prisma.AssetUpsertWithoutEquipmentsInput
+  connect?: Prisma.AssetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AssetUpdateToOneWithWhereWithoutEquipmentsInput, Prisma.AssetUpdateWithoutEquipmentsInput>, Prisma.AssetUncheckedUpdateWithoutEquipmentsInput>
 }
 
 export type AssetCreateNestedOneWithoutPosesInput = {
@@ -513,74 +513,6 @@ export type AssetUncheckedUpdateWithoutCharactersInput = {
   expressions?: Prisma.ExpressionUncheckedUpdateManyWithoutImageNestedInput
 }
 
-export type AssetCreateWithoutEquipmentsInput = {
-  id?: string
-  name: string
-  type: string
-  path: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  characters?: Prisma.CharacterCreateNestedManyWithoutImageInput
-  generations?: Prisma.GenerationCreateNestedManyWithoutImageInput
-  poses?: Prisma.PoseCreateNestedManyWithoutImageInput
-  expressions?: Prisma.ExpressionCreateNestedManyWithoutImageInput
-}
-
-export type AssetUncheckedCreateWithoutEquipmentsInput = {
-  id?: string
-  name: string
-  type: string
-  path: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  characters?: Prisma.CharacterUncheckedCreateNestedManyWithoutImageInput
-  generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutImageInput
-  poses?: Prisma.PoseUncheckedCreateNestedManyWithoutImageInput
-  expressions?: Prisma.ExpressionUncheckedCreateNestedManyWithoutImageInput
-}
-
-export type AssetCreateOrConnectWithoutEquipmentsInput = {
-  where: Prisma.AssetWhereUniqueInput
-  create: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
-}
-
-export type AssetUpsertWithoutEquipmentsInput = {
-  update: Prisma.XOR<Prisma.AssetUpdateWithoutEquipmentsInput, Prisma.AssetUncheckedUpdateWithoutEquipmentsInput>
-  create: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
-  where?: Prisma.AssetWhereInput
-}
-
-export type AssetUpdateToOneWithWhereWithoutEquipmentsInput = {
-  where?: Prisma.AssetWhereInput
-  data: Prisma.XOR<Prisma.AssetUpdateWithoutEquipmentsInput, Prisma.AssetUncheckedUpdateWithoutEquipmentsInput>
-}
-
-export type AssetUpdateWithoutEquipmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  path?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  characters?: Prisma.CharacterUpdateManyWithoutImageNestedInput
-  generations?: Prisma.GenerationUpdateManyWithoutImageNestedInput
-  poses?: Prisma.PoseUpdateManyWithoutImageNestedInput
-  expressions?: Prisma.ExpressionUpdateManyWithoutImageNestedInput
-}
-
-export type AssetUncheckedUpdateWithoutEquipmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  path?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  characters?: Prisma.CharacterUncheckedUpdateManyWithoutImageNestedInput
-  generations?: Prisma.GenerationUncheckedUpdateManyWithoutImageNestedInput
-  poses?: Prisma.PoseUncheckedUpdateManyWithoutImageNestedInput
-  expressions?: Prisma.ExpressionUncheckedUpdateManyWithoutImageNestedInput
-}
-
 export type AssetCreateWithoutGenerationsInput = {
   id?: string
   name: string
@@ -645,6 +577,74 @@ export type AssetUncheckedUpdateWithoutGenerationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   characters?: Prisma.CharacterUncheckedUpdateManyWithoutImageNestedInput
   equipments?: Prisma.EquipmentUncheckedUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUncheckedUpdateManyWithoutImageNestedInput
+  expressions?: Prisma.ExpressionUncheckedUpdateManyWithoutImageNestedInput
+}
+
+export type AssetCreateWithoutEquipmentsInput = {
+  id?: string
+  name: string
+  type: string
+  path: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  characters?: Prisma.CharacterCreateNestedManyWithoutImageInput
+  generations?: Prisma.GenerationCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseCreateNestedManyWithoutImageInput
+  expressions?: Prisma.ExpressionCreateNestedManyWithoutImageInput
+}
+
+export type AssetUncheckedCreateWithoutEquipmentsInput = {
+  id?: string
+  name: string
+  type: string
+  path: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  characters?: Prisma.CharacterUncheckedCreateNestedManyWithoutImageInput
+  generations?: Prisma.GenerationUncheckedCreateNestedManyWithoutImageInput
+  poses?: Prisma.PoseUncheckedCreateNestedManyWithoutImageInput
+  expressions?: Prisma.ExpressionUncheckedCreateNestedManyWithoutImageInput
+}
+
+export type AssetCreateOrConnectWithoutEquipmentsInput = {
+  where: Prisma.AssetWhereUniqueInput
+  create: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
+}
+
+export type AssetUpsertWithoutEquipmentsInput = {
+  update: Prisma.XOR<Prisma.AssetUpdateWithoutEquipmentsInput, Prisma.AssetUncheckedUpdateWithoutEquipmentsInput>
+  create: Prisma.XOR<Prisma.AssetCreateWithoutEquipmentsInput, Prisma.AssetUncheckedCreateWithoutEquipmentsInput>
+  where?: Prisma.AssetWhereInput
+}
+
+export type AssetUpdateToOneWithWhereWithoutEquipmentsInput = {
+  where?: Prisma.AssetWhereInput
+  data: Prisma.XOR<Prisma.AssetUpdateWithoutEquipmentsInput, Prisma.AssetUncheckedUpdateWithoutEquipmentsInput>
+}
+
+export type AssetUpdateWithoutEquipmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  characters?: Prisma.CharacterUpdateManyWithoutImageNestedInput
+  generations?: Prisma.GenerationUpdateManyWithoutImageNestedInput
+  poses?: Prisma.PoseUpdateManyWithoutImageNestedInput
+  expressions?: Prisma.ExpressionUpdateManyWithoutImageNestedInput
+}
+
+export type AssetUncheckedUpdateWithoutEquipmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  characters?: Prisma.CharacterUncheckedUpdateManyWithoutImageNestedInput
+  generations?: Prisma.GenerationUncheckedUpdateManyWithoutImageNestedInput
   poses?: Prisma.PoseUncheckedUpdateManyWithoutImageNestedInput
   expressions?: Prisma.ExpressionUncheckedUpdateManyWithoutImageNestedInput
 }
