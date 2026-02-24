@@ -32,7 +32,6 @@ export class ExtractionService {
 
     // Build dynamic prompt and schema
     let categoriesDescription = ''
-    const properties: Record<string, z.ZodTypeAny> = {}
 
     for (const cat of enabledCategories) {
       categoriesDescription += `- Category: "${cat.name}"\n`
@@ -74,7 +73,7 @@ Each result must have:
       results: z.array(
         z.object({
           category: z.string(),
-          data: z.union([z.record(z.any()), z.array(z.record(z.any()))]),
+          data: z.union([z.record(z.string(), z.any()), z.array(z.record(z.string(), z.any()))]),
         }),
       ),
     })

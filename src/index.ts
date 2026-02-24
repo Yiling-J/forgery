@@ -17,7 +17,6 @@ import pose from './api/pose'
 import restore from './api/restore'
 import setting from './api/setting'
 import { migrationService } from './service/migration'
-import { settingService } from './service/setting'
 import index from './ui/index.html'
 
 // Ensure data directories exist

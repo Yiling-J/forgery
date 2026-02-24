@@ -6,7 +6,6 @@ import { assetService } from '../service/asset'
 import { dataService } from '../service/data'
 import { extractionService } from '../service/extraction'
 import { fileService } from '../service/file'
-import { categoryService } from '../service/category'
 
 const app = new Hono()
 
@@ -18,7 +17,7 @@ const analyzeSchema = z.object({
 const extractItemSchema = z.object({
   categoryId: z.string(),
   imagePath: z.string(),
-  values: z.record(z.any()), // Text values extracted in Step 1
+  values: z.record(z.string(), z.any()), // Text values extracted in Step 1
   model: z.string().optional(),
   previousDataId: z.string().optional(), // For re-extraction/update
 })
@@ -114,20 +113,20 @@ const route = app
         // Update existing Data
         try {
           dataItem = await dataService.updateData(previousDataId, {
-            values: JSON.stringify(finalValues),
+            values: finalValues,
           })
         } catch (e) {
           console.warn(`Failed to update previous data ${previousDataId}, creating new one`, e)
           dataItem = await dataService.createData({
-            categoryId,
-            values: JSON.stringify(finalValues),
+            category: { connect: { id: categoryId } },
+            values: finalValues,
           })
         }
       } else {
         // Create new Data
         dataItem = await dataService.createData({
-          categoryId,
-          values: JSON.stringify(finalValues),
+          category: { connect: { id: categoryId } },
+          values: finalValues,
         })
       }
 

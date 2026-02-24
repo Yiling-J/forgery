@@ -1,6 +1,6 @@
 import { prisma } from '../../db'
 import { EQUIPMENT_CATEGORIES } from '../../lib/categories'
-import { Prisma } from '../../generated/prisma'
+import { Prisma } from '../../generated/prisma/client'
 
 export default async function run() {
   console.log('Starting Generic Category Migration...')

@@ -1,5 +1,5 @@
 import { prisma } from '../db'
-import { Prisma } from '../generated/prisma'
+import { Prisma } from '../generated/prisma/client'
 
 export class CategoryService {
   async getAllCategories() {

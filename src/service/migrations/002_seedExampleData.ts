@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { prisma } from '../../db'
 import { assetService } from '../asset'
 import { settingService } from '../setting'
-import { Prisma } from '../../generated/prisma'
+import { Prisma } from '../../generated/prisma/client'
 
 interface AssetData {
   name: string

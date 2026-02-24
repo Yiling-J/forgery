@@ -9,7 +9,13 @@ const createCategorySchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   fields: z.array(z.any()), // Expecting JSON array
-  imagePrompt: z.record(z.any()).optional().nullable(), // Expecting JSON object
+  imagePrompt: z
+    .object({
+      text: z.string(),
+      imageIds: z.array(z.string()).default([]),
+    })
+    .optional()
+    .nullable(),
   enabled: z.boolean().optional(),
   maxCount: z.number().int().min(1).default(1),
 })

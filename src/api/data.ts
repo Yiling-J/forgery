@@ -7,7 +7,7 @@ const app = new Hono()
 
 const createDataSchema = z.object({
   categoryId: z.string(),
-  values: z.record(z.any()), // Expecting JSON object
+  values: z.record(z.string(), z.any()), // Expecting JSON object
 })
 
 const updateDataSchema = createDataSchema.partial()
