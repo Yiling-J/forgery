@@ -2,16 +2,16 @@ import { Edit, Plus, ScanLine, Trash2, Upload } from 'lucide-react'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
-import { useCategory, DataItem, CollectionItem } from '../hooks/use-category'
 import { CollectionDialog } from '../components/CollectionDialog'
-import { ItemDetailsDialog } from '../components/ItemDetailsDialog'
 import { ExtractorDialog } from '../components/ExtractorDialog'
+import { ItemDetailsDialog } from '../components/ItemDetailsDialog'
 import { PageHeader } from '../components/PageHeader'
 import { UploadItemDialog } from '../components/UploadItemDialog'
 import { VibeCard } from '../components/VibeCard'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { ScrollArea, ScrollBar } from '../components/ui/scroll-area'
+import { CollectionItem, DataItem, useCategory } from '../hooks/use-category'
 import { cn } from '../lib/utils'
 
 interface CategoryPageProps {
@@ -19,14 +19,7 @@ interface CategoryPageProps {
 }
 
 const getEquipmentColor = (name: string) => {
-  const colors = [
-    '#ef4444',
-    '#f97316',
-    '#f59e0b',
-    '#22c55e',
-    '#3b82f6',
-    '#a855f7',
-  ]
+  const colors = ['#ef4444', '#f97316', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7']
   const charCode = name.charCodeAt(0) || 0
   return colors[charCode % colors.length]
 }
@@ -58,15 +51,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ categoryName }) => {
   const [selectedCollection, setSelectedCollection] = useState<CollectionItem | null>(null)
 
   // Derived states
-  const categoryOptions = category
-    ? (() => {
-        try {
-          return JSON.parse(category.options || '[]') as string[]
-        } catch {
-          return []
-        }
-      })()
-    : []
+  const categoryOptions = category ? category.options : []
 
   const handleDeleteItem = async (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return
@@ -138,11 +123,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ categoryName }) => {
         actions={
           viewMode === 'items' ? (
             <div className="flex gap-2">
-              <Button
-                onClick={() => setUploadOpen(true)}
-                variant="secondary"
-                className="border"
-              >
+              <Button onClick={() => setUploadOpen(true)} variant="secondary" className="border">
                 <Upload className="mr-2 h-4 w-4" /> Upload
               </Button>
               <Button onClick={() => setExtractorOpen(true)}>
