@@ -72,6 +72,12 @@ The frontend is built with:
 
 We use `bun:test` for testing.
 
+### Test Maintenance Rule
+
+- **Do not delete tests** unless the feature or code being tested is permanently removed from the codebase.
+- When refactoring code, you must also refactor the corresponding tests to ensure they pass with the new implementation.
+- This ensures we maintain regression coverage and do not silently break features.
+
 ### Service Tests
 
 - Located in `src/service/*.test.ts`.

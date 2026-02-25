@@ -2,15 +2,42 @@ import { describe, expect, test, mock, beforeAll } from 'bun:test'
 
 // Mock dependencies
 const generateTextMock = mock(async () => ({
-  assets: [
+  Headwear: [
     {
-      item_name: 'Helmet',
+      name: 'Helmet',
       description: 'A rusty helmet',
-      category: 'Headwear',
+      option: 'Heavy',
     },
   ],
 }))
 const generateImageMock = mock(async () => 'data:image/png;base64,mockImage')
+
+// Mock Prisma
+const prismaMock = {
+  category: {
+    findMany: mock(async () => [
+      {
+        name: 'Headwear',
+        description: 'Head equipment',
+        options: '["Heavy", "Light"]',
+        maxCount: 9,
+        enabled: true,
+      }
+    ]),
+    findFirst: mock(async () => ({
+      id: 'cat-1',
+      name: 'Headwear',
+      imagePrompt: '{"text": "Extract {{name}}", "imageIds": []}',
+    })),
+  },
+  asset: {
+    findUnique: mock(async () => null)
+  }
+}
+
+mock.module('../db', () => ({
+  prisma: prismaMock,
+}))
 
 mock.module('./ai', () => ({
   aiService: {
@@ -29,37 +56,36 @@ describe('ExtractionService', () => {
     extractionService = mod.extractionService
   })
 
-  test('analyzeImage calls AI service', async () => {
+  test('analyzeImage calls AI service and returns keyed object', async () => {
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
     const result = await extractionService.analyzeImage(file)
-    expect(result.assets.length).toBe(1)
-    expect(result.assets[0].item_name).toBe('Helmet')
+
+    expect(prismaMock.category.findMany).toHaveBeenCalled()
     expect(generateTextMock).toHaveBeenCalled()
+
+    expect(result).toHaveProperty('Headwear')
+    expect(result.Headwear).toBeArray()
+    expect(result.Headwear[0].name).toBe('Helmet')
   })
 
-  test('extractAsset calls AI service with correct prompt', async () => {
+  test('extractAsset calls AI service with correct prompt from DB', async () => {
     // Clear previous calls
     generateImageMock.mockClear()
 
     const file = new File(['dummy'], 'test.png', { type: 'image/png' })
     const name = 'Magic Helmet'
-    const description = 'A glowing magical helmet'
     const category = 'Headwear'
-    const hint = 'Focus on the glow'
 
-    const result = await extractionService.extractAsset(file, name, description, category, undefined, hint)
+    const result = await extractionService.extractAsset(file, category, { name })
 
     expect(result).toBe('data:image/png;base64,mockImage')
+    expect(prismaMock.category.findFirst).toHaveBeenCalledWith({ where: { name: category } })
     expect(generateImageMock).toHaveBeenCalled()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const callArgs = generateImageMock.mock.calls[0] as unknown as any[]
     const prompt = callArgs[0] as string
 
-    expect(prompt).toContain('Task: Asset Extraction')
-    expect(prompt).toContain('Target Item: Magic Helmet')
-    expect(prompt).toContain('Description: A glowing magical helmet')
-    expect(prompt).toContain('Category: Headwear')
-    expect(prompt).toContain('User Hint: Focus on the glow')
+    expect(prompt).toBe('Extract Magic Helmet')
   })
 })
