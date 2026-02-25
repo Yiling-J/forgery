@@ -9,11 +9,13 @@ import { SelectionStage } from './extractor/SelectionStage'
 import { UploadStage } from './extractor/UploadStage'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from './ui/dialog'
+import { Category } from '../hooks/use-category'
 
 interface ExtractorDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: (assets: ExtractedAsset[]) => void
+  category: Category
 }
 
 type Stage = 'upload' | 'analyze' | 'selection' | 'extraction'
@@ -22,6 +24,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   open,
   onOpenChange,
   onSuccess,
+  category,
 }) => {
   const [stage, setStage] = useState<Stage>('upload')
   const [file, setFile] = useState<File | null>(null)
@@ -39,9 +42,9 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const [extractionResults, setExtractionResults] = useState<(ExtractedAsset | null)[]>([])
   const [extractionStatuses, setExtractionStatuses] = useState<ItemStatus[]>([])
 
-  // Save as Outfit state
-  const [saveAsOutfit, setSaveAsOutfit] = useState(false)
-  const [outfitName, setOutfitName] = useState('')
+  // Save as Collection state
+  const [saveAsCollection, setSaveAsCollection] = useState(false)
+  const [collectionName, setCollectionName] = useState('')
 
   // Models
   const [availableModels, setAvailableModels] = useState<string[]>([])
@@ -63,8 +66,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
     setExtractionCandidates([])
     setExtractionResults([])
     setExtractionStatuses([])
-    setSaveAsOutfit(false)
-    setOutfitName('')
+    setSaveAsCollection(false)
+    setCollectionName('')
     analyzeController.current?.abort()
   }
 
@@ -123,7 +126,10 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
 
     try {
       const response = await client.extract.analyze.$post({
-        form: { image: file },
+        form: {
+            image: file,
+            category: category.name
+        },
       })
 
       if (!response.ok) throw new Error('Server error')
@@ -153,7 +159,22 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               if (event === 'status') {
                 setStatusMessage(data.message)
               } else if (event === 'complete') {
-                const newCandidates = data.assets as CandidateAsset[]
+                const results = data.results as Record<string, any>
+                const categoryResult = results[category.name]
+
+                let newCandidates: CandidateAsset[] = []
+                if (Array.isArray(categoryResult)) {
+                    newCandidates = categoryResult.map((item: any) => ({
+                        ...item,
+                        category: category.name
+                    }))
+                } else if (categoryResult) {
+                    newCandidates = [{
+                        ...categoryResult,
+                        category: category.name
+                    }]
+                }
+
                 const path = data.imagePath as string
                 setCandidates(newCandidates)
                 setImagePath(path)
@@ -270,27 +291,28 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
   const handleDone = async () => {
     const successfulResults = extractionResults.filter((r): r is ExtractedAsset => r !== null)
 
-    if (saveAsOutfit) {
-      if (!outfitName.trim()) {
-        toast.error('Please enter an outfit name')
+    if (saveAsCollection) {
+      if (!collectionName.trim()) {
+        toast.error('Please enter a collection name')
         return
       }
       try {
-        const equipmentIds = successfulResults.map((r) => r.id)
-        const res = await client.outfits.$post({
+        const dataIds = successfulResults.map((r) => r.id)
+        const res = await client.collections.$post({
           json: {
-            name: outfitName,
-            equipmentIds,
+            name: collectionName,
+            categoryId: category.id,
+            dataIds,
           },
         })
         if (res.ok) {
-          toast.success('Outfit created')
+          toast.success('Collection created')
         } else {
-          toast.error('Failed to create outfit')
+          toast.error('Failed to create collection')
         }
       } catch (e) {
         console.error(e)
-        toast.error('Failed to create outfit')
+        toast.error('Failed to create collection')
       }
     }
 
@@ -337,10 +359,11 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
               onDone={handleDone}
               availableModels={availableModels}
               defaultModel={defaultModel}
-              saveAsOutfit={saveAsOutfit}
-              setSaveAsOutfit={setSaveAsOutfit}
-              outfitName={outfitName}
-              setOutfitName={setOutfitName}
+              saveAsCollection={saveAsCollection}
+              setSaveAsCollection={setSaveAsCollection}
+              collectionName={collectionName}
+              setCollectionName={setCollectionName}
+              category={category}
             />
           )}
         </div>

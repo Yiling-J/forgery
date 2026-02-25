@@ -12,6 +12,7 @@ const app = new Hono()
 
 const analyzeSchema = z.object({
   image: z.instanceof(File),
+  category: z.string().optional(),
 })
 
 const itemExtractSchema = z.object({
@@ -27,7 +28,7 @@ const itemExtractSchema = z.object({
 
 const route = app
   .post('/analyze', zValidator('form', analyzeSchema), async (c) => {
-    const { image } = c.req.valid('form')
+    const { image, category } = c.req.valid('form')
     const file = image as File
 
     return streamSSE(c, async (stream) => {
@@ -44,7 +45,7 @@ const route = app
           data: JSON.stringify({ status: 'analyzing', message: 'Analyzing character assets...' }),
         })
 
-        const results = await extractionService.analyzeImage(savedFile.path)
+        const results = await extractionService.analyzeImage(savedFile.path, category)
 
         await stream.writeSSE({
           event: 'complete',

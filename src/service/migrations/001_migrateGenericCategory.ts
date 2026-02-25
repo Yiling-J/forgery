@@ -246,4 +246,38 @@ Instructions:
       }
   }
   console.log(`Migrated relationships for ${generations.length} generations`)
+
+  // 4. Migrate Outfits to Collections
+  const outfits = await prisma.outfit.findMany({
+    include: {
+      equipments: true,
+    },
+  })
+
+  if (equipmentCategory) {
+    for (const outfit of outfits) {
+      const exists = await prisma.collection.findUnique({ where: { id: outfit.id } })
+      if (!exists) {
+        // Create Collection
+        await prisma.collection.create({
+          data: {
+            id: outfit.id,
+            name: outfit.name,
+            prompt: outfit.prompt,
+            categoryId: equipmentCategory.id,
+            // We map existing equipment IDs to the new Collection items.
+            // Since equipment IDs were preserved when migrating to Data, this works directly.
+            items: {
+              create: outfit.equipments.map((eq) => ({
+                dataId: eq.equipmentId,
+              })),
+            },
+          },
+        })
+      }
+    }
+    console.log(`Migrated ${outfits.length} outfits to collections`)
+  } else {
+    console.warn('Equipment category not found, skipping outfit migration')
+  }
 }

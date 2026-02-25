@@ -209,6 +209,7 @@ export type DataWhereInput = {
   image?: Prisma.XOR<Prisma.AssetNullableScalarRelationFilter, Prisma.AssetWhereInput> | null
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   generations?: Prisma.GenerationDataListRelationFilter
+  collections?: Prisma.CollectionItemListRelationFilter
 }
 
 export type DataOrderByWithRelationInput = {
@@ -223,6 +224,7 @@ export type DataOrderByWithRelationInput = {
   image?: Prisma.AssetOrderByWithRelationInput
   category?: Prisma.CategoryOrderByWithRelationInput
   generations?: Prisma.GenerationDataOrderByRelationAggregateInput
+  collections?: Prisma.CollectionItemOrderByRelationAggregateInput
 }
 
 export type DataWhereUniqueInput = Prisma.AtLeast<{
@@ -240,6 +242,7 @@ export type DataWhereUniqueInput = Prisma.AtLeast<{
   image?: Prisma.XOR<Prisma.AssetNullableScalarRelationFilter, Prisma.AssetWhereInput> | null
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   generations?: Prisma.GenerationDataListRelationFilter
+  collections?: Prisma.CollectionItemListRelationFilter
 }, "id">
 
 export type DataOrderByWithAggregationInput = {
@@ -280,6 +283,7 @@ export type DataCreateInput = {
   image?: Prisma.AssetCreateNestedOneWithoutDataInput
   category: Prisma.CategoryCreateNestedOneWithoutDataInput
   generations?: Prisma.GenerationDataCreateNestedManyWithoutDataInput
+  collections?: Prisma.CollectionItemCreateNestedManyWithoutDataInput
 }
 
 export type DataUncheckedCreateInput = {
@@ -292,6 +296,7 @@ export type DataUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationDataUncheckedCreateNestedManyWithoutDataInput
+  collections?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutDataInput
 }
 
 export type DataUpdateInput = {
@@ -304,6 +309,7 @@ export type DataUpdateInput = {
   image?: Prisma.AssetUpdateOneWithoutDataNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutDataNestedInput
   generations?: Prisma.GenerationDataUpdateManyWithoutDataNestedInput
+  collections?: Prisma.CollectionItemUpdateManyWithoutDataNestedInput
 }
 
 export type DataUncheckedUpdateInput = {
@@ -316,6 +322,7 @@ export type DataUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationDataUncheckedUpdateManyWithoutDataNestedInput
+  collections?: Prisma.CollectionItemUncheckedUpdateManyWithoutDataNestedInput
 }
 
 export type DataCreateManyInput = {
@@ -481,6 +488,20 @@ export type DataUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.DataScalarWhereInput | Prisma.DataScalarWhereInput[]
 }
 
+export type DataCreateNestedOneWithoutCollectionsInput = {
+  create?: Prisma.XOR<Prisma.DataCreateWithoutCollectionsInput, Prisma.DataUncheckedCreateWithoutCollectionsInput>
+  connectOrCreate?: Prisma.DataCreateOrConnectWithoutCollectionsInput
+  connect?: Prisma.DataWhereUniqueInput
+}
+
+export type DataUpdateOneRequiredWithoutCollectionsNestedInput = {
+  create?: Prisma.XOR<Prisma.DataCreateWithoutCollectionsInput, Prisma.DataUncheckedCreateWithoutCollectionsInput>
+  connectOrCreate?: Prisma.DataCreateOrConnectWithoutCollectionsInput
+  upsert?: Prisma.DataUpsertWithoutCollectionsInput
+  connect?: Prisma.DataWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DataUpdateToOneWithWhereWithoutCollectionsInput, Prisma.DataUpdateWithoutCollectionsInput>, Prisma.DataUncheckedUpdateWithoutCollectionsInput>
+}
+
 export type DataCreateNestedOneWithoutGenerationsInput = {
   create?: Prisma.XOR<Prisma.DataCreateWithoutGenerationsInput, Prisma.DataUncheckedCreateWithoutGenerationsInput>
   connectOrCreate?: Prisma.DataCreateOrConnectWithoutGenerationsInput
@@ -504,6 +525,7 @@ export type DataCreateWithoutImageInput = {
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutDataInput
   generations?: Prisma.GenerationDataCreateNestedManyWithoutDataInput
+  collections?: Prisma.CollectionItemCreateNestedManyWithoutDataInput
 }
 
 export type DataUncheckedCreateWithoutImageInput = {
@@ -515,6 +537,7 @@ export type DataUncheckedCreateWithoutImageInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationDataUncheckedCreateNestedManyWithoutDataInput
+  collections?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutDataInput
 }
 
 export type DataCreateOrConnectWithoutImageInput = {
@@ -565,6 +588,7 @@ export type DataCreateWithoutCategoryInput = {
   updatedAt?: Date | string
   image?: Prisma.AssetCreateNestedOneWithoutDataInput
   generations?: Prisma.GenerationDataCreateNestedManyWithoutDataInput
+  collections?: Prisma.CollectionItemCreateNestedManyWithoutDataInput
 }
 
 export type DataUncheckedCreateWithoutCategoryInput = {
@@ -576,6 +600,7 @@ export type DataUncheckedCreateWithoutCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   generations?: Prisma.GenerationDataUncheckedCreateNestedManyWithoutDataInput
+  collections?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutDataInput
 }
 
 export type DataCreateOrConnectWithoutCategoryInput = {
@@ -603,6 +628,70 @@ export type DataUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.DataUpdateManyMutationInput, Prisma.DataUncheckedUpdateManyWithoutCategoryInput>
 }
 
+export type DataCreateWithoutCollectionsInput = {
+  id?: string
+  name: string
+  description: string
+  option?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  image?: Prisma.AssetCreateNestedOneWithoutDataInput
+  category: Prisma.CategoryCreateNestedOneWithoutDataInput
+  generations?: Prisma.GenerationDataCreateNestedManyWithoutDataInput
+}
+
+export type DataUncheckedCreateWithoutCollectionsInput = {
+  id?: string
+  name: string
+  description: string
+  option?: string | null
+  imageId?: string | null
+  categoryId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  generations?: Prisma.GenerationDataUncheckedCreateNestedManyWithoutDataInput
+}
+
+export type DataCreateOrConnectWithoutCollectionsInput = {
+  where: Prisma.DataWhereUniqueInput
+  create: Prisma.XOR<Prisma.DataCreateWithoutCollectionsInput, Prisma.DataUncheckedCreateWithoutCollectionsInput>
+}
+
+export type DataUpsertWithoutCollectionsInput = {
+  update: Prisma.XOR<Prisma.DataUpdateWithoutCollectionsInput, Prisma.DataUncheckedUpdateWithoutCollectionsInput>
+  create: Prisma.XOR<Prisma.DataCreateWithoutCollectionsInput, Prisma.DataUncheckedCreateWithoutCollectionsInput>
+  where?: Prisma.DataWhereInput
+}
+
+export type DataUpdateToOneWithWhereWithoutCollectionsInput = {
+  where?: Prisma.DataWhereInput
+  data: Prisma.XOR<Prisma.DataUpdateWithoutCollectionsInput, Prisma.DataUncheckedUpdateWithoutCollectionsInput>
+}
+
+export type DataUpdateWithoutCollectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  option?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  image?: Prisma.AssetUpdateOneWithoutDataNestedInput
+  category?: Prisma.CategoryUpdateOneRequiredWithoutDataNestedInput
+  generations?: Prisma.GenerationDataUpdateManyWithoutDataNestedInput
+}
+
+export type DataUncheckedUpdateWithoutCollectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  option?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generations?: Prisma.GenerationDataUncheckedUpdateManyWithoutDataNestedInput
+}
+
 export type DataCreateWithoutGenerationsInput = {
   id?: string
   name: string
@@ -612,6 +701,7 @@ export type DataCreateWithoutGenerationsInput = {
   updatedAt?: Date | string
   image?: Prisma.AssetCreateNestedOneWithoutDataInput
   category: Prisma.CategoryCreateNestedOneWithoutDataInput
+  collections?: Prisma.CollectionItemCreateNestedManyWithoutDataInput
 }
 
 export type DataUncheckedCreateWithoutGenerationsInput = {
@@ -623,6 +713,7 @@ export type DataUncheckedCreateWithoutGenerationsInput = {
   categoryId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  collections?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutDataInput
 }
 
 export type DataCreateOrConnectWithoutGenerationsInput = {
@@ -650,6 +741,7 @@ export type DataUpdateWithoutGenerationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneWithoutDataNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutDataNestedInput
+  collections?: Prisma.CollectionItemUpdateManyWithoutDataNestedInput
 }
 
 export type DataUncheckedUpdateWithoutGenerationsInput = {
@@ -661,6 +753,7 @@ export type DataUncheckedUpdateWithoutGenerationsInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  collections?: Prisma.CollectionItemUncheckedUpdateManyWithoutDataNestedInput
 }
 
 export type DataCreateManyImageInput = {
@@ -682,6 +775,7 @@ export type DataUpdateWithoutImageInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutDataNestedInput
   generations?: Prisma.GenerationDataUpdateManyWithoutDataNestedInput
+  collections?: Prisma.CollectionItemUpdateManyWithoutDataNestedInput
 }
 
 export type DataUncheckedUpdateWithoutImageInput = {
@@ -693,6 +787,7 @@ export type DataUncheckedUpdateWithoutImageInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationDataUncheckedUpdateManyWithoutDataNestedInput
+  collections?: Prisma.CollectionItemUncheckedUpdateManyWithoutDataNestedInput
 }
 
 export type DataUncheckedUpdateManyWithoutImageInput = {
@@ -724,6 +819,7 @@ export type DataUpdateWithoutCategoryInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.AssetUpdateOneWithoutDataNestedInput
   generations?: Prisma.GenerationDataUpdateManyWithoutDataNestedInput
+  collections?: Prisma.CollectionItemUpdateManyWithoutDataNestedInput
 }
 
 export type DataUncheckedUpdateWithoutCategoryInput = {
@@ -735,6 +831,7 @@ export type DataUncheckedUpdateWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generations?: Prisma.GenerationDataUncheckedUpdateManyWithoutDataNestedInput
+  collections?: Prisma.CollectionItemUncheckedUpdateManyWithoutDataNestedInput
 }
 
 export type DataUncheckedUpdateManyWithoutCategoryInput = {
@@ -754,10 +851,12 @@ export type DataUncheckedUpdateManyWithoutCategoryInput = {
 
 export type DataCountOutputType = {
   generations: number
+  collections: number
 }
 
 export type DataCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   generations?: boolean | DataCountOutputTypeCountGenerationsArgs
+  collections?: boolean | DataCountOutputTypeCountCollectionsArgs
 }
 
 /**
@@ -777,6 +876,13 @@ export type DataCountOutputTypeCountGenerationsArgs<ExtArgs extends runtime.Type
   where?: Prisma.GenerationDataWhereInput
 }
 
+/**
+ * DataCountOutputType without action
+ */
+export type DataCountOutputTypeCountCollectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CollectionItemWhereInput
+}
+
 
 export type DataSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -790,6 +896,7 @@ export type DataSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   image?: boolean | Prisma.Data$imageArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   generations?: boolean | Prisma.Data$generationsArgs<ExtArgs>
+  collections?: boolean | Prisma.Data$collectionsArgs<ExtArgs>
   _count?: boolean | Prisma.DataCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["data"]>
 
@@ -835,6 +942,7 @@ export type DataInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   image?: boolean | Prisma.Data$imageArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   generations?: boolean | Prisma.Data$generationsArgs<ExtArgs>
+  collections?: boolean | Prisma.Data$collectionsArgs<ExtArgs>
   _count?: boolean | Prisma.DataCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DataIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -852,6 +960,7 @@ export type $DataPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     image: Prisma.$AssetPayload<ExtArgs> | null
     category: Prisma.$CategoryPayload<ExtArgs>
     generations: Prisma.$GenerationDataPayload<ExtArgs>[]
+    collections: Prisma.$CollectionItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1259,6 +1368,7 @@ export interface Prisma__DataClient<T, Null = never, ExtArgs extends runtime.Typ
   image<T extends Prisma.Data$imageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Data$imageArgs<ExtArgs>>): Prisma.Prisma__AssetClient<runtime.Types.Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.CategoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   generations<T extends Prisma.Data$generationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Data$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenerationDataPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  collections<T extends Prisma.Data$collectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Data$collectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CollectionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1730,6 +1840,30 @@ export type Data$generationsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.GenerationDataScalarFieldEnum | Prisma.GenerationDataScalarFieldEnum[]
+}
+
+/**
+ * Data.collections
+ */
+export type Data$collectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CollectionItem
+   */
+  select?: Prisma.CollectionItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CollectionItem
+   */
+  omit?: Prisma.CollectionItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CollectionItemInclude<ExtArgs> | null
+  where?: Prisma.CollectionItemWhereInput
+  orderBy?: Prisma.CollectionItemOrderByWithRelationInput | Prisma.CollectionItemOrderByWithRelationInput[]
+  cursor?: Prisma.CollectionItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CollectionItemScalarFieldEnum | Prisma.CollectionItemScalarFieldEnum[]
 }
 
 /**

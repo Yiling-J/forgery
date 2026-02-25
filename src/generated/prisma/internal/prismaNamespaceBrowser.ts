@@ -56,6 +56,8 @@ export const ModelName = {
   Equipment: 'Equipment',
   Category: 'Category',
   Data: 'Data',
+  Collection: 'Collection',
+  CollectionItem: 'CollectionItem',
   Generation: 'Generation',
   GenerationData: 'GenerationData',
   GenerationEquipment: 'GenerationEquipment',
@@ -144,6 +146,27 @@ export const DataScalarFieldEnum = {
 } as const
 
 export type DataScalarFieldEnum = (typeof DataScalarFieldEnum)[keyof typeof DataScalarFieldEnum]
+
+
+export const CollectionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  prompt: 'prompt',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CollectionScalarFieldEnum = (typeof CollectionScalarFieldEnum)[keyof typeof CollectionScalarFieldEnum]
+
+
+export const CollectionItemScalarFieldEnum = {
+  collectionId: 'collectionId',
+  dataId: 'dataId'
+} as const
+
+export type CollectionItemScalarFieldEnum = (typeof CollectionItemScalarFieldEnum)[keyof typeof CollectionItemScalarFieldEnum]
 
 
 export const GenerationScalarFieldEnum = {
