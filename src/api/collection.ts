@@ -20,22 +20,7 @@ const updateCollectionSchema = z.object({
   dataIds: z.array(z.string()).optional(),
 })
 
-const listQuerySchema = z.object({
-  page: z.string().optional(),
-  limit: z.string().optional(),
-  categoryId: z.string().optional(),
-})
-
 const route = app
-  .get('/', zValidator('query', listQuerySchema), async (c) => {
-    const query = c.req.valid('query')
-    const page = query.page ? parseInt(query.page) : 1
-    const limit = query.limit ? parseInt(query.limit) : 20
-    const categoryId = query.categoryId
-
-    const items = await collectionService.listCollections({ page, limit, categoryId })
-    return c.json(items)
-  })
   .get('/:id', async (c) => {
     const id = c.req.param('id')
     const item = await collectionService.getCollection(id)

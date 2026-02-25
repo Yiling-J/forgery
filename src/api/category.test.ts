@@ -13,6 +13,14 @@ mock.module('../service/category', () => ({
   categoryService: categoryServiceMock,
 }))
 
+const collectionServiceMock = {
+  listCollections: mock(),
+}
+
+mock.module('../service/collection', () => ({
+  collectionService: collectionServiceMock,
+}))
+
 import app from './category'
 
 describe('Category API', () => {
@@ -85,6 +93,18 @@ describe('Category API', () => {
         page: 1,
         limit: 10,
         option: 'opt1'
+    })
+  })
+
+  test('GET /:id/collections should list collections', async () => {
+    collectionServiceMock.listCollections.mockResolvedValueOnce([])
+
+    const res = await app.request('/1/collections?page=1&limit=10')
+    expect(res.status).toBe(200)
+    expect(collectionServiceMock.listCollections).toHaveBeenCalledWith({
+        page: 1,
+        limit: 10,
+        categoryId: '1'
     })
   })
 })
