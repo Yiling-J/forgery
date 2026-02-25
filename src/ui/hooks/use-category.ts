@@ -11,7 +11,7 @@ export type Category = CategoryResponse[number]
 type DataListResponse = InferResponseType<typeof client.categories[':id']['data']['$get']>
 export type DataItem = DataListResponse['items'][number]
 
-type CollectionListResponse = InferResponseType<typeof client.collections.$get>
+type CollectionListResponse = InferResponseType<typeof client.categories[':id']['collections']['$get']>
 export type CollectionItem = CollectionListResponse[number]
 
 export function useCategory(categoryName: string) {
@@ -81,11 +81,11 @@ export function useCategory(categoryName: string) {
   } = useInfiniteScroll<CollectionItem>({
     fetchData: async (page, limit) => {
       if (!category) return []
-      const res = await client.collections.$get({
+      const res = await client.categories[':id'].collections.$get({
+        param: { id: category.id },
         query: {
           page: page.toString(),
           limit: limit.toString(),
-          categoryId: category.id,
         },
       })
       if (res.ok) {

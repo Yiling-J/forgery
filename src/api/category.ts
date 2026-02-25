@@ -2,6 +2,7 @@ import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { categoryService } from '../service/category'
+import { collectionService } from '../service/collection'
 
 const app = new Hono()
 
@@ -152,4 +153,21 @@ const routeWithData = deleteRoute.get(
   },
 )
 
-export default routeWithData
+// List Collections by Category
+const listCollectionSchema = z.object({
+  page: z.coerce.number().optional().default(1),
+  limit: z.coerce.number().optional().default(20),
+})
+
+const routeWithCollections = routeWithData.get(
+  '/:id/collections',
+  zValidator('query', listCollectionSchema),
+  async (c) => {
+    const { id } = c.req.param()
+    const { page, limit } = c.req.valid('query')
+    const result = await collectionService.listCollections({ page, limit, categoryId: id })
+    return c.json(result)
+  },
+)
+
+export default routeWithCollections
