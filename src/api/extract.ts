@@ -3,9 +3,10 @@ import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
 import { z } from 'zod'
 import { assetService } from '../service/asset'
-import { equipmentService } from '../service/equipment'
+import { dataService } from '../service/data'
 import { extractionService } from '../service/extraction'
 import { fileService } from '../service/file'
+import { prisma } from '../db'
 
 const app = new Hono()
 
@@ -17,10 +18,11 @@ const itemExtractSchema = z.object({
   imagePath: z.string(),
   name: z.string(),
   description: z.string(),
-  category: z.string().optional(),
+  category: z.string(),
+  option: z.string().optional(),
   model: z.string().optional(),
   hint: z.string().optional(),
-  previousEquipmentId: z.string().optional(), // New field for re-extraction
+  previousDataId: z.string().optional(),
 })
 
 const route = app
@@ -30,7 +32,6 @@ const route = app
 
     return streamSSE(c, async (stream) => {
       try {
-        // 1. Save file
         await stream.writeSSE({
           event: 'status',
           data: JSON.stringify({ status: 'analyzing', message: 'Uploading image...' }),
@@ -38,33 +39,17 @@ const route = app
 
         const savedFile = await fileService.saveFile(file)
 
-        // 2. Analyze
         await stream.writeSSE({
           event: 'status',
           data: JSON.stringify({ status: 'analyzing', message: 'Analyzing character assets...' }),
         })
 
-        let analysis
-        try {
-          analysis = await extractionService.analyzeImage(savedFile.path)
-        } catch (err: unknown) {
-          throw new Error(`Analysis failed: ${err instanceof Error ? err.message : String(err)}`, {
-            cause: err,
-          })
-        }
-
-        // 3. Return candidates and image path
-        // Map backend assets (item_name) to frontend CandidateAsset (name)
-        const candidates = analysis.assets.map((a) => ({
-          name: a.item_name,
-          description: a.description,
-          category: a.category,
-        }))
+        const results = await extractionService.analyzeImage(savedFile.path)
 
         await stream.writeSSE({
           event: 'complete',
           data: JSON.stringify({
-            assets: candidates,
+            results,
             imagePath: savedFile.path,
           }),
         })
@@ -79,17 +64,15 @@ const route = app
     })
   })
   .post('/item', zValidator('json', itemExtractSchema), async (c) => {
-    const { imagePath, name, description, category, model, hint, previousEquipmentId } = c.req.valid('json')
+    const { imagePath, name, description, category, option, model, hint, previousDataId } = c.req.valid('json')
 
     try {
       // Extract asset
       const extractedBase64 = await extractionService.extractAsset(
         imagePath,
-        name,
-        description,
         category,
+        { name, description, option: option || '', hint: hint || '' },
         model,
-        hint,
       )
 
       // Save to file system
@@ -102,39 +85,45 @@ const route = app
         path: savedFile.filename,
       })
 
-      let equipment
+      // Get Category ID
+      const categoryRecord = await prisma.category.findFirst({ where: { name: category } })
+      if (!categoryRecord) {
+          throw new Error(`Category ${category} not found`)
+      }
 
-      if (previousEquipmentId) {
-        // Update existing equipment
+      let dataItem
+
+      if (previousDataId) {
         try {
-          equipment = await equipmentService.updateEquipment(previousEquipmentId, {
-            name: name,
-            description: description,
-            category: category || 'Others',
-            imageId: assetRecord.id,
+          dataItem = await dataService.updateData(previousDataId, {
+            name,
+            description,
+            option,
+            category: { connect: { id: categoryRecord.id } },
+            image: { connect: { id: assetRecord.id } },
           })
         } catch (e) {
-          console.warn(`Failed to update previous equipment ${previousEquipmentId}, creating new one`, e)
-          // Fallback to create if update fails (e.g., record deleted)
-          equipment = await equipmentService.createEquipment({
-            name: name,
-            description: description,
-            imageId: assetRecord.id,
-            category: category || 'Others',
+          console.warn(`Failed to update previous data ${previousDataId}, creating new one`, e)
+          dataItem = await dataService.createData({
+            name,
+            description,
+            option,
+            category: { connect: { id: categoryRecord.id } },
+            image: { connect: { id: assetRecord.id } },
           })
         }
       } else {
-        // Create new equipment
-        equipment = await equipmentService.createEquipment({
-          name: name,
-          description: description,
-          imageId: assetRecord.id,
-          category: category || 'Others',
+        dataItem = await dataService.createData({
+          name,
+          description,
+          option,
+          category: { connect: { id: categoryRecord.id } },
+          image: { connect: { id: assetRecord.id } },
         })
       }
 
       const result = {
-        ...equipment,
+        ...dataItem,
         imageUrl: `/files/${savedFile.filename}`,
       }
 

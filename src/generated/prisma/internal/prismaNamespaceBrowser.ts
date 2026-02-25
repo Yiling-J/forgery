@@ -54,7 +54,10 @@ export const ModelName = {
   Asset: 'Asset',
   Character: 'Character',
   Equipment: 'Equipment',
+  Category: 'Category',
+  Data: 'Data',
   Generation: 'Generation',
+  GenerationData: 'GenerationData',
   GenerationEquipment: 'GenerationEquipment',
   Outfit: 'Outfit',
   OutfitEquipment: 'OutfitEquipment',
@@ -113,6 +116,36 @@ export const EquipmentScalarFieldEnum = {
 export type EquipmentScalarFieldEnum = (typeof EquipmentScalarFieldEnum)[keyof typeof EquipmentScalarFieldEnum]
 
 
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  imagePrompt: 'imagePrompt',
+  enabled: 'enabled',
+  options: 'options',
+  maxCount: 'maxCount',
+  withImage: 'withImage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const DataScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  option: 'option',
+  imageId: 'imageId',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DataScalarFieldEnum = (typeof DataScalarFieldEnum)[keyof typeof DataScalarFieldEnum]
+
+
 export const GenerationScalarFieldEnum = {
   id: 'id',
   characterId: 'characterId',
@@ -125,6 +158,14 @@ export const GenerationScalarFieldEnum = {
 } as const
 
 export type GenerationScalarFieldEnum = (typeof GenerationScalarFieldEnum)[keyof typeof GenerationScalarFieldEnum]
+
+
+export const GenerationDataScalarFieldEnum = {
+  generationId: 'generationId',
+  dataId: 'dataId'
+} as const
+
+export type GenerationDataScalarFieldEnum = (typeof GenerationDataScalarFieldEnum)[keyof typeof GenerationDataScalarFieldEnum]
 
 
 export const GenerationEquipmentScalarFieldEnum = {

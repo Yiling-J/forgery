@@ -33,10 +33,25 @@ export type Character = Prisma.CharacterModel
  */
 export type Equipment = Prisma.EquipmentModel
 /**
+ * Model Category
+ *
+ */
+export type Category = Prisma.CategoryModel
+/**
+ * Model Data
+ *
+ */
+export type Data = Prisma.DataModel
+/**
  * Model Generation
  *
  */
 export type Generation = Prisma.GenerationModel
+/**
+ * Model GenerationData
+ *
+ */
+export type GenerationData = Prisma.GenerationDataModel
 /**
  * Model GenerationEquipment
  *
