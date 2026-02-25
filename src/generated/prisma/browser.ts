@@ -43,6 +43,16 @@ export type Category = Prisma.CategoryModel
  */
 export type Data = Prisma.DataModel
 /**
+ * Model Collection
+ *
+ */
+export type Collection = Prisma.CollectionModel
+/**
+ * Model CollectionItem
+ *
+ */
+export type CollectionItem = Prisma.CollectionItemModel
+/**
  * Model Generation
  *
  */

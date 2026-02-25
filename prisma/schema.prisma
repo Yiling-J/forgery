@@ -79,7 +79,8 @@ model Category {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  data Data[]
+  data        Data[]
+  collections Collection[]
 
   @@map("categories")
 }
@@ -98,9 +99,37 @@ model Data {
   image       Asset?           @relation(fields: [imageId], references: [id])
   category    Category         @relation(fields: [categoryId], references: [id])
   generations GenerationData[]
+  collections CollectionItem[]
 
   @@index([option])
   @@map("data")
+}
+
+model Collection {
+  id          String   @id @default(ulid())
+  name        String
+  description String?
+  prompt      String?
+  categoryId  String   @map("category_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  category Category         @relation(fields: [categoryId], references: [id])
+  items    CollectionItem[]
+
+  @@map("collections")
+}
+
+model CollectionItem {
+  collectionId String @map("collection_id")
+  dataId       String @map("data_id")
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  data       Data       @relation(fields: [dataId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, dataId])
+  @@map("collection_items")
 }
 
 model Generation {

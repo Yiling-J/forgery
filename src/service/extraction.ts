@@ -12,17 +12,25 @@ export class ExtractionService {
   /**
    * Analyzes an image to identify extractable assets based on enabled categories.
    */
-  async analyzeImage(fileOrPath: File | string): Promise<Record<string, ExtractedItem | ExtractedItem[]>> {
+  async analyzeImage(
+    fileOrPath: File | string,
+    targetCategory?: string,
+  ): Promise<Record<string, ExtractedItem | ExtractedItem[]>> {
+    const whereClause: any = { enabled: true }
+    if (targetCategory) {
+      whereClause.name = targetCategory
+    }
+
     const categories = await prisma.category.findMany({
-      where: { enabled: true },
-      select: { name: true, description: true, options: true, maxCount: true }
+      where: whereClause,
+      select: { name: true, description: true, options: true, maxCount: true },
     })
 
     if (categories.length === 0) {
-       throw new Error("No enabled categories found.")
+      throw new Error('No enabled categories found.')
     }
 
-    const categoryDescriptions = categories.map(c => {
+    const categoryDescriptions = categories.map((c) => {
        const opts = JSON.parse(c.options || '[]')
        let desc = `- Category: "${c.name}"\n  Description: ${c.description}\n  Max Items: ${c.maxCount}`
        if (opts.length > 0) {

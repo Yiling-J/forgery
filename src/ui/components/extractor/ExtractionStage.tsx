@@ -1,6 +1,7 @@
 import { CheckCircle2, Loader2, RefreshCw, XCircle } from 'lucide-react'
 import React, { useState } from 'react'
 import { cn } from '../../lib/utils'
+import { Category } from '../../hooks/use-category'
 import { CandidateAsset, ExtractedAsset } from '../../types'
 import { EnlargableImage } from '../EnlargableImage'
 import { Button } from '../ui/button'
@@ -29,10 +30,11 @@ interface ExtractionStageProps {
   onDone: () => void
   availableModels: string[]
   defaultModel?: string
-  saveAsOutfit: boolean
-  setSaveAsOutfit: (value: boolean) => void
-  outfitName: string
-  setOutfitName: (value: string) => void
+  saveAsCollection: boolean
+  setSaveAsCollection: (value: boolean) => void
+  collectionName: string
+  setCollectionName: (value: string) => void
+  category: Category
 }
 
 export const ExtractionStage: React.FC<ExtractionStageProps> = ({
@@ -43,10 +45,11 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
   onDone,
   availableModels,
   defaultModel,
-  saveAsOutfit,
-  setSaveAsOutfit,
-  outfitName,
-  setOutfitName,
+  saveAsCollection,
+  setSaveAsCollection,
+  collectionName,
+  setCollectionName,
+  category,
 }) => {
   const [reExtractIndex, setReExtractIndex] = useState<number | null>(null)
   const [model, setModel] = useState('')
@@ -188,28 +191,32 @@ export const ExtractionStage: React.FC<ExtractionStageProps> = ({
 
       {/* Footer / Done Actions */}
       <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-4 bg-white/50 backdrop-blur-sm rounded-xl">
-        <div className="flex items-center space-x-2 px-2">
-          <Checkbox
-            id="saveOutfit"
-            checked={saveAsOutfit}
-            onCheckedChange={(c) => setSaveAsOutfit(c === true)}
-            disabled={!isAllDone}
-          />
-          <Label
-            htmlFor="saveOutfit"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Save as Outfit
-          </Label>
-        </div>
-        {saveAsOutfit && (
-          <Input
-            placeholder="Outfit Name"
-            value={outfitName}
-            onChange={(e) => setOutfitName(e.target.value)}
-            disabled={!isAllDone}
-            className="w-full animate-in fade-in zoom-in duration-300"
-          />
+        {category.maxCount > 1 && (
+          <>
+            <div className="flex items-center space-x-2 px-2">
+              <Checkbox
+                id="saveCollection"
+                checked={saveAsCollection}
+                onCheckedChange={(c) => setSaveAsCollection(c === true)}
+                disabled={!isAllDone}
+              />
+              <Label
+                htmlFor="saveCollection"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Save as Collection
+              </Label>
+            </div>
+            {saveAsCollection && (
+              <Input
+                placeholder="Collection Name"
+                value={collectionName}
+                onChange={(e) => setCollectionName(e.target.value)}
+                disabled={!isAllDone}
+                className="w-full animate-in fade-in zoom-in duration-300"
+              />
+            )}
+          </>
         )}
 
         <div className="flex justify-end gap-2 mt-2">

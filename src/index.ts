@@ -6,6 +6,7 @@ import { existsSync, mkdirSync } from 'node:fs'
 import asset from './api/asset'
 import backup from './api/backup'
 import category from './api/category'
+import collection from './api/collection'
 import character from './api/character'
 import data from './api/data'
 import equipment from './api/equipment'
@@ -35,6 +36,7 @@ const route = api
   .route('/assets', asset)
   .route('/backup', backup)
   .route('/categories', category)
+  .route('/collections', collection)
   .route('/characters', character)
   .route('/data', data)
   .route('/equipments', equipment)
