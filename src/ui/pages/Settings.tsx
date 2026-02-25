@@ -1,16 +1,19 @@
 import { client } from '@/ui/client'
+import { CategorySettings } from '@/ui/components/CategorySettings'
 import { ExtractionFlowDesigner } from '@/ui/components/ExtractionFlowDesigner'
 import { PageHeader } from '@/ui/components/PageHeader'
 import { Button } from '@/ui/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/ui/card'
 import { Input } from '@/ui/components/ui/input'
 import { Label } from '@/ui/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/ui/tabs'
 import { useToast } from '@/ui/hooks/use-toast'
 import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export default function Settings() {
   const { toast } = useToast()
+  const [activeTab, setActiveTab] = useState('providers')
   const [loading, setLoading] = useState(true)
   const [settings, setSettings] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState<Record<string, boolean>>({})
@@ -142,133 +145,167 @@ export default function Settings() {
     )
   }
 
+  const getPageTitle = () => {
+    switch (activeTab) {
+      case 'providers':
+        return 'Providers'
+      case 'models':
+        return 'Models'
+      case 'categories':
+        return 'Categories'
+      default:
+        return 'Settings'
+    }
+  }
+
   return (
     <div className="w-full h-full px-4 flex flex-col font-sans text-slate-900 relative space-y-8">
-      <PageHeader title="Settings" subtitle="System // Configuration" />
+      <Tabs
+        defaultValue="providers"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full h-full flex flex-col"
+      >
+        <PageHeader
+          title={getPageTitle()}
+          subtitle="System // Configuration"
+          actions={
+            <TabsList>
+              <TabsTrigger value="providers">Providers</TabsTrigger>
+              <TabsTrigger value="models">Models</TabsTrigger>
+              <TabsTrigger value="categories">Categories</TabsTrigger>
+            </TabsList>
+          }
+        />
 
-      <div className="max-w-4xl mx-auto w-full grid gap-8">
-        {/* OpenAI Provider */}
-        <Card className="border-slate-200 shadow-sm">
-          <CardHeader>
-            <CardTitle>OpenAI Provider</CardTitle>
-            <CardDescription>Configure OpenAI API settings and models.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="openai_api_key">API Key</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="openai_api_key"
-                  type="password"
-                  value={settings['openai_api_key'] || ''}
-                  onChange={(e) => handleInputChange('openai_api_key', e.target.value)}
-                  placeholder="sk-..."
-                  className="font-mono text-sm"
+        <div className="max-w-4xl mx-auto w-full flex-1">
+          <TabsContent value="providers" className="grid gap-8">
+            {/* OpenAI Provider */}
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle>OpenAI Provider</CardTitle>
+                <CardDescription>Configure OpenAI API settings and models.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="openai_api_key">API Key</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="openai_api_key"
+                      type="password"
+                      value={settings['openai_api_key'] || ''}
+                      onChange={(e) => handleInputChange('openai_api_key', e.target.value)}
+                      placeholder="sk-..."
+                      className="font-mono text-sm"
+                    />
+                    {renderSaveButton('openai_api_key')}
+                  </div>
+                </div>
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="openai_base_url">Base URL (Optional)</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="openai_base_url"
+                      value={settings['openai_base_url'] || ''}
+                      onChange={(e) => handleInputChange('openai_base_url', e.target.value)}
+                      placeholder="https://api.openai.com/v1"
+                      className="font-mono text-sm"
+                    />
+                    {renderSaveButton('openai_base_url')}
+                  </div>
+                </div>
+
+                <ModelList
+                  title="Text Models"
+                  models={openaiTextModels}
+                  onAdd={(m) =>
+                    addModel(openaiTextModels, setOpenaiTextModels, 'openai_text_models', m)
+                  }
+                  onRemove={(m) =>
+                    removeModel(openaiTextModels, setOpenaiTextModels, 'openai_text_models', m)
+                  }
                 />
-                {renderSaveButton('openai_api_key')}
-              </div>
-            </div>
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="openai_base_url">Base URL (Optional)</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="openai_base_url"
-                  value={settings['openai_base_url'] || ''}
-                  onChange={(e) => handleInputChange('openai_base_url', e.target.value)}
-                  placeholder="https://api.openai.com/v1"
-                  className="font-mono text-sm"
+                <ModelList
+                  title="Image Models"
+                  models={openaiImageModels}
+                  onAdd={(m) =>
+                    addModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)
+                  }
+                  onRemove={(m) =>
+                    removeModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)
+                  }
                 />
-                {renderSaveButton('openai_base_url')}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            <ModelList
-              title="Text Models"
-              models={openaiTextModels}
-              onAdd={(m) =>
-                addModel(openaiTextModels, setOpenaiTextModels, 'openai_text_models', m)
-              }
-              onRemove={(m) =>
-                removeModel(openaiTextModels, setOpenaiTextModels, 'openai_text_models', m)
-              }
-            />
-            <ModelList
-              title="Image Models"
-              models={openaiImageModels}
-              onAdd={(m) =>
-                addModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)
-              }
-              onRemove={(m) =>
-                removeModel(openaiImageModels, setOpenaiImageModels, 'openai_image_models', m)
-              }
-            />
-          </CardContent>
-        </Card>
+            {/* Google Provider */}
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader>
+                <CardTitle>Google Provider</CardTitle>
+                <CardDescription>Configure Google Gemini API settings and models.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="google_api_key">API Key</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="google_api_key"
+                      type="password"
+                      value={settings['google_api_key'] || ''}
+                      onChange={(e) => handleInputChange('google_api_key', e.target.value)}
+                      placeholder="AIza..."
+                      className="font-mono text-sm"
+                    />
+                    {renderSaveButton('google_api_key')}
+                  </div>
+                </div>
 
-        {/* Google Provider */}
-        <Card className="border-slate-200 shadow-sm">
-          <CardHeader>
-            <CardTitle>Google Provider</CardTitle>
-            <CardDescription>Configure Google Gemini API settings and models.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="google_api_key">API Key</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="google_api_key"
-                  type="password"
-                  value={settings['google_api_key'] || ''}
-                  onChange={(e) => handleInputChange('google_api_key', e.target.value)}
-                  placeholder="AIza..."
-                  className="font-mono text-sm"
+                <ModelList
+                  title="Text Models"
+                  models={googleTextModels}
+                  onAdd={(m) =>
+                    addModel(googleTextModels, setGoogleTextModels, 'google_text_models', m)
+                  }
+                  onRemove={(m) =>
+                    removeModel(googleTextModels, setGoogleTextModels, 'google_text_models', m)
+                  }
                 />
-                {renderSaveButton('google_api_key')}
-              </div>
+                <ModelList
+                  title="Image Models"
+                  models={googleImageModels}
+                  onAdd={(m) =>
+                    addModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)
+                  }
+                  onRemove={(m) =>
+                    removeModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)
+                  }
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="models">
+            <div className="mb-4 ml-1">
+              <p className="text-sm text-slate-500">
+                Configure the AI models used for each step of the asset generation pipeline.
+              </p>
             </div>
 
-            <ModelList
-              title="Text Models"
-              models={googleTextModels}
-              onAdd={(m) =>
-                addModel(googleTextModels, setGoogleTextModels, 'google_text_models', m)
-              }
-              onRemove={(m) =>
-                removeModel(googleTextModels, setGoogleTextModels, 'google_text_models', m)
-              }
+            <ExtractionFlowDesigner
+              settings={settings}
+              openaiTextModels={openaiTextModels}
+              openaiImageModels={openaiImageModels}
+              googleTextModels={googleTextModels}
+              googleImageModels={googleImageModels}
+              onSelect={(key, val) => saveSetting(key, val)}
             />
-            <ModelList
-              title="Image Models"
-              models={googleImageModels}
-              onAdd={(m) =>
-                addModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)
-              }
-              onRemove={(m) =>
-                removeModel(googleImageModels, setGoogleImageModels, 'google_image_models', m)
-              }
-            />
-          </CardContent>
-        </Card>
+          </TabsContent>
 
-        {/* Default Models */}
-        <div>
-          <div className="mb-4 ml-1">
-            <h3 className="text-lg font-semibold text-slate-900">Default Models</h3>
-            <p className="text-sm text-slate-500">
-              Configure the AI models used for each step of the asset generation pipeline.
-            </p>
-          </div>
-
-          <ExtractionFlowDesigner
-            settings={settings}
-            openaiTextModels={openaiTextModels}
-            openaiImageModels={openaiImageModels}
-            googleTextModels={googleTextModels}
-            googleImageModels={googleImageModels}
-            onSelect={(key, val) => saveSetting(key, val)}
-          />
+          <TabsContent value="categories">
+            <CategorySettings />
+          </TabsContent>
         </div>
-      </div>
+      </Tabs>
     </div>
   )
 }
