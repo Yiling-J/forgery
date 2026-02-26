@@ -34,7 +34,8 @@ export default function Characters() {
   const navigate = useNavigate()
 
   // Use generic Data hook but filtering by 'Character' category
-  const { category, dataItems: items, loadingData: loading, resetData } = useCategory('Character')
+  // Destructure dataRef to attach to loading element
+  const { category, dataItems: items, loadingData: loading, resetData, dataRef } = useCategory('Character')
 
   return (
     <div className="w-full h-full px-4 flex flex-col text-slate-900 relative">
@@ -77,8 +78,8 @@ export default function Characters() {
         </div>
       )}
 
-      {/* Loading Indicator */}
-      <div className="h-10 w-full flex items-center justify-center p-4">
+      {/* Loading Indicator with Ref attached */}
+      <div ref={dataRef} className="h-10 w-full flex items-center justify-center p-4">
         {loading && (
           <div className="text-slate-400 font-mono tracking-widest animate-pulse">LOADING...</div>
         )}
