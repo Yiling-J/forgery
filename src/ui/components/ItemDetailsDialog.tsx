@@ -1,14 +1,29 @@
-import { Loader2 } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { InferResponseType } from 'hono/client'
+import {
+  Calendar,
+  Download,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  X,
+} from 'lucide-react'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { client } from '../client'
+import { DataItem } from '../hooks/use-category'
 import { Button } from './ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
-import { DataItem, Category } from '../hooks/use-category'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+import { Category } from '../hooks/use-category'
 
 interface ItemDetailsDialogProps {
   open: boolean
@@ -28,48 +43,36 @@ export const ItemDetailsDialog: React.FC<ItemDetailsDialogProps> = ({
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [option, setOption] = useState('')
-  const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const categoryOptions = React.useMemo(() => {
-      try {
-          return JSON.parse(category.options || '[]') as string[]
-      } catch {
-          return []
-      }
-  }, [category.options])
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (item) {
       setName(item.name)
-      setDescription(item.description || '')
+      setDescription(item.description)
       setOption(item.option || '')
     }
   }, [item])
 
   const handleSave = async () => {
     if (!item) return
-    setSaving(true)
+    setLoading(true)
     try {
-      const res = await client.data[':id'].$patch({
+      await client.data[':id'].$patch({
         param: { id: item.id },
         json: {
-            name,
-            description,
-            option: option || undefined
+          name,
+          description,
+          option: option || undefined,
         },
       })
-      if (res.ok) {
-        toast.success('Item updated')
-        onUpdate()
-        onOpenChange(false)
-      } else {
-        toast.error('Failed to update item')
-      }
+      toast.success('Item updated')
+      onUpdate()
+      onOpenChange(false)
     } catch (e) {
       console.error(e)
-      toast.error('An error occurred')
+      toast.error('Failed to update item')
     } finally {
-      setSaving(false)
+      setLoading(false)
     }
   }
 
@@ -77,84 +80,86 @@ export const ItemDetailsDialog: React.FC<ItemDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 gap-0 bg-stone-50 overflow-hidden">
-        <DialogHeader className="px-6 py-4 border-b border-stone-200 bg-white shrink-0">
-          <DialogTitle className="text-xl font-black uppercase tracking-tighter text-stone-800">
-            Details
-          </DialogTitle>
-          <DialogDescription>{item.option || category.name}</DialogDescription>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-hidden flex flex-col">
-          {/* Top: Full Image */}
-          <div className="h-[60%] bg-white flex items-center justify-center p-4 overflow-hidden relative shrink-0">
-             <div
-              className="absolute inset-0 opacity-20 pointer-events-none"
-              style={{
-                backgroundImage: 'radial-gradient(#000 1px, transparent 1px)',
-                backgroundSize: '24px 24px',
-              }}
-            ></div>
-            <img
-              src={item.image?.path ? `/files/${item.image.path}` : ''}
-              alt={item.name}
-              className="max-w-full max-h-full object-contain drop-shadow-2xl"
-            />
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0 gap-0 overflow-hidden bg-white">
+        <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
+          {/* Left: Image */}
+          <div className="md:w-1/2 bg-stone-50 flex items-center justify-center p-8 border-r border-stone-200">
+            {item.image?.path ? (
+              <img
+                src={`/files/${item.image.path}`}
+                alt={item.name}
+                className="max-w-full max-h-full object-contain drop-shadow-xl"
+              />
+            ) : (
+              <div className="text-stone-400">No Image</div>
+            )}
           </div>
 
-          {/* Bottom: Edit Form */}
-          <div className="flex-1 bg-white border-t border-stone-200 flex flex-col overflow-y-auto shrink-0 p-6 gap-6">
-            <div className="space-y-4">
+          {/* Right: Details Form */}
+          <div className="md:w-1/2 flex flex-col">
+            <DialogHeader className="px-6 py-4 border-b border-stone-200 shrink-0">
+              <DialogTitle>Item Details</DialogTitle>
+            </DialogHeader>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Name"
-                />
+                <Label>Name</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} />
               </div>
 
-               {categoryOptions.length > 0 && (
-                <div className="flex flex-col gap-2">
-                <Label htmlFor="option">Option</Label>
-                <Select
+              {category.options.length > 0 && (
+                <div className="space-y-2">
+                  <Label>Option ({category.name})</Label>
+                  <select
+                    className="flex h-10 w-full rounded-md border border-stone-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-950 disabled:cursor-not-allowed disabled:opacity-50"
                     value={option}
-                    onValueChange={setOption}
-                >
-                    <SelectTrigger>
-                    <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                    {categoryOptions.map((opt) => (
-                        <SelectItem key={opt} value={opt}>
+                    onChange={(e) => setOption(e.target.value)}
+                  >
+                    <option value="">Select option...</option>
+                    {category.options.map((opt) => (
+                      <option key={opt} value={opt}>
                         {opt}
-                        </SelectItem>
+                      </option>
                     ))}
-                    </SelectContent>
-                </Select>
+                  </select>
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label>Description</Label>
                 <Textarea
-                  id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe the item..."
-                  rows={4}
-                  className="resize-none"
+                  className="min-h-[150px]"
                 />
+              </div>
+
+              <div className="pt-4 border-t border-stone-100">
+                <div className="grid grid-cols-2 gap-4 text-xs text-stone-500">
+                  <div>
+                    <span className="font-bold block text-stone-700">Created</span>
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </div>
+                  <div>
+                    <span className="font-bold block text-stone-700">Updated</span>
+                    {new Date(item.updatedAt).toLocaleDateString()}
+                  </div>
+                  <div>
+                    <span className="font-bold block text-stone-700">ID</span>
+                    <span className="font-mono">{item.id}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="mt-auto pt-6 border-t border-stone-100">
-              <Button onClick={handleSave} disabled={saving} className="w-full">
-                {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Save Changes
+            <DialogFooter className="px-6 py-4 border-t border-stone-200 bg-stone-50 shrink-0">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
               </Button>
-            </div>
+              <Button onClick={handleSave} disabled={loading}>
+                {loading ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </DialogFooter>
           </div>
         </div>
       </DialogContent>

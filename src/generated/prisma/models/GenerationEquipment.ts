@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model GenerationEquipment
- *
+ * @deprecated
  */
 export type GenerationEquipmentModel = runtime.Types.Result.DefaultSelection<Prisma.$GenerationEquipmentPayload>
 

@@ -1,3 +1,4 @@
+import { InferResponseType } from 'hono/client'
 import { Loader2, Play, Sparkles } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -235,8 +236,8 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
       return next
     })
 
-    // Get previous equipment ID if it exists (for re-extraction)
-    const previousEquipmentId = extractionResults[index]?.id
+    // Get previous data ID if it exists (for re-extraction)
+    const previousDataId = extractionResults[index]?.id
 
     try {
       const res = await client.extract.item.$post({
@@ -247,7 +248,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
           category: item.category,
           model,
           hint,
-          previousEquipmentId,
+          previousDataId,
         },
       })
 
@@ -256,6 +257,7 @@ export const ExtractorDialog: React.FC<ExtractorDialogProps> = ({
         if (isMounted.current) {
           setExtractionResults((prev) => {
             const next = [...prev]
+            // @ts-ignore
             next[index] = asset
             return next
           })

@@ -10,9 +10,10 @@ import { PageHeader } from '../components/PageHeader'
 import { VibeCard } from '../components/VibeCard'
 import { Button } from '../components/ui/button'
 import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
+import { useCategory } from '../hooks/use-category'
 
-type CharacterResponse = InferResponseType<typeof client.characters.$get>
-type Character = CharacterResponse['items'][number]
+// Use Data API response type now
+type DataItem = InferResponseType<typeof client.data.$post>
 
 const getCharacterColor = (name: string) => {
   const colors = [
@@ -32,28 +33,8 @@ export default function Characters() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  const {
-    items,
-    loading,
-    ref,
-    reset,
-    setItems: setCharacters,
-  } = useInfiniteScroll<Character>({
-    fetchData: async (page, limit) => {
-      const res = await client.characters.$get({
-        query: {
-          page: page.toString(),
-          limit: limit.toString(),
-        },
-      })
-      if (res.ok) {
-        const data = await res.json()
-        return data.items
-      }
-      return []
-    },
-    limit: 20,
-  })
+  // Use generic Data hook but filtering by 'Character' category
+  const { category, dataItems: items, loadingData: loading, resetData } = useCategory('Character')
 
   return (
     <div className="w-full h-full px-4 flex flex-col text-slate-900 relative">
@@ -79,8 +60,7 @@ export default function Characters() {
               key={char.id}
               index={index}
               name={char.name}
-              // @ts-ignore
-              subtitle={`${char.looksCount} LOOKS`}
+              subtitle={char.description || 'Character'}
               image={char.image?.path ? `/files/${char.image.path}` : ''}
               color={getCharacterColor(char.name)}
               onClick={() => navigate(`/characters/${char.id}/looks`)}
@@ -98,13 +78,13 @@ export default function Characters() {
       )}
 
       {/* Loading Indicator */}
-      <div ref={ref} className="h-10 w-full flex items-center justify-center p-4">
+      <div className="h-10 w-full flex items-center justify-center p-4">
         {loading && (
           <div className="text-slate-400 font-mono tracking-widest animate-pulse">LOADING...</div>
         )}
       </div>
 
-      <CreateCharacterDialog open={createOpen} onOpenChange={setCreateOpen} onSuccess={reset} />
+      <CreateCharacterDialog open={createOpen} onOpenChange={setCreateOpen} onSuccess={resetData} />
       <DeleteConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
@@ -113,10 +93,10 @@ export default function Characters() {
         onConfirm={async () => {
           if (!deleteId) return
           try {
-            const res = await client.characters[':id'].$delete({ param: { id: deleteId } })
+            const res = await client.data[':id'].$delete({ param: { id: deleteId } })
             if (res.ok) {
               toast.success('Character deleted')
-              setCharacters((prev) => prev.filter((c) => c.id !== deleteId))
+              resetData()
             } else {
               toast.error('Failed to delete character')
             }

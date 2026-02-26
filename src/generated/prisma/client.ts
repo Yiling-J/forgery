@@ -46,12 +46,12 @@ export { Prisma }
 export type Asset = Prisma.AssetModel
 /**
  * Model Character
- *
+ * @deprecated
  */
 export type Character = Prisma.CharacterModel
 /**
  * Model Equipment
- *
+ * @deprecated
  */
 export type Equipment = Prisma.EquipmentModel
 /**
@@ -86,17 +86,17 @@ export type Generation = Prisma.GenerationModel
 export type GenerationData = Prisma.GenerationDataModel
 /**
  * Model GenerationEquipment
- *
+ * @deprecated
  */
 export type GenerationEquipment = Prisma.GenerationEquipmentModel
 /**
  * Model Outfit
- *
+ * @deprecated
  */
 export type Outfit = Prisma.OutfitModel
 /**
  * Model OutfitEquipment
- *
+ * @deprecated
  */
 export type OutfitEquipment = Prisma.OutfitEquipmentModel
 /**
@@ -106,11 +106,11 @@ export type OutfitEquipment = Prisma.OutfitEquipmentModel
 export type Setting = Prisma.SettingModel
 /**
  * Model Pose
- *
+ * @deprecated
  */
 export type Pose = Prisma.PoseModel
 /**
  * Model Expression
- *
+ * @deprecated
  */
 export type Expression = Prisma.ExpressionModel

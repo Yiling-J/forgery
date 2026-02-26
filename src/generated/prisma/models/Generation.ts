@@ -1252,10 +1252,19 @@ export type $GenerationPayload<ExtArgs extends runtime.Types.Extensions.Internal
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    /**
+     * @deprecated
+     */
     characterId: string
     imageId: string
     userPrompt: string | null
+    /**
+     * @deprecated
+     */
     poseId: string | null
+    /**
+     * @deprecated
+     */
     expressionId: string | null
     createdAt: Date
     updatedAt: Date

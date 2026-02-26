@@ -6,32 +6,37 @@ import { assetService } from './asset'
 
 export class GenerationService {
   async createGeneration(
-    characterId: string,
-    equipmentIds: string[],
-    userPrompt?: string,
-    poseId?: string,
-    expressionId?: string,
+    dataIds: string[],
+    userPrompt?: string
   ) {
-    // 1. Fetch character and its image
-    const character = await prisma.character.findUnique({
-      where: { id: characterId },
-      include: { image: true },
+    // 1. Fetch all data items with their images and categories
+    const dataItems = await prisma.data.findMany({
+      where: { id: { in: dataIds } },
+      include: {
+          image: true,
+          category: true
+      },
     })
 
-    if (!character) {
-      throw new Error('Character not found')
+    if (dataItems.length !== dataIds.length) {
+        throw new Error('Some items were not found')
     }
 
-    // 2. Fetch equipments and their images
-    const equipments = await prisma.equipment.findMany({
-      where: { id: { in: equipmentIds } },
-      include: { image: true },
-    })
+    // Identify Character (Base)
+    const character = dataItems.find(d => d.category.name === 'Character')
+    if (!character) {
+        throw new Error('No character selected as base')
+    }
 
-    // 3. Construct parts
+    // Identify Modifiers (Equipment, Pose, Expression)
+    // We treat everything else as a modifier
+    const modifiers = dataItems.filter(d => d.id !== character.id)
+
+    // 2. Construct parts
     const parts: AIPart[] = []
 
     // Base Character
+    if (!character.image) throw new Error('Character has no image')
     const charPath = join('data/files', character.image.path)
     const charFile = Bun.file(charPath)
     const charBuffer = await charFile.arrayBuffer()
@@ -45,92 +50,42 @@ export class GenerationService {
     })
     parts.push({ text: 'Base Character Reference' })
 
-    // Equipments
-    for (const eq of equipments) {
-      const eqPath = join('data/files', eq.image.path)
-      const eqFile = Bun.file(eqPath)
-      const eqBuffer = await eqFile.arrayBuffer()
-      const eqBase64 = Buffer.from(eqBuffer).toString('base64')
-
-      parts.push({
-        inlineData: {
-          mimeType: eq.image.type,
-          data: eqBase64,
-        },
-      })
-
-      parts.push({
-        text: `
-Equipment to equip:
-name: ${eq.name}
-description: ${eq.description}
-category: ${eq.category}
-`,
-      })
-    }
-
-    // Handle Pose
+    // Process Modifiers
     let poseInstruction = '6. Maintain the exact pose and angle of the Base Character.'
-
-    if (poseId) {
-      const pose = await prisma.pose.findUnique({
-        where: { id: poseId },
-        include: { image: true },
-      })
-
-      if (pose) {
-        const posePath = join('data/files', pose.image.path)
-        const file = Bun.file(posePath)
-        const poseBuffer = await file.arrayBuffer()
-        const poseBase64 = Buffer.from(poseBuffer).toString('base64')
-
-        parts.push({
-          inlineData: {
-            mimeType: pose.image.type,
-            data: poseBase64,
-          },
-        })
-        parts.push({ text: 'Target Pose Reference' })
-
-        poseInstruction =
-          "6. Use the 'Target Pose Reference' image for the character's pose and angle."
-      } else {
-        // Fallback for transition: if user hasn't migrated example data yet, poseId might be missing.
-        // We log a warning but proceed without the pose, or we could throw.
-        // Given strict requirement, throwing might be better, but let's be safe and just ignore if not found?
-        // Actually, if the user explicitly selected a pose, they expect it to work. Throwing is better.
-        throw new Error(`Pose not found: ${poseId}`)
-      }
-    }
-
-    // Handle Expression
     let expressionInstruction = '7. Maintain the facial expression of the Base Character.'
 
-    if (expressionId) {
-      const expression = await prisma.expression.findUnique({
-        where: { id: expressionId },
-        include: { image: true },
-      })
+    for (const item of modifiers) {
+        if (!item.image) continue;
 
-      if (expression) {
-        const expressionPath = join('data/files', expression.image.path)
-        const file = Bun.file(expressionPath)
-        const expressionBuffer = await file.arrayBuffer()
-        const expressionBase64 = Buffer.from(expressionBuffer).toString('base64')
+        const itemPath = join('data/files', item.image.path)
+        const itemFile = Bun.file(itemPath)
+        const itemBuffer = await itemFile.arrayBuffer()
+        const itemBase64 = Buffer.from(itemBuffer).toString('base64')
 
         parts.push({
-          inlineData: {
-            mimeType: expression.image.type,
-            data: expressionBase64,
-          },
+            inlineData: {
+                mimeType: item.image.type,
+                data: itemBase64,
+            }
         })
-        parts.push({ text: 'Target Expression Reference' })
 
-        expressionInstruction =
-          "7. Use the 'Target Expression Reference' image for the character's facial expression."
-      } else {
-        throw new Error(`Expression not found: ${expressionId}`)
-      }
+        if (item.category.name === 'Pose') {
+             parts.push({ text: 'Target Pose Reference' })
+             poseInstruction = "6. Use the 'Target Pose Reference' image for the character's pose and angle."
+        } else if (item.category.name === 'Expression') {
+             parts.push({ text: 'Target Expression Reference' })
+             expressionInstruction = "7. Use the 'Target Expression Reference' image for the character's facial expression."
+        } else {
+             // Equipment or other
+             parts.push({
+                text: `
+Equipment to equip:
+name: ${item.name}
+description: ${item.description}
+category: ${item.option || item.category.name}
+`,
+              })
+        }
     }
 
     let prompt = `
@@ -156,14 +111,14 @@ category: ${eq.category}
 
     parts.push({ text: prompt })
 
-    // 4. Generate Image
+    // 3. Generate Image
     const generatedImageBase64 = await aiService.generateImage(
       parts,
       undefined,
       'step_generation_model',
     )
 
-    // 5. Save generated image as Asset
+    // 4. Save generated image as Asset
     const matches = generatedImageBase64.match(/^data:(.+);base64,(.+)$/)
     if (!matches || matches.length !== 3) {
       throw new Error('Invalid generated image format')
@@ -180,34 +135,31 @@ category: ${eq.category}
       ext: ext,
     })
 
-    // 6. Create Generation record
+    // 5. Create Generation record
     const generation = await prisma.generation.create({
       data: {
-        characterId: character.id,
+        characterId: character.id, // Keep backward compatibility for now
         imageId: asset.id,
         userPrompt: userPrompt,
-        poseId: poseId,
-        expressionId: expressionId,
-        equipments: {
-          create: equipmentIds.map((eqId) => ({
-            equipmentId: eqId,
-          })),
-        },
+        // Create GenerationData links for ALL items (Character + Modifiers)
+        data: {
+            create: dataItems.map(d => ({
+                dataId: d.id
+            }))
+        }
       },
       include: {
         image: true,
-        character: true,
-        pose: { include: { image: true } },
-        expression: { include: { image: true } },
-        equipments: {
-          include: {
-            equipment: {
-              include: {
-                image: true,
-              },
-            },
-          },
-        },
+        data: {
+            include: {
+                data: {
+                    include: {
+                        image: true,
+                        category: true // Include Category for result if needed immediately
+                    }
+                }
+            }
+        }
       },
     })
 
@@ -222,17 +174,15 @@ category: ${eq.category}
     const skip = (page - 1) * limit
     const where: Prisma.GenerationWhereInput = {}
 
+    // Deprecated filter support
     if (filters?.characterId) {
       where.characterId = filters.characterId
     }
 
-    if (filters?.equipmentId) {
-      where.equipments = {
-        some: {
-          equipmentId: filters.equipmentId,
-        },
-      }
-    }
+    // Support new generic filtering via GenerationData if needed,
+    // but the requirement was specifically about fetching generations FOR a data item,
+    // which is handled in DataService.listGenerations.
+    // This method is for global listing.
 
     const [total, items] = await Promise.all([
       prisma.generation.count({ where }),
@@ -242,18 +192,16 @@ category: ${eq.category}
         take: limit,
         include: {
           image: true,
-          character: true,
-          pose: { include: { image: true } },
-          expression: { include: { image: true } },
-          equipments: {
+          data: {
             include: {
-              equipment: {
-                include: {
-                  image: true,
-                },
-              },
-            },
-          },
+                data: {
+                    include: {
+                        image: true,
+                        category: true
+                    }
+                }
+            }
+          }
         },
         orderBy: {
           id: 'desc',
@@ -272,6 +220,11 @@ category: ${eq.category}
     if (!generation) return
 
     // Delete relation records first (not strictly needed with cascading deletes, but safe)
+    await prisma.generationData.deleteMany({
+        where: { generationId: id }
+    })
+
+    // Delete deprecated relations just in case
     await prisma.generationEquipment.deleteMany({
       where: { generationId: id },
     })

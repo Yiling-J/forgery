@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model OutfitEquipment
- *
+ * @deprecated
  */
 export type OutfitEquipmentModel = runtime.Types.Result.DefaultSelection<Prisma.$OutfitEquipmentPayload>
 
