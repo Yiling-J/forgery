@@ -13,8 +13,14 @@ import { Input } from '@/ui/components/ui/input'
 import { Label } from '@/ui/components/ui/label'
 import { Textarea } from '@/ui/components/ui/textarea'
 import { useToast } from '@/ui/hooks/use-toast'
-import { Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { Loader2, Plus, X } from 'lucide-react'
+import { useRef, useState } from 'react'
+
+interface Asset {
+  id: string
+  path: string
+  name: string
+}
 
 interface CreateCategoryDialogProps {
   open: boolean
@@ -30,6 +36,55 @@ export function CreateCategoryDialog({ open, onOpenChange, onCreated }: CreateCa
   const [maxCount, setMaxCount] = useState(9)
   const [withImage, setWithImage] = useState(true)
   const [options, setOptions] = useState('')
+  const [promptText, setPromptText] = useState('')
+  const [referenceImages, setReferenceImages] = useState<Asset[]>([])
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    setUploading(true)
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const res = await client.assets.upload.$post({
+          form: {
+            file: file,
+            name: file.name,
+          },
+        })
+
+        if (res.ok) {
+          const asset = await res.json()
+          // @ts-ignore
+          setReferenceImages((prev) => [...prev, asset])
+        } else {
+          console.error('Failed to upload', file.name)
+          toast({
+            title: 'Error',
+            description: `Failed to upload ${file.name}`,
+            variant: 'destructive',
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Upload error', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to upload images.',
+        variant: 'destructive',
+      })
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const removeImage = (id: string) => {
+    setReferenceImages((prev) => prev.filter((img) => img.id !== id))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,7 +101,10 @@ export function CreateCategoryDialog({ open, onOpenChange, onCreated }: CreateCa
           maxCount,
           withImage,
           options: optionsArray,
-          imagePrompt: { text: '', imageIds: [] },
+          imagePrompt: {
+            text: withImage ? promptText : '',
+            imageIds: withImage ? referenceImages.map((img) => img.id) : [],
+          },
           enabled: true,
         },
       })
@@ -80,11 +138,13 @@ export function CreateCategoryDialog({ open, onOpenChange, onCreated }: CreateCa
     setMaxCount(9)
     setWithImage(true)
     setOptions('')
+    setPromptText('')
+    setReferenceImages([])
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create New Category</DialogTitle>
           <DialogDescription>Add a new category to organize your assets.</DialogDescription>
@@ -158,6 +218,72 @@ export function CreateCategoryDialog({ open, onOpenChange, onCreated }: CreateCa
               </label>
             </div>
           </div>
+
+          {withImage && (
+            <div className="col-span-4 space-y-4 border-t border-slate-100 pt-4 mt-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-slate-500 font-semibold uppercase text-xs tracking-wider">
+                  Extraction Configuration
+                </Label>
+              </div>
+
+              {/* Reference Images */}
+              {referenceImages.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {referenceImages.map((img) => (
+                    <div key={img.id} className="relative w-16 h-16 shrink-0 group">
+                      <img
+                        src={`/files/${img.path}`}
+                        alt={img.name}
+                        className="w-full h-full object-cover rounded-md border border-slate-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(img.id)}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Prompt & Add Image */}
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="shrink-0 h-20 w-20 flex flex-col gap-1 items-center justify-center border-dashed border-slate-300 hover:border-slate-400 hover:bg-slate-50"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                  ) : (
+                    <>
+                      <Plus className="h-5 w-5 text-slate-400" />
+                      <span className="text-[10px] text-slate-500">Add Image</span>
+                    </>
+                  )}
+                </Button>
+                <Textarea
+                  value={promptText}
+                  onChange={(e) => setPromptText(e.target.value)}
+                  placeholder="Enter extraction prompt (e.g. Extract {{name}} from image)..."
+                  className="flex-1 h-20 resize-none font-mono text-sm"
+                />
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+              />
+            </div>
+          )}
 
           <DialogFooter>
             <Button type="submit" disabled={loading}>

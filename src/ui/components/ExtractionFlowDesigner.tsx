@@ -9,12 +9,18 @@ import {
   SelectValue,
 } from './ui/select'
 
+interface Category {
+  id: string
+  name: string
+}
+
 interface ExtractionFlowDesignerProps {
   settings: Record<string, string>
   openaiTextModels: string[]
   openaiImageModels: string[]
   googleTextModels: string[]
   googleImageModels: string[]
+  categories?: Category[]
   onSelect: (key: string, value: string) => void
 }
 
@@ -24,6 +30,7 @@ export function ExtractionFlowDesigner({
   openaiImageModels,
   googleTextModels,
   googleImageModels,
+  categories,
   onSelect,
 }: ExtractionFlowDesignerProps) {
   const steps = [
@@ -84,14 +91,39 @@ export function ExtractionFlowDesigner({
                   </div>
 
                   <div className="w-full md:w-64">
-                    <ModelSelect
-                      value={settings[step.key]}
-                      openaiModels={textModels.openai}
-                      googleModels={textModels.google}
-                      onSelect={(val) => onSelect(step.key, val)}
-                    />
+                    {step.id !== 'extract' && (
+                      <ModelSelect
+                        value={settings[step.key]}
+                        openaiModels={textModels.openai}
+                        googleModels={textModels.google}
+                        onSelect={(val) => onSelect(step.key, val)}
+                      />
+                    )}
                   </div>
                 </div>
+
+                {step.id === 'extract' && categories && categories.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-slate-100">
+                    <div className="space-y-3 pl-2">
+                      {categories.map((cat) => (
+                        <div
+                          key={cat.id}
+                          className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4"
+                        >
+                          <span className="text-sm text-slate-600 font-medium">{cat.name}</span>
+                          <div className="w-full md:w-64">
+                            <ModelSelect
+                              value={settings[`step_extract_cat_${cat.id}_model`]}
+                              openaiModels={openaiImageModels}
+                              googleModels={googleImageModels}
+                              onSelect={(val) => onSelect(`step_extract_cat_${cat.id}_model`, val)}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Arrow Connection (except last) */}
