@@ -22,6 +22,49 @@ export class DataService {
   async deleteData(id: string) {
     return prisma.data.delete({ where: { id } })
   }
+
+  async listGenerations(
+    id: string,
+    pagination: { page: number; limit: number }
+  ) {
+    const { page, limit } = pagination
+    const skip = (page - 1) * limit
+
+    const where: Prisma.GenerationWhereInput = {
+      data: {
+        some: {
+          dataId: id
+        }
+      }
+    }
+
+    const [total, items] = await Promise.all([
+      prisma.generation.count({ where }),
+      prisma.generation.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          image: true,
+          data: {
+             include: {
+                 data: {
+                     include: {
+                         image: true,
+                         category: true
+                     }
+                 }
+             }
+          }
+        },
+        orderBy: {
+          id: 'desc',
+        },
+      }),
+    ])
+
+    return { total, items, page, limit, totalPages: Math.ceil(total / limit) }
+  }
 }
 
 export const dataService = new DataService()

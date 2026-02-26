@@ -6,6 +6,40 @@ export async function run() {
 
   // 1. Create Categories
 
+  // Character Category
+  const characterPrompt = {
+    text: `Task: Character Extraction
+
+Input: An image containing a character.
+Target Character: {{name}}
+Description: {{description}}
+
+Instructions:
+1. Identify the character described above in the input image.
+2. Extract ONLY this character.
+3. Place it on a pure white background (#FFFFFF).
+4. Ensure the character is fully visible, centered, and cleanly isolated.
+5. Remove all other elements (background, other characters, etc).
+6. Maintain high quality and original details.
+`,
+    imageIds: [],
+  }
+
+  let characterCategory = await prisma.category.findFirst({ where: { name: 'Character' } })
+  if (!characterCategory) {
+    characterCategory = await prisma.category.create({
+      data: {
+        name: 'Character',
+        description: 'Characters',
+        imagePrompt: JSON.stringify(characterPrompt),
+        enabled: true,
+        options: JSON.stringify([]),
+        maxCount: 1,
+        withImage: true,
+      },
+    })
+  }
+
   // Equipment Category
   const equipmentPrompt = {
     text: `Task: Asset Extraction
@@ -111,6 +145,25 @@ Instructions:
 
   // 2. Migrate Data (Preserve IDs)
 
+  // Migrate Characters
+  const characters = await prisma.character.findMany()
+  for (const item of characters) {
+    const exists = await prisma.data.findUnique({ where: { id: item.id } })
+    if (!exists) {
+        await prisma.data.create({
+        data: {
+            id: item.id,
+            name: item.name,
+            description: item.description || '',
+            imageId: item.imageId,
+            categoryId: characterCategory.id,
+        },
+        })
+    }
+  }
+  console.log(`Migrated ${characters.length} characters`)
+
+
   // Migrate Equipments
   const equipments = await prisma.equipment.findMany()
   for (const item of equipments) {
@@ -174,6 +227,28 @@ Instructions:
   })
 
   for (const gen of generations) {
+      // Character
+      // Every generation must link to its character in GenerationData
+      const charExists = await prisma.generationData.findUnique({
+        where: {
+          generationId_dataId: {
+            generationId: gen.id,
+            dataId: gen.characterId
+          }
+        }
+      })
+      if (!charExists) {
+        const dataExists = await prisma.data.findUnique({ where: { id: gen.characterId } })
+        if (dataExists) {
+          await prisma.generationData.create({
+            data: {
+              generationId: gen.id,
+              dataId: gen.characterId
+            }
+          })
+        }
+      }
+
       // Pose
       if (gen.poseId) {
           // Check if link exists

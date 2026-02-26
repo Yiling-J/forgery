@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model Expression
- *
+ * @deprecated
  */
 export type ExpressionModel = runtime.Types.Result.DefaultSelection<Prisma.$ExpressionPayload>
 

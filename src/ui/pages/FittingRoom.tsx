@@ -18,17 +18,16 @@ import {
 } from '../components/ui/dropdown-menu'
 import { ScrollArea } from '../components/ui/scroll-area'
 
-// Types - Define locally to avoid complex type extraction if client inference is tricky
-// But we should try to use inference
-type CharacterResponse = InferResponseType<(typeof client.characters)[':id']['$get']>
-type GenerationResponse = InferResponseType<typeof client.generations.$get>
-type GenerationItem = GenerationResponse['items'][number]
+// Use new APIs
+type DataItem = InferResponseType<typeof client.data[':id']['$get']>
+// @ts-ignore
+type GenerationItem = InferResponseType<typeof client.data[':id']['generations']['$get']>['items'][number]
 
 export default function FittingRoom() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  // @ts-ignore - Response type might be union with error
-  const [character, setCharacter] = useState<CharacterResponse | null>(null)
+  // @ts-ignore
+  const [character, setCharacter] = useState<DataItem | null>(null)
   const [generations, setGenerations] = useState<GenerationItem[]>([])
   const [loading, setLoading] = useState(true)
   const [createLookOpen, setCreateLookOpen] = useState(false)
@@ -46,8 +45,8 @@ export default function FittingRoom() {
     setLoading(true)
     try {
       const [charRes, genRes] = await Promise.all([
-        client.characters[':id'].$get({ param: { id: charId } }),
-        client.generations.$get({ query: { characterId: charId, limit: '100' } }),
+        client.data[':id'].$get({ param: { id: charId } }),
+        client.data[':id'].generations.$get({ param: { id: charId }, query: { limit: '100' } }),
       ])
 
       if (charRes.ok) {
@@ -56,6 +55,7 @@ export default function FittingRoom() {
       }
       if (genRes.ok) {
         const genData = await genRes.json()
+        // @ts-ignore
         setGenerations(genData.items)
       }
     } catch (e) {
@@ -253,6 +253,7 @@ export default function FittingRoom() {
             const res = await client.generations[':id'].$delete({ param: { id: deleteLookId } })
             if (res.ok) {
               toast.success('Look deleted')
+              // @ts-ignore
               setGenerations((prev) => prev.filter((g) => g.id !== deleteLookId))
             } else {
               toast.error('Failed to delete look')

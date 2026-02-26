@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model Pose
- *
+ * @deprecated
  */
 export type PoseModel = runtime.Types.Result.DefaultSelection<Prisma.$PosePayload>
 

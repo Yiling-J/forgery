@@ -28,10 +28,14 @@ export function useCategory(categoryName: string) {
       if (res.ok) {
         const categories = await res.json()
         const cat = categories.find((c) => c.name === categoryName)
-        setCategory(cat || null)
+        if (cat) {
+            setCategory(cat)
+        } else {
+            console.warn(`Category ${categoryName} not found in`, categories)
+        }
       }
     } catch (e) {
-      console.error(e)
+      console.error('Failed to fetch categories', e)
     } finally {
       setLoadingCategory(false)
     }
@@ -51,6 +55,7 @@ export function useCategory(categoryName: string) {
   } = useInfiniteScroll<DataItem>({
     fetchData: async (page, limit) => {
       if (!category) return []
+
       const query: { page: string; limit: string; option?: string } = {
         page: page.toString(),
         limit: limit.toString(),
@@ -58,13 +63,18 @@ export function useCategory(categoryName: string) {
       if (selectedOption) {
         query.option = selectedOption
       }
-      const res = await client.categories[':id'].data.$get({
-        param: { id: category.id },
-        query,
-      })
-      if (res.ok) {
-        const data = await res.json()
-        return data.items
+
+      try {
+        const res = await client.categories[':id'].data.$get({
+            param: { id: category.id },
+            query,
+        })
+        if (res.ok) {
+            const data = await res.json()
+            return data.items
+        }
+      } catch(e) {
+          console.error('Failed to fetch data items', e)
       }
       return []
     },
@@ -81,15 +91,20 @@ export function useCategory(categoryName: string) {
   } = useInfiniteScroll<CollectionItem>({
     fetchData: async (page, limit) => {
       if (!category) return []
-      const res = await client.categories[':id'].collections.$get({
-        param: { id: category.id },
-        query: {
-          page: page.toString(),
-          limit: limit.toString(),
+
+      try {
+        const res = await client.categories[':id'].collections.$get({
+            param: { id: category.id },
+            query: {
+            page: page.toString(),
+            limit: limit.toString(),
         },
-      })
-      if (res.ok) {
-        return await res.json()
+        })
+        if (res.ok) {
+            return await res.json()
+        }
+      } catch(e) {
+          console.error('Failed to fetch collections', e)
       }
       return []
     },

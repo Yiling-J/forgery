@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model Character
- *
+ * @deprecated
  */
 export type CharacterModel = runtime.Types.Result.DefaultSelection<Prisma.$CharacterPayload>
 

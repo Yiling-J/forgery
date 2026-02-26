@@ -32,6 +32,7 @@ model Asset {
   @@map("assets")
 }
 
+/// @deprecated
 model Character {
   id          String   @id @default(ulid())
   name        String
@@ -47,7 +48,7 @@ model Character {
   @@map("characters")
 }
 
-// Deprecated
+/// @deprecated
 model Equipment {
   id          String   @id @default(ulid())
   name        String
@@ -134,12 +135,13 @@ model CollectionItem {
 
 model Generation {
   id           String   @id @default(ulid())
+  /// @deprecated
   characterId  String   @map("character_id")
   imageId      String   @map("image_id")
   userPrompt   String?  @map("user_prompt")
-  // Deprecated
+  /// @deprecated
   poseId       String?  @map("pose")
-  // Deprecated
+  /// @deprecated
   expressionId String?  @map("expression")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -166,6 +168,7 @@ model GenerationData {
   @@map("generation_data")
 }
 
+/// @deprecated
 model GenerationEquipment {
   generationId String @map("generation_id")
   equipmentId  String @map("equipment_id")
@@ -177,6 +180,7 @@ model GenerationEquipment {
   @@map("generation_equipments")
 }
 
+/// @deprecated
 model Outfit {
   id        String   @id @default(ulid())
   name      String
@@ -190,6 +194,7 @@ model Outfit {
   @@map("outfits")
 }
 
+/// @deprecated
 model OutfitEquipment {
   outfitId    String @map("outfit_id")
   equipmentId String @map("equipment_id")
@@ -211,7 +216,7 @@ model Setting {
   @@map("settings")
 }
 
-// Deprecated
+/// @deprecated
 model Pose {
   id        String   @id @default(ulid())
   name      String
@@ -226,7 +231,7 @@ model Pose {
   @@map("poses")
 }
 
-// Deprecated
+/// @deprecated
 model Expression {
   id        String   @id @default(ulid())
   name      String

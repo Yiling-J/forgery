@@ -5,8 +5,6 @@ import { dataService } from '../service/data'
 
 const app = new Hono()
 
-// List route removed
-
 // Create
 const createSchema = z.object({
   name: z.string().min(1),
@@ -70,4 +68,35 @@ const deleteRoute = updateRoute.delete('/:id', async (c) => {
   }
 })
 
-export default deleteRoute
+// Get one
+const getRoute = deleteRoute.get('/:id', async (c) => {
+    const { id } = c.req.param()
+    try {
+        const item = await dataService.getData(id)
+        if (!item) return c.json({ error: 'Not found' }, 404)
+        return c.json(item)
+    } catch (e) {
+        console.error('Failed to get data', e)
+        return c.json({ error: 'Failed to get data' }, 500)
+    }
+})
+
+const listGenerationsSchema = z.object({
+  page: z.coerce.number().optional().default(1),
+  limit: z.coerce.number().optional().default(10),
+})
+
+// List Generations
+const listGenerationsRoute = getRoute.get('/:id/generations', zValidator('query', listGenerationsSchema), async (c) => {
+    const { id } = c.req.param()
+    const { page, limit } = c.req.valid('query')
+    try {
+        const result = await dataService.listGenerations(id, { page, limit })
+        return c.json(result)
+    } catch (e) {
+        console.error('Failed to list generations', e)
+        return c.json({ error: 'Failed to list generations' }, 500)
+    }
+})
+
+export default listGenerationsRoute
