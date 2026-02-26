@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '../db'
 import { aiService } from './ai'
+import { settingService } from './setting'
 
 export interface ExtractedItem {
   name: string
@@ -135,7 +136,16 @@ The value for each key must be either a single item object or an array of item o
          }
      }
 
-     return aiService.generateImage(promptText, [file, ...referenceImages], model || 'step_refine_model')
+     let modelToUse = model
+     if (!modelToUse) {
+         const catModelKey = `step_extract_cat_${category.id}_model`
+         const catModelValue = await settingService.get(catModelKey)
+         if (catModelValue) {
+             modelToUse = catModelValue
+         }
+     }
+
+     return aiService.generateImage(promptText, [file, ...referenceImages], modelToUse)
   }
 }
 

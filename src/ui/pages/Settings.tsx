@@ -8,8 +8,12 @@ import { Input } from '@/ui/components/ui/input'
 import { Label } from '@/ui/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/ui/tabs'
 import { useToast } from '@/ui/hooks/use-toast'
+import { InferResponseType } from 'hono/client'
 import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+
+type CategoryListResponse = InferResponseType<typeof client.categories.$get>
+type Category = CategoryListResponse[number]
 
 export default function Settings() {
   const { toast } = useToast()
@@ -18,6 +22,7 @@ export default function Settings() {
   const [settings, setSettings] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState<Record<string, boolean>>({})
   const [saved, setSaved] = useState<Record<string, boolean>>({})
+  const [categories, setCategories] = useState<Category[]>([])
 
   // Lists for dropdowns
   const [openaiTextModels, setOpenaiTextModels] = useState<string[]>([])
@@ -27,7 +32,20 @@ export default function Settings() {
 
   useEffect(() => {
     fetchSettings()
+    fetchCategories()
   }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const res = await client.categories.$get()
+      if (res.ok) {
+        const data = await res.json()
+        setCategories(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories', error)
+    }
+  }
 
   const fetchSettings = async () => {
     setLoading(true)
@@ -297,6 +315,7 @@ export default function Settings() {
               openaiImageModels={openaiImageModels}
               googleTextModels={googleTextModels}
               googleImageModels={googleImageModels}
+              categories={categories}
               onSelect={(key, val) => saveSetting(key, val)}
             />
           </TabsContent>

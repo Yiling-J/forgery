@@ -32,6 +32,9 @@ const prismaMock = {
   },
   asset: {
     findUnique: mock(async () => null)
+  },
+  setting: {
+    findUnique: mock(async () => null)
   }
 }
 
