@@ -1,5 +1,6 @@
 import { Edit, Plus, ScanLine, Trash2, Upload } from 'lucide-react'
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { CollectionDialog } from '../components/CollectionDialog'
@@ -25,6 +26,7 @@ const getEquipmentColor = (name: string) => {
 }
 
 export const CategoryPage: React.FC<CategoryPageProps> = ({ categoryName }) => {
+  const navigate = useNavigate()
   const {
     category,
     loadingCategory,
@@ -188,11 +190,16 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ categoryName }) => {
                   subtitle={item.option || category.name}
                   image={item.image?.path ? `/files/${item.image.path}` : ''}
                   color={getEquipmentColor(item.name)}
-                  onClick={() => {
-                    setSelectedItem(item)
-                    setItemDetailsOpen(true)
-                  }}
+                  onClick={() => navigate(`/data/${item.id}`)}
                   actions={[
+                    {
+                      name: 'Edit',
+                      onClick: () => {
+                        setSelectedItem(item)
+                        setItemDetailsOpen(true)
+                      },
+                      icon: <Edit className="w-4 h-4" />,
+                    },
                     {
                       name: 'Delete',
                       onClick: () => handleDeleteItem(item.id),

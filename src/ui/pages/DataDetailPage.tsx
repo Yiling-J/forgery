@@ -23,11 +23,11 @@ type DataItem = InferResponseType<typeof client.data[':id']['$get']>
 // @ts-ignore
 type GenerationItem = InferResponseType<typeof client.data[':id']['generations']['$get']>['items'][number]
 
-export default function FittingRoom() {
+export default function DataDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   // @ts-ignore
-  const [character, setCharacter] = useState<DataItem | null>(null)
+  const [dataItem, setDataItem] = useState<DataItem | null>(null)
   const [generations, setGenerations] = useState<GenerationItem[]>([])
   const [loading, setLoading] = useState(true)
   const [createLookOpen, setCreateLookOpen] = useState(false)
@@ -41,17 +41,17 @@ export default function FittingRoom() {
     }
   }, [id])
 
-  const fetchData = async (charId: string) => {
+  const fetchData = async (itemId: string) => {
     setLoading(true)
     try {
-      const [charRes, genRes] = await Promise.all([
-        client.data[':id'].$get({ param: { id: charId } }),
-        client.data[':id'].generations.$get({ param: { id: charId }, query: { limit: '100' } }),
+      const [itemRes, genRes] = await Promise.all([
+        client.data[':id'].$get({ param: { id: itemId } }),
+        client.data[':id'].generations.$get({ param: { id: itemId }, query: { limit: '100' } }),
       ])
 
-      if (charRes.ok) {
-        const data = await charRes.json()
-        setCharacter(data)
+      if (itemRes.ok) {
+        const data = await itemRes.json()
+        setDataItem(data)
       }
       if (genRes.ok) {
         const genData = await genRes.json()
@@ -68,48 +68,54 @@ export default function FittingRoom() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-stone-50">
-        <div className="animate-pulse text-stone-400 font-medium">Loading Fitting Room...</div>
+        <div className="animate-pulse text-stone-400 font-medium">Loading Details...</div>
       </div>
     )
   }
 
-  if (!character || 'error' in character) {
+  if (!dataItem || 'error' in dataItem) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-stone-50 gap-4">
-        <h2 className="text-2xl font-bold text-stone-800">Character Not Found</h2>
-        <Button onClick={() => navigate('/characters')}>Return to Characters</Button>
+        <h2 className="text-2xl font-bold text-stone-800">Item Not Found</h2>
+        <Button onClick={() => navigate(-1)}>Return</Button>
       </div>
     )
   }
+
+  // @ts-ignore
+  const categoryName = dataItem.category?.name || 'Item'
+  const isCharacter = categoryName === 'Character'
 
   return (
     <div className="px-8 pb-2 h-[calc(100vh-6rem)] flex flex-col bg-stone-50/30 relative">
       <PageHeader
-        title="Fitting Room"
-        subtitle="System // FITTING_ROOM"
+        title={`${categoryName} Details`}
+        subtitle={`System // ${categoryName.toUpperCase()}_DETAILS`}
         backButton={
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate('/characters')}
+            onClick={() => navigate(-1)}
             className="rounded-full hover:bg-stone-200 text-stone-600"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
         }
         actions={
-          <Button
-            onClick={() => setCreateLookOpen(true)}
-            className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg hover:shadow-xl transition-all"
-          >
-            <Plus className="mr-2 h-4 w-4" /> Create New Look
-          </Button>
+          isCharacter && (
+            <Button
+              onClick={() => setCreateLookOpen(true)}
+              className="bg-stone-900 hover:bg-stone-800 text-white shadow-lg hover:shadow-xl transition-all"
+            >
+              <Plus className="mr-2 h-4 w-4" /> Create New Look
+            </Button>
+          )
         }
         className="mb-6 shrink-0"
       />
 
       <div className="flex flex-col lg:flex-row flex-1 gap-6 overflow-hidden pb-4 min-h-0">
-        {/* Left: Character Preview */}
+        {/* Left: Item Preview */}
         <div className="w-full lg:w-1/3 flex flex-col gap-4 shrink-0 h-full min-h-0">
           <Card className="flex-1 border-stone-200 overflow-hidden bg-white flex items-center justify-center relative shadow-sm rounded-2xl p-8">
             <div
@@ -120,14 +126,18 @@ export default function FittingRoom() {
               }}
             ></div>
             <img
-              src={character.image?.path ? `/files/${character.image.path}` : ''}
-              alt={character.name}
+              // @ts-ignore
+              src={dataItem.image?.path ? `/files/${dataItem.image.path}` : ''}
+              // @ts-ignore
+              alt={dataItem.name}
               className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-md p-4 rounded-xl border border-white/50 shadow-sm">
-              <h3 className="font-bold text-stone-800 text-lg">{character.name}</h3>
+              {/* @ts-ignore */}
+              <h3 className="font-bold text-stone-800 text-lg">{dataItem.name}</h3>
               <p className="text-xs text-stone-500 mt-1 line-clamp-2">
-                {character.description || 'No description provided.'}
+                {/* @ts-ignore */}
+                {dataItem.description || 'No description provided.'}
               </p>
             </div>
           </Card>
@@ -138,7 +148,7 @@ export default function FittingRoom() {
           <div className="flex-none p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center shrink-0">
             <h3 className="font-bold text-stone-700 uppercase tracking-wider text-xs flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              Generated Looks
+              Generated Looks (Involved)
             </h3>
             <span className="text-xs font-mono text-stone-400">{generations.length} LOOKS</span>
           </div>
@@ -150,11 +160,13 @@ export default function FittingRoom() {
               </div>
               <div className="text-center">
                 <p className="font-medium text-stone-600">No looks generated yet.</p>
-                <p className="text-xs mt-1">Create your first look to get started.</p>
+                {isCharacter && <p className="text-xs mt-1">Create your first look to get started.</p>}
               </div>
-              <Button variant="outline" onClick={() => setCreateLookOpen(true)}>
-                Create Look
-              </Button>
+              {isCharacter && (
+                <Button variant="outline" onClick={() => setCreateLookOpen(true)}>
+                  Create Look
+                </Button>
+              )}
             </div>
           ) : (
             <ScrollArea className="grow overflow-hidden">
