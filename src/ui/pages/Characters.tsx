@@ -64,7 +64,7 @@ export default function Characters() {
               subtitle={char.description || 'Character'}
               image={char.image?.path ? `/files/${char.image.path}` : ''}
               color={getCharacterColor(char.name)}
-              onClick={() => navigate(`/characters/${char.id}/looks`)}
+              onClick={() => navigate(`/data/${char.id}`)}
               actions={[
                 {
                   name: 'Delete',

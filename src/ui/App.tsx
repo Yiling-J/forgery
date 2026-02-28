@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './Layout'
 import Characters from './pages/Characters'
 import Equipments from './pages/Equipments'
-import FittingRoom from './pages/FittingRoom'
+import DataDetailPage from './pages/DataDetailPage'
 import Poses from './pages/Poses'
 import Expressions from './pages/Expressions'
 import Settings from './pages/Settings'
@@ -15,7 +15,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/characters" replace />} />
           <Route path="characters" element={<Characters />} />
-          <Route path="characters/:id/looks" element={<FittingRoom />} />
+          <Route path="data/:id" element={<DataDetailPage />} />
           <Route path="equipments" element={<Equipments />} />
           <Route path="poses" element={<Poses />} />
           <Route path="expressions" element={<Expressions />} />
