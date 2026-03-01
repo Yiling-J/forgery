@@ -1,7 +1,7 @@
 import { InferResponseType } from 'hono/client'
 import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { CreateCharacterDialog } from '../components/CreateCharacterDialog'
@@ -32,10 +32,11 @@ export default function Characters() {
   const [createOpen, setCreateOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const navigate = useNavigate()
+  const { projectId } = useParams()
 
   // Use generic Data hook but filtering by 'Character' category
   // Destructure dataRef to attach to loading element
-  const { category, dataItems: items, loadingData: loading, resetData, dataRef } = useCategory('Character')
+  const { category, dataItems: items, loadingData: loading, resetData, dataRef } = useCategory(projectId, 'Character')
 
   return (
     <div className="w-full h-full px-4 flex flex-col text-slate-900 relative">

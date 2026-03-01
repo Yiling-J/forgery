@@ -6,9 +6,14 @@ import { collectionService } from '../service/collection'
 
 const app = new Hono()
 
+const listSchema = z.object({
+  projectId: z.string()
+})
+
 // List
-const listRoute = app.get('/', async (c) => {
-  const result = await categoryService.listCategories()
+const listRoute = app.get('/', zValidator('query', listSchema), async (c) => {
+  const { projectId } = c.req.valid('query')
+  const result = await categoryService.listCategories(projectId)
   const mappedResult = result.map((cat) => {
     let imagePrompt = { text: '', imageIds: [] }
     let options: string[] = []
@@ -46,6 +51,7 @@ const createSchema = z.object({
   options: z.array(z.string()).default([]),
   maxCount: z.number().default(9),
   withImage: z.boolean().default(true),
+  projectId: z.string()
 })
 
 const createRoute = listRoute.post('/', zValidator('json', createSchema), async (c) => {

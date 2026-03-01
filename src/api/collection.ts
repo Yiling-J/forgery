@@ -10,6 +10,7 @@ const createCollectionSchema = z.object({
   description: z.string().optional(),
   prompt: z.string().optional(),
   categoryId: z.string(),
+  projectId: z.string(),
   dataIds: z.array(z.string()),
 })
 

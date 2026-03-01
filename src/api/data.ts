@@ -12,14 +12,16 @@ const createSchema = z.object({
   option: z.string().optional(),
   imageId: z.string().optional(),
   categoryId: z.string().min(1),
+  projectId: z.string(),
 })
 
 const createRoute = app.post('/', zValidator('json', createSchema), async (c) => {
-  const { categoryId, imageId, ...rest } = c.req.valid('json')
+  const { categoryId, imageId, projectId, ...rest } = c.req.valid('json')
 
   try {
     const result = await dataService.createData({
       ...rest,
+      project: { connect: { id: projectId } },
       category: { connect: { id: categoryId } },
       image: imageId ? { connect: { id: imageId } } : undefined
     })

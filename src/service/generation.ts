@@ -7,6 +7,7 @@ import { assetService } from './asset'
 export class GenerationService {
   async createGeneration(
     dataIds: string[],
+    projectId: string,
     userPrompt?: string
   ) {
     // 1. Fetch all data items with their images and categories
@@ -138,8 +139,8 @@ category: ${item.option || item.category.name}
     // 5. Create Generation record
     const generation = await prisma.generation.create({
       data: {
-        characterId: character.id, // Keep backward compatibility for now
         imageId: asset.id,
+        projectId,
         userPrompt: userPrompt,
         // Create GenerationData links for ALL items (Character + Modifiers)
         data: {
@@ -167,22 +168,12 @@ category: ${item.option || item.category.name}
   }
 
   async listGenerations(
-    pagination: { page: number; limit: number },
-    filters?: { characterId?: string; equipmentId?: string },
+    projectId: string,
+    pagination: { page: number; limit: number }
   ) {
     const { page, limit } = pagination
     const skip = (page - 1) * limit
-    const where: Prisma.GenerationWhereInput = {}
-
-    // Deprecated filter support
-    if (filters?.characterId) {
-      where.characterId = filters.characterId
-    }
-
-    // Support new generic filtering via GenerationData if needed,
-    // but the requirement was specifically about fetching generations FOR a data item,
-    // which is handled in DataService.listGenerations.
-    // This method is for global listing.
+    const where: Prisma.GenerationWhereInput = { projectId }
 
     const [total, items] = await Promise.all([
       prisma.generation.count({ where }),
@@ -222,11 +213,6 @@ category: ${item.option || item.category.name}
     // Delete relation records first (not strictly needed with cascading deletes, but safe)
     await prisma.generationData.deleteMany({
         where: { generationId: id }
-    })
-
-    // Delete deprecated relations just in case
-    await prisma.generationEquipment.deleteMany({
-      where: { generationId: id },
     })
 
     // Delete generation record

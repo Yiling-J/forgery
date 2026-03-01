@@ -29,7 +29,7 @@ describe('Category API', () => {
         { id: '1', name: 'Cat1', imagePrompt: '{}', options: '[]' }
     ])
 
-    const res = await app.request('/')
+    const res = await app.request('/?projectId=p1')
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body).toBeArray()
@@ -49,6 +49,7 @@ describe('Category API', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             name: 'New',
+            projectId: 'p1',
             imagePrompt: { text: 't', imageIds: [] },
             options: []
         })

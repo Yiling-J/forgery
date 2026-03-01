@@ -64,6 +64,7 @@ export class CollectionService {
     description?: string
     prompt?: string
     categoryId: string
+    projectId: string
     dataIds: string[]
   }) {
     const collection = await prisma.collection.create({
@@ -72,6 +73,7 @@ export class CollectionService {
         description: data.description,
         prompt: data.prompt,
         categoryId: data.categoryId,
+        projectId: data.projectId,
         items: {
           create: data.dataIds.map((did) => ({
             dataId: did,

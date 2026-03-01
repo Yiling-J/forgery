@@ -15,6 +15,7 @@ import { Textarea } from '@/ui/components/ui/textarea'
 import { useToast } from '@/ui/hooks/use-toast'
 import { Loader2, Plus, X } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 interface Asset {
   id: string
@@ -86,9 +87,11 @@ export function CreateCategoryDialog({ open, onOpenChange, onCreated }: CreateCa
     setReferenceImages((prev) => prev.filter((img) => img.id !== id))
   }
 
+  const { projectId } = useParams()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name) return
+    if (!name || !projectId) return
 
     setLoading(true)
     try {
@@ -100,6 +103,7 @@ export function CreateCategoryDialog({ open, onOpenChange, onCreated }: CreateCa
           description,
           maxCount,
           withImage,
+          projectId,
           options: optionsArray,
           imagePrompt: {
             text: withImage ? promptText : '',

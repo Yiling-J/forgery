@@ -14,7 +14,7 @@ export type DataItem = DataListResponse['items'][number]
 type CollectionListResponse = InferResponseType<typeof client.categories[':id']['collections']['$get']>
 export type CollectionItem = CollectionListResponse[number]
 
-export function useCategory(categoryName: string) {
+export function useCategory(projectId: string | undefined, categoryName: string) {
   const [category, setCategory] = useState<Category | null>(null)
   const [loadingCategory, setLoadingCategory] = useState(true)
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
@@ -22,9 +22,10 @@ export function useCategory(categoryName: string) {
 
   // Fetch Category
   const fetchCategory = useCallback(async () => {
+    if (!projectId) return
     setLoadingCategory(true)
     try {
-      const res = await client.categories.$get()
+      const res = await client.categories.$get({ query: { projectId } })
       if (res.ok) {
         const categories = await res.json()
         const cat = categories.find((c) => c.name === categoryName)
@@ -39,7 +40,7 @@ export function useCategory(categoryName: string) {
     } finally {
       setLoadingCategory(false)
     }
-  }, [categoryName])
+  }, [projectId, categoryName])
 
   useEffect(() => {
     fetchCategory()

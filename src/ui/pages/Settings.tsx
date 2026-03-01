@@ -1,5 +1,4 @@
 import { client } from '@/ui/client'
-import { CategorySettings } from '@/ui/components/CategorySettings'
 import { ExtractionFlowDesigner } from '@/ui/components/ExtractionFlowDesigner'
 import { PageHeader } from '@/ui/components/PageHeader'
 import { Button } from '@/ui/components/ui/button'
@@ -169,8 +168,6 @@ export default function Settings() {
         return 'Providers'
       case 'models':
         return 'Models'
-      case 'categories':
-        return 'Categories'
       default:
         return 'Settings'
     }
@@ -191,7 +188,6 @@ export default function Settings() {
             <TabsList>
               <TabsTrigger value="providers">Providers</TabsTrigger>
               <TabsTrigger value="models">Models</TabsTrigger>
-              <TabsTrigger value="categories">Categories</TabsTrigger>
             </TabsList>
           }
         />
@@ -318,10 +314,6 @@ export default function Settings() {
               categories={categories}
               onSelect={(key, val) => saveSetting(key, val)}
             />
-          </TabsContent>
-
-          <TabsContent value="categories">
-            <CategorySettings />
           </TabsContent>
         </div>
       </Tabs>

@@ -7,14 +7,10 @@ import asset from './api/asset'
 import backup from './api/backup'
 import category from './api/category'
 import collection from './api/collection'
-import character from './api/character'
 import data from './api/data'
-import equipment from './api/equipment'
 import extract from './api/extract'
-import expression from './api/expression'
 import generation from './api/generation'
-import outfit from './api/outfit'
-import pose from './api/pose'
+import project from './api/project'
 import restore from './api/restore'
 import setting from './api/setting'
 import { migrationService } from './service/migration'
@@ -37,15 +33,11 @@ const route = api
   .route('/backup', backup)
   .route('/categories', category)
   .route('/collections', collection)
-  .route('/characters', character)
   .route('/data', data)
-  .route('/equipments', equipment)
   .route('/generations', generation)
   .route('/extract', extract)
-  .route('/outfits', outfit)
-  .route('/poses', pose)
+  .route('/projects', project)
   .route('/restore', restore)
-  .route('/expressions', expression)
   .route('/settings', setting)
 
 // Mount API

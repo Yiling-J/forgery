@@ -1,7 +1,7 @@
-import { Crown, Frame, Settings, Shirt, Smile } from 'lucide-react'
+import { Crown, Frame, Home, Layers, Settings, Shirt, Smile } from 'lucide-react'
 import logo from 'public/logo.webp'
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { BackupRestoreDialog } from './BackupRestoreDialog'
 import {
   Sidebar,
@@ -14,38 +14,47 @@ import {
   SidebarMenuItem,
 } from './ui/sidebar'
 
-// Menu items.
-const items = [
-  {
-    title: 'Characters',
-    url: '/characters',
-    icon: Crown,
-  },
-  {
-    title: 'Equipments',
-    url: '/equipments',
-    icon: Shirt,
-  },
-  {
-    title: 'Poses',
-    url: '/poses',
-    icon: Frame,
-  },
-  {
-    title: 'Expressions',
-    url: '/expressions',
-    icon: Smile,
-  },
-  {
-    title: 'Settings',
-    url: '/settings',
-    icon: Settings,
-  },
-]
-
 export function AppSidebar() {
   const location = useLocation()
+  const { projectId } = useParams()
   const [isBackupOpen, setIsBackupOpen] = useState(false)
+
+  // Project specific items
+  const projectItems = projectId ? [
+    {
+      title: 'Characters',
+      url: `/projects/${projectId}/characters`,
+      icon: Crown,
+    },
+    {
+      title: 'Equipments',
+      url: `/projects/${projectId}/equipments`,
+      icon: Shirt,
+    },
+    {
+      title: 'Poses',
+      url: `/projects/${projectId}/poses`,
+      icon: Frame,
+    },
+    {
+      title: 'Expressions',
+      url: `/projects/${projectId}/expressions`,
+      icon: Smile,
+    },
+    {
+      title: 'Categories',
+      url: `/projects/${projectId}/categories`,
+      icon: Layers,
+    },
+  ] : []
+
+  const globalItems = [
+    {
+      title: 'Settings',
+      url: '/settings',
+      icon: Settings,
+    }
+  ]
 
   return (
     <>
@@ -54,16 +63,44 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => (
+                <SidebarMenuItem className="mb-3">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === '/'}
+                    className="flex h-auto flex-col items-center gap-1 py-3"
+                  >
+                    <Link to="/" className="flex flex-col items-center justify-center">
+                      <Home className="!h-6 !w-6 mb-1" />
+                      <span className="text-xs font-medium">Home</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                {projectItems.map((item) => (
                   <SidebarMenuItem key={item.title} className="mb-3">
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname.startsWith(item.url)}
+                      className="flex h-auto flex-col items-center gap-1 py-3"
+                    >
+                      <Link to={item.url} className="flex flex-col items-center justify-center">
+                        <item.icon className="!h-6 !w-6 mb-1" />
+                        <span className="text-xs font-medium">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+
+                {globalItems.map((item) => (
+                  <SidebarMenuItem key={item.title} className="mb-3 mt-4">
                     <SidebarMenuButton
                       asChild
                       isActive={location.pathname === item.url}
                       className="flex h-auto flex-col items-center gap-1 py-3"
                     >
                       <Link to={item.url} className="flex flex-col items-center justify-center">
-                        <item.icon className="!h-6 !w-6 mb-1" />
-                        <span className="text-xs font-medium">{item.title}</span>
+                        <item.icon className="!h-6 !w-6 mb-1 text-muted-foreground" />
+                        <span className="text-xs font-medium text-muted-foreground">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

@@ -1,5 +1,6 @@
 import { Loader2, Upload } from 'lucide-react'
 import React, { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { client } from '../client'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
@@ -24,6 +25,7 @@ export const CreateCharacterDialog: React.FC<CreateCharacterDialogProps> = ({
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { projectId } = useParams()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -35,7 +37,7 @@ export const CreateCharacterDialog: React.FC<CreateCharacterDialogProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!file || !name) return
+    if (!file || !name || !projectId) return
 
     setLoading(true)
     setError(null)
@@ -55,12 +57,21 @@ export const CreateCharacterDialog: React.FC<CreateCharacterDialogProps> = ({
 
       const asset = await uploadRes.json()
 
-      // 2. Create Character
-      const createRes = await client.characters.$post({
+      // Get character category
+      const categoriesRes = await client.categories.$get({ query: { projectId } })
+      if (!categoriesRes.ok) throw new Error('Failed to fetch categories')
+      const categories = await categoriesRes.json()
+      const charCategory = categories.find(c => c.name === 'Character')
+      if (!charCategory) throw new Error('Character category not found')
+
+      // 2. Create Data
+      const createRes = await client.data.$post({
         json: {
           name,
           description,
           imageId: asset.id,
+          categoryId: charCategory.id,
+          projectId
         },
       })
 

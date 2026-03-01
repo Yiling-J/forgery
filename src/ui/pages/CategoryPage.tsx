@@ -1,6 +1,6 @@
 import { Edit, Plus, ScanLine, Trash2, Upload } from 'lucide-react'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { CollectionDialog } from '../components/CollectionDialog'
@@ -27,6 +27,8 @@ const getEquipmentColor = (name: string) => {
 
 export const CategoryPage: React.FC<CategoryPageProps> = ({ categoryName }) => {
   const navigate = useNavigate()
+  const { projectId } = useParams()
+
   const {
     category,
     loadingCategory,
@@ -43,7 +45,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ categoryName }) => {
     collectionRef,
     resetCollections,
     setCollectionItems, // Important to remove deleted items
-  } = useCategory(categoryName)
+  } = useCategory(projectId, categoryName)
 
   const [extractorOpen, setExtractorOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)

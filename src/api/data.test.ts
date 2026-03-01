@@ -21,7 +21,8 @@ describe('Data API', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             name: 'Item',
-            categoryId: 'c1'
+            categoryId: 'c1',
+            projectId: 'p1'
         })
     })
 

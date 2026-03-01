@@ -33,7 +33,7 @@ describe('Generation API', () => {
 
     const req = new Request('http://localhost/', {
       method: 'POST',
-      body: JSON.stringify({ dataIds: ['char1', 'eq1', 'eq2'] }),
+      body: JSON.stringify({ dataIds: ['char1', 'eq1', 'eq2'], projectId: 'p1' }),
       headers: { 'Content-Type': 'application/json' },
     })
 
@@ -42,6 +42,7 @@ describe('Generation API', () => {
     expect(await res.json()).toEqual({ id: '1' })
     expect(mockGenerationService.createGeneration).toHaveBeenCalledWith(
       ['char1', 'eq1', 'eq2'],
+      'p1',
       undefined
     )
   })
@@ -53,6 +54,7 @@ describe('Generation API', () => {
       method: 'POST',
       body: JSON.stringify({
         dataIds: ['char1', 'eq1', 'eq2'],
+        projectId: 'p1',
         userPrompt: 'test prompt',
       }),
       headers: { 'Content-Type': 'application/json' },
@@ -63,6 +65,7 @@ describe('Generation API', () => {
     expect(await res.json()).toEqual({ id: '1' })
     expect(mockGenerationService.createGeneration).toHaveBeenCalledWith(
       ['char1', 'eq1', 'eq2'],
+      'p1',
       'test prompt'
     )
   })

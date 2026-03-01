@@ -7,8 +7,6 @@ import { client } from '../client'
 import { useInfiniteScroll } from '../hooks/use-infinite-scroll'
 import { useCategory } from '../hooks/use-category'
 import { cn } from '../lib/utils'
-import { LoadOutfitDialog } from './LoadOutfitDialog'
-import { SaveOutfitDialog } from './SaveOutfitDialog'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import {
@@ -54,8 +52,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
   const [userPrompt, setUserPrompt] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const [loadOutfitOpen, setLoadOutfitOpen] = useState(false)
-  const [saveOutfitOpen, setSaveOutfitOpen] = useState(false)
 
   // Use generic hooks
   // Note: we need to adapt useCategory or useInfiniteScroll to filter by option (category) for Equipment
@@ -102,19 +98,19 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
       dataRef: equipmentRefInner,
       setSelectedOption: setEquipmentOption,
       selectedOption: currentEquipmentOption
-  } = useCategory('Equipment')
+  } = useCategory(character?.projectId, 'Equipment')
 
   const {
       dataItems: poses,
       loadingData: loadingPoses,
       dataRef: poseRef
-  } = useCategory('Pose')
+  } = useCategory(character?.projectId, 'Pose')
 
   const {
       dataItems: expressions,
       loadingData: loadingExpressions,
       dataRef: expressionRef
-  } = useCategory('Expression')
+  } = useCategory(character?.projectId, 'Expression')
 
   // Sync selectedCategories with equipmentOption
   // useCategory only supports single option selection currently.
@@ -164,6 +160,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
       const res = await client.generations.$post({
         json: {
           dataIds,
+          projectId: character.projectId,
           userPrompt: userPrompt.trim() || undefined,
         },
       })
@@ -183,30 +180,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
     } finally {
       setSubmitting(false)
     }
-  }
-
-  const handleOutfitSelected = (outfit: OutfitItem) => {
-      // Outfits still use Equipment relation in backend but we are moving away.
-      // If outfit.equipments is populated with Equipment objects, we need to map them to Data objects.
-      // But Equipment and Data share IDs if migrated.
-      // So we can just cast them if fields match enough.
-
-      const equipments = outfit.equipments.map((oe) => ({
-          ...oe.equipment,
-          // Map fields if needed. Data has `option` instead of `category`.
-          option: oe.equipment.category,
-          categoryId: '', // We don't have this from old relation easily, but ID matches.
-          category: {
-              id: '', name: 'Equipment', description: '', imagePrompt: '', enabled: true, options: '[]', maxCount: 9, withImage: true, createdAt: '', updatedAt: ''
-          }
-      })) as unknown as DataItem[] // Force cast for now as IDs are what matter
-
-    // @ts-ignore
-    setSelectedEquipments(equipments)
-    if (outfit.prompt) {
-      setUserPrompt(outfit.prompt)
-    }
-    toast.success(`Loaded outfit: ${outfit.name}`)
   }
 
   return (
@@ -553,20 +526,7 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
           </div>
 
           {/* Footer */}
-          <DialogFooter className="px-6 py-4 border-t border-stone-200 bg-white shrink-0 flex items-center justify-between sm:justify-between w-full">
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setLoadOutfitOpen(true)}>
-                <Download className="w-4 h-4 mr-2" /> Load Outfit
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setSaveOutfitOpen(true)}
-                disabled={selectedEquipments.length === 0}
-              >
-                <Save className="w-4 h-4 mr-2" /> Save Outfit
-              </Button>
-            </div>
-
+          <DialogFooter className="px-6 py-4 border-t border-stone-200 bg-white shrink-0 flex justify-end w-full">
             <div className="flex items-center gap-4">
               <Button
                 size="lg"
@@ -586,24 +546,6 @@ export const CreateLookDialog: React.FC<CreateLookDialogProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <LoadOutfitDialog
-        open={loadOutfitOpen}
-        onOpenChange={setLoadOutfitOpen}
-        onSelect={handleOutfitSelected}
-      />
-      <SaveOutfitDialog
-        open={saveOutfitOpen}
-        onOpenChange={setSaveOutfitOpen}
-        selectedEquipments={
-            // Cast back to match props expectation which probably expects deprecated Equipment type
-            // But if we update SaveOutfitDialog to accept DataItem, it will be better.
-            // For now, let's assume it accepts { id, name } structure which DataItem has.
-            selectedEquipments as any
-        }
-        prompt={userPrompt}
-        onSuccess={() => toast.success('Outfit saved successfully')}
-      />
     </>
   )
 }

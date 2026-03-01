@@ -2,8 +2,9 @@ import { prisma } from '../db'
 import { Prisma } from '../generated/prisma/client'
 
 export class CategoryService {
-  async listCategories() {
+  async listCategories(projectId: string) {
     return prisma.category.findMany({
+      where: { projectId },
       orderBy: { name: 'asc' }
     })
   }

@@ -70,7 +70,7 @@ describe('GenerationService', () => {
 
     mockPrisma.generation.create.mockResolvedValue({ id: 'gen1' })
 
-    await generationService.createGeneration(['char1'], 'Make it cool')
+    await generationService.createGeneration(['char1'], 'proj1', 'Make it cool')
 
     // Verify AI service call includes user prompt
     expect(mockAiService.generateImage).toHaveBeenCalledWith(
@@ -120,7 +120,7 @@ describe('GenerationService', () => {
 
     mockPrisma.generation.create.mockResolvedValue({ id: 'gen1' })
 
-    await generationService.createGeneration(['char1', 'pose1'])
+    await generationService.createGeneration(['char1', 'pose1'], 'proj1')
 
     // Verify AI service called with pose instruction
     expect(mockAiService.generateImage).toHaveBeenCalledWith(

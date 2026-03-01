@@ -24,7 +24,7 @@ type DataItem = InferResponseType<typeof client.data[':id']['$get']>
 type GenerationItem = InferResponseType<typeof client.data[':id']['generations']['$get']>['items'][number]
 
 export default function DataDetailPage() {
-  const { id } = useParams<{ id: string }>()
+  const { id, projectId } = useParams<{ id: string; projectId: string }>()
   const navigate = useNavigate()
   // @ts-ignore
   const [dataItem, setDataItem] = useState<DataItem | null>(null)

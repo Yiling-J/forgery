@@ -29,9 +29,9 @@ describe('CategoryService', () => {
 
   test('listCategories should return categories', async () => {
     prismaMock.category.findMany.mockResolvedValueOnce([{ id: '1', name: 'Test' }])
-    const result = await categoryService.listCategories()
+    const result = await categoryService.listCategories('p1')
     expect(result).toEqual([{ id: '1', name: 'Test' }])
-    expect(prismaMock.category.findMany).toHaveBeenCalledWith({ orderBy: { name: 'asc' } })
+    expect(prismaMock.category.findMany).toHaveBeenCalledWith({ where: { projectId: 'p1' }, orderBy: { name: 'asc' } })
   })
 
   test('getCategory should return a category', async () => {

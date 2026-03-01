@@ -22,49 +22,26 @@ model Asset {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  characters  Character[]
-  equipments  Equipment[]
-  generations Generation[]
-  poses       Pose[]
-  expressions Expression[]
   data        Data[]
+  generations Generation[]
 
   @@map("assets")
 }
 
-/// @deprecated
-model Character {
-  id          String   @id @default(ulid())
-  name        String
-  description String?
-  imageId     String   @map("image_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+model Project {
+  id           String   @id @default(ulid())
+  name         String
+  coverImageId String?  @map("cover_image_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  image       Asset        @relation(fields: [imageId], references: [id])
+  categories  Category[]
+  data        Data[]
+  collections Collection[]
   generations Generation[]
 
-  @@map("characters")
-}
-
-/// @deprecated
-model Equipment {
-  id          String   @id @default(ulid())
-  name        String
-  description String
-  category    String
-  imageId     String   @map("image_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  image       Asset                 @relation(fields: [imageId], references: [id])
-  generations GenerationEquipment[]
-  outfits     OutfitEquipment[]
-
-  @@index([category])
-  @@map("equipments")
+  @@map("projects")
 }
 
 model Category {
@@ -76,10 +53,12 @@ model Category {
   options     String   // JSON array of strings
   maxCount    Int      @map("max_count")
   withImage   Boolean  @map("with_image") @default(true)
+  projectId   String   @map("project_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   data        Data[]
   collections Collection[]
 
@@ -93,12 +72,14 @@ model Data {
   option      String?
   imageId     String?  @map("image_id")
   categoryId  String   @map("category_id")
+  projectId   String   @map("project_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   image       Asset?           @relation(fields: [imageId], references: [id])
-  category    Category         @relation(fields: [categoryId], references: [id])
+  category    Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   generations GenerationData[]
   collections CollectionItem[]
 
@@ -112,11 +93,13 @@ model Collection {
   description String?
   prompt      String?
   categoryId  String   @map("category_id")
+  projectId   String   @map("project_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  category Category         @relation(fields: [categoryId], references: [id])
+  project  Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   items    CollectionItem[]
 
   @@map("collections")
@@ -135,23 +118,15 @@ model CollectionItem {
 
 model Generation {
   id           String   @id @default(ulid())
-  /// @deprecated
-  characterId  String   @map("character_id")
   imageId      String   @map("image_id")
   userPrompt   String?  @map("user_prompt")
-  /// @deprecated
-  poseId       String?  @map("pose")
-  /// @deprecated
-  expressionId String?  @map("expression")
+  projectId    String   @map("project_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  character  Character             @relation(fields: [characterId], references: [id])
-  image      Asset                 @relation(fields: [imageId], references: [id])
-  pose       Pose?                 @relation(fields: [poseId], references: [id])
-  expression Expression?           @relation(fields: [expressionId], references: [id])
-  equipments GenerationEquipment[]
+  project    Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  image      Asset            @relation(fields: [imageId], references: [id])
   data       GenerationData[]
 
   @@map("generations")
@@ -161,49 +136,11 @@ model GenerationData {
   generationId String @map("generation_id")
   dataId       String @map("data_id")
 
-  generation Generation @relation(fields: [generationId], references: [id])
-  data       Data       @relation(fields: [dataId], references: [id])
+  generation Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  data       Data       @relation(fields: [dataId], references: [id], onDelete: Cascade)
 
   @@id([generationId, dataId])
   @@map("generation_data")
-}
-
-/// @deprecated
-model GenerationEquipment {
-  generationId String @map("generation_id")
-  equipmentId  String @map("equipment_id")
-
-  generation Generation @relation(fields: [generationId], references: [id])
-  equipment  Equipment  @relation(fields: [equipmentId], references: [id])
-
-  @@id([generationId, equipmentId])
-  @@map("generation_equipments")
-}
-
-/// @deprecated
-model Outfit {
-  id        String   @id @default(ulid())
-  name      String
-  prompt    String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  equipments OutfitEquipment[]
-
-  @@map("outfits")
-}
-
-/// @deprecated
-model OutfitEquipment {
-  outfitId    String @map("outfit_id")
-  equipmentId String @map("equipment_id")
-
-  outfit    Outfit    @relation(fields: [outfitId], references: [id], onDelete: Cascade)
-  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
-
-  @@id([outfitId, equipmentId])
-  @@map("outfit_equipments")
 }
 
 model Setting {
@@ -214,34 +151,4 @@ model Setting {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("settings")
-}
-
-/// @deprecated
-model Pose {
-  id        String   @id @default(ulid())
-  name      String
-  imageId   String   @map("image_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  image       Asset        @relation(fields: [imageId], references: [id])
-  generations Generation[]
-
-  @@map("poses")
-}
-
-/// @deprecated
-model Expression {
-  id        String   @id @default(ulid())
-  name      String
-  imageId   String   @map("image_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  image       Asset        @relation(fields: [imageId], references: [id])
-  generations Generation[]
-
-  @@map("expressions")
 }
